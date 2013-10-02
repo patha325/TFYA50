@@ -1,2 +1,4 @@
-Detta är en testfil
+Detta är en testfil.
+
+Nu har den ytterligare en paragraf.
 
