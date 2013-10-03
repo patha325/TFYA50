@@ -2,5 +2,4 @@ Detta är en testfil.
 
 Nu har den ytterligare en paragraf.
 
-Swedish characters do not work properly in vim on Windows... Too bad..
-
+Swedish characters do not work properly in vim on Windows... Too bad...
