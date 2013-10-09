@@ -17,7 +17,7 @@ int main(){
 
 void hideNSeek(){
 
-    for (int i = 0; i<10; i++) {
+    for (int i = 0; i<50; i++) {
         cout << i << endl;
     }
     cout << "Ready or not, here I come!" << endl;
