@@ -6,7 +6,7 @@ void hideNSeek();
 
 int main(){
 
-	cout << "Hello, Allan!" << endl;
+	cout << "Hello, A!" << endl;
 
 
     hideNSeek();
