@@ -1,5 +1,9 @@
 TFYA50
+<<<<<<< HEAD
 ======
+=======
+=======
+>>>>>>> 0e6f4dc4e410366fb826d31bca7bc37f87c524c6
 
 Gör:
 -När du börjar för dagen är det en bra vana att hämta senaste versionen av alla
