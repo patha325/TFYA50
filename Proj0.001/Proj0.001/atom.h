@@ -1,5 +1,5 @@
-#ifndef atom 
-#define atom
+#ifndef ATOM_H 
+#define ATOM_H
 
 #include<vector>
 

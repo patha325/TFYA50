@@ -1,5 +1,6 @@
-#ifndef cell_list
-#define cell_list
+#ifndef CELL_LIST_H
+#define CELL_LIST_H
+
 
 #include <vector>
 

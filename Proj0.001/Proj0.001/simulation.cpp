@@ -30,15 +30,13 @@ void Simulation::regulate_thermostat(){
 
 
 }
-void save(){
+void Simulation::save(){
 	//Save ??? to a .txt file with some structure.
 
 }
 	
-void create_cell_list(){
-	cell_list = new Cell_list(0.5);
-		
-		//Cell_list(cutoff);
 
-
+void Simulation::create_cell_list(){
+	// Call a Cell_list. 
+	cell_list = new Cell_list(cutoff);
 }
