@@ -20,7 +20,7 @@ public:
 	Cell_list(float cutoff); //Creates all cells 
 	~Cell_list();
 	void add_atoms_to_cells(std::vector<Atom*>);
-	std::vector<Atom*> getNeighbours(Atom* atom); //Returns vector of atoms in nearest cells, with respect to paramteter atom.
+	std::vector<Atom*> get_neighbours(Atom* atom); //Returns vector of atoms in nearest cells, with respect to paramteter atom.
 };
 
 #endif
