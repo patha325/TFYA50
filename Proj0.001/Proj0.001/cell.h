@@ -1,5 +1,5 @@
-#ifndef cell
-#define cell
+#ifndef CELL_H
+#define CELL_H
 
 #include<vector>
 #include"atom.h"

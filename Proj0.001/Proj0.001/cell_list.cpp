@@ -11,7 +11,7 @@ void Cell_list::create_cell(){}
 
 
 //public
-Cell_list::Cell_list(float cutoff, float cell_length){} 
+Cell_list::Cell_list(float cutoff){} 
 
 Cell_list::~Cell_list(){}
 
