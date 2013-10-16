@@ -21,7 +21,7 @@ private:
 	float sigma;
 	float epsilon;
 	float lattice_constant;
-	string crystal_structure; //bcc,fcc,hcp
+	std::string crystal_structure; //bcc,fcc,hcp
 
 	Cell_list* cell_list; 
 
