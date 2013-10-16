@@ -17,8 +17,4 @@ public:
 	~Cell_list();
 	void add_atoms_to_cells(std::vector<Atom*>);
 	std::vector<Atom*> getNeighbours(Atom* atom); //Returns vector of atoms in nearest cells, with respect to paramteter atom.
-
-	
-
-
 };

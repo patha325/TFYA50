@@ -1,3 +1,6 @@
+#ifndef cell
+#define cell
+
 #include<vector>
 #include"atom.h"
 
@@ -13,6 +16,6 @@ public:
 	~Cell();
 	void add_atom(Atom*);
 	void clear_cell();
-
-
 };
+
+#endif
