@@ -6,12 +6,21 @@
 using namespace std;
 
 //private
+
+/* ------------------------------
+FUNCTION: Cell_list::clear_cells()
+PARAMETERS: None
+RETURN: void
+Removes all atoms from all cells
+------------------------------ */
 void Cell_list::clear_cells(){}
+
+
 void Cell_list::create_cell(){}
 
 
 //public
-Cell_list::Cell_list(float cutoff, float cell_length){} 
+Cell_list::Cell_list(float cutoff){} 
 
 Cell_list::~Cell_list(){}
 

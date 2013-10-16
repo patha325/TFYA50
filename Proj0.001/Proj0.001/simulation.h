@@ -2,8 +2,8 @@
 #define simulation
 
 #include<vector>
-#include "atom.h"
 #include<string>
+#include "atom.h"
 #include "cell_list.h"
 class Simulation{
 private:
@@ -21,7 +21,7 @@ private:
 	float sigma;
 	float epsilon;
 	float lattice_constant;
-	std::string crystal_structure; //bcc,fcc,hcp
+	string crystal_structure; //bcc,fcc,hcp
 
 	Cell_list* cell_list; 
 

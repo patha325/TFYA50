@@ -36,7 +36,9 @@ void save(){
 }
 	
 void create_cell_list(){
-	Cell_list(cutoff);
+	cell_list = new Cell_list(0.5);
+		
+		//Cell_list(cutoff);
 
 
 }
