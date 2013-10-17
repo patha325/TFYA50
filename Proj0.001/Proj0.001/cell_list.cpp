@@ -14,7 +14,7 @@ and the cells in the vector.
 Create cells! through cell.cpp.
 ------------------------------ */
 Cell_list::Cell_list(float cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float lattice_constant){} 
-// Take care of periodic boundry conditions?
+
 
 /* ------------------------------
 DESTRUCTOR
