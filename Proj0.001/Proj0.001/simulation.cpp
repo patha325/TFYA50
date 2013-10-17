@@ -1,10 +1,12 @@
 #include "simulation.h"
-#include "cell_list.h"
+
+using namespace std;
 
 void Simulation::run_simulation(){
 	//Loop through next_time_step
 	// How often shall we update cell list?
 
+	//Some test stuff:
 }
 Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, int time_step,int steps,float temperature,float cutoff,float mass,float sigma,float epsilon,float lattice_constant,std::string crystal_structure,bool thermostat){
 	// Create a simulation object. Initialize cell_list, list of atoms.

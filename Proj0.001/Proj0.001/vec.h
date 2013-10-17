@@ -28,7 +28,10 @@ public:
 
 	//Operators
 	Vec operator*(float);
-	Vec operator+(Vec*);
+	Vec operator+(Vec);
+	Vec operator=(Vec);
 };
+
+Vec operator*(float,Vec);
 
 #endif

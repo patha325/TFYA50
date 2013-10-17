@@ -1,10 +1,15 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
-#include<vector>
-#include<string>
+#include <vector>
+#include <string>
+#include <iostream>
+
 #include "atom.h"
 #include "cell_list.h"
+#include "cell_list.h"
+#include "vec.h"
+
 class Simulation{
 private:
 	//Variables
