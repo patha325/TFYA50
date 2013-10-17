@@ -2,13 +2,6 @@
 
 using namespace std;
 
-/*
-int cell_number; //Do we need this?
-std::vector<float> origin_of_cell;// Lower left corner. ALWAYS
-std::vector<Atom*> atoms_in_cell;
-int number_of_atoms_in_cell;
-*/
-
 /*-----------------
 CONSTRUCTOR
 Sets parameters cell_number

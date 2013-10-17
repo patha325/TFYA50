@@ -5,7 +5,6 @@
 
 class Atom{
 private:
-
 	std::vector<float> position;
 	std::vector<float> velocity;
 	std::vector<float> prev_position;
@@ -29,10 +28,6 @@ public:
 	Atom (std::vector<float> position);
 	~Atom ();
 	void update_atom();
-
-
-
-
 };
 
 #endif

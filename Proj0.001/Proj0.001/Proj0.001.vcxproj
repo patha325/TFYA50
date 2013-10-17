@@ -60,12 +60,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="vec.h" />
     <ClInclude Include="atom.h" />
     <ClInclude Include="cell.h" />
     <ClInclude Include="cell_list.h" />
     <ClInclude Include="simulation.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="vec.cpp" />
     <ClCompile Include="atom.cpp" />
     <ClCompile Include="cell.cpp" />
     <ClCompile Include="cell_list.cpp" />
