@@ -2,39 +2,77 @@
 
 using namespace std;
 
-void Simulation::run_simulation(){
-	//Loop through next_time_step
-	// How often shall we update cell list?
-
-	//Some test stuff:
-}
+/*-----------------------
+CONSTRUCTOR
+Parameters:
+	int unit_cells_x				: Number of unit cells in x-direction
+	int unit_cells_y				: Number of unit cells in y-direction
+	int unit_cells_z				: Number of unit cells in x-direction
+	int time_step					: Length of one time step
+	int steps						: number of time steps for the simulation
+	float temperature				: Simulation temperature
+	float cutoff					: Cutoff distance for potential calculations
+	float mass						: Mass of an atom
+	float sigma						: Material constant sigma
+	float epsilon					: Material constan epsilon
+	float lattice_constant			: Lattice constant
+	std::string crystal_structure	: Name of chrystal structure (fcc, hcp, bcc...)
+	bool thermostat					: If a thermostat is employed
+-
+Creates a simulation object. 
+Calls constructors for all atoms and the cell list. 
+------------------------*/
 Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, int time_step,int steps,float temperature,float cutoff,float mass,float sigma,float epsilon,float lattice_constant,std::string crystal_structure,bool thermostat){
-	// Create a simulation object. Initialize cell_list, list of atoms.
 	create_list_of_atoms();
 	create_cell_list();
 	
-	// Save all the input!
-	
+	// Todo: Save all the input!	
 }
+
+/*-------------------------
+DESTRUCTOR
+Destroys all atoms and the 
+cells and cell list.
+-------------------------*/
 Simulation::~Simulation (){
 
 }
-void Simulation::create_list_of_atoms(){
-	// Input
-	// None
-	//Requires 
-	//Lattice constant & crystal_structure & unit_cells_i
-	
-	//Create all atoms in this class? Convert from fcc to atom positions.
-	// Call atom and put in vector list_of_atoms.
 
+/*----------------------------
+FUNCTION: run_simulation
+Paramteters: None
+Returns: Nothing
+-
+Here is the main loop for the 
+simulation. Handles time steps, 
+and everything that happes during
+the simulation.
+----------------------------*/
+void Simulation::run_simulation(){
 
-	//Output
-	// None
-
+	// Todo: How often shall we update cell list?
 }
-void Simulation::next_time_step(int current_time_step){
-	/* Alter everything in the simulation to get to the next time step.
+
+/*-----------------------------
+FUNCTION: create_list_of_atoms
+Parameters: None
+Returns: Nothing
+-
+Create all atoms and add them to the
+vector list_of_atoms.
+-----------------------------*/
+void Simulation::create_list_of_atoms(){
+
+	//Todo: Lattice constant & crystal_structure & unit_cells_i
+	//Todo: Create all atoms in this class? Convert from fcc to atom positions.
+}
+
+/*------------------------------
+FUNCTION next_time_step
+Paramteters: int
+Returns: Nothing
+-
+Alter everything in the simulation to get to the next time step.
 	Calculate distances
 	Calculate potential
 	Calculate force
@@ -47,22 +85,40 @@ void Simulation::next_time_step(int current_time_step){
 	}
 
 	Save ... to txt.
+------------------------------*/
+void Simulation::next_time_step(int current_time_step){}
 
-	*/
-}
-void Simulation::regulate_thermostat(){
-	//Regulate the kinetic energy so that the temperature remains "constant"
+/*------------------------------
+FUNCTION regulate_thermostat
+Paramteters: None
+Returns: Nothing
+- 
+Regulates systems to maintain the 
+temperature of the heat sink.
+------------------------------*/
+void Simulation::regulate_thermostat(){}
 
-
-}
-void Simulation::save(){
-	//Save ??? to a .txt file with some structure.
-
-}
+/*----------------------------
+FUNCTION save
+Parameters: None
+Return: Nothing
+-
+Save ??? to a .txt file with some structure. 
+TODO: How save, format?
+----------------------------*/
+void Simulation::save(){}
 	
-
+/*------------------------------
+FUNCTION create_cell_list
+Parameters: None
+Returns: Nothing
+-
+Creates the cell list by calling its 
+constructor. Adds all atoms to the 
+cell list.
+------------------------------*/
 void Simulation::create_cell_list(){
-	// Call a Cell_list. 
+
 	cell_list = new Cell_list(cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant);
 	cell_list->add_atoms_to_cells(list_of_atoms);
 }

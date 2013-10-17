@@ -7,7 +7,7 @@ CONSTRUCTOR
 Sets parameters cell_number
 and origin.
 -----------------*/
-Cell::Cell(int cell_number, std::vector<float> origin){}
+Cell::Cell(int cell_number, Vec origin){}
 
 /*----------------
 DESTRUCTOR
