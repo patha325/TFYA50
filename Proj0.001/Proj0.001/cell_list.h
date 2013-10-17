@@ -17,7 +17,7 @@ private:
 
 public:
 	//Methods
-	Cell_list(float cutoff); 
+	Cell_list(float cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float lattice_constant); // unit_cells is a material parameter.
 	~Cell_list();
 	void add_atoms_to_cells(std::vector<Atom*>);
 	std::vector<Atom*> get_neighbours(Atom* atom); 

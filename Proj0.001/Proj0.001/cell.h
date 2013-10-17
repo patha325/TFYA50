@@ -7,7 +7,7 @@
 class Cell{
 private:
 	int cell_number;
-	std::vector<float> origin;
+	std::vector<float> origin_of_cell;// Lower left corner. AlWAYS
 	std::vector<Atom*> atoms_in_cell;
 	int number_of_atoms_in_cell;
 

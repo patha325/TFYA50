@@ -15,6 +15,11 @@ private:
 	float temperature;
 	float cutoff;
 	bool thermostat;
+	int unit_cells_x;
+	int unit_cells_y;
+	int unit_cells_z;
+
+
 
 	//Material
 	float mass;
@@ -31,11 +36,13 @@ private:
 
 public:
 	void create_list_of_atoms(); //Create all atoms in this class? Convert from fcc to atom positions.
-	void next_time_step(); //Alter everything in the simulation to get to the next time step.
+	void next_time_step(int current_time_step); //Alter everything in the simulation to get to the next time step.
 	void regulate_thermostat(); //Regulate the kinetic energy so that the temperature remains "constant"
 	void run_simulation(); //Loop through next_time_step
 	void save(); //Save ??? to a .txt file with some structure.
-	Simulation (int number_of_atoms,
+	Simulation (int unit_cells_x,
+		int unit_cells_y, // unit_cells is a material parameter.
+		int unit_cells_z,
 		int time_step,
 		int steps,
 		float temperature,
@@ -47,6 +54,8 @@ public:
 		std::string crystal_structure,
 		bool thermostat);
 	~Simulation ();
-
+	void update_atoms(); // Run through list_of_atoms and .update_atom
+	// abort simulation button?
+	// handle end of simulation?
 };
 #endif
