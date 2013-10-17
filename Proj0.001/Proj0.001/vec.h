@@ -12,6 +12,7 @@ private:
 
 public:
 	//Constructor
+	Vec();
 	Vec(float x, float y, float z);
 
 	//Getters

@@ -3,31 +3,40 @@
 
 #include<vector>
 
+#include "Vec.h"
+
 class Atom{
 private:
-	std::vector<float> position;
-	std::vector<float> velocity;
-	std::vector<float> prev_position;
-	std::vector<float> next_position;
-	std::vector<float> next_velocity;
+	Vec position;
+	Vec velocity;
+	Vec prev_position;
+	Vec next_position;
+	Vec next_velocity;
 	int cell_number;
 	int number_of_neighbours;
 		
 
 public:
-	std::vector<float> calculate_force(std::vector<Atom*>);
-	float calculate_potential(std::vector<Atom*>);
-	std::vector<float> distance(Atom*); // Take care of periodic boundry conditions? 
-	std::vector<float> get_velocity();
-	void set_velocity(std::vector<float>);
-	std::vector<float> get_position();
-	void set_position(std::vector<float>);
-	int get_cell_number();
-	void set_cell_number(int);
-	void next_time_step(); //Alter everything in the atom to get to the next time step.
-	Atom (std::vector<float> position);
+	//Constructor
+	Atom (Vec);
 	~Atom ();
-	void update_atom();
+
+	//Getters
+	Vec get_velocity();
+	Vec get_position();
+	int get_cell_number();
+
+	//Setters
+	void set_velocity(Vec);
+	void set_position(Vec);
+	void set_cell_number(int);
+
+	//Other functions
+	Vec calculate_force(std::vector<Atom*>);
+	float calculate_potential(std::vector<Atom*>);
+	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? 
+	void next_time_step(); //Alter everything in the atom to get to the next time step.
+	void update_atom();	
 };
 
 #endif

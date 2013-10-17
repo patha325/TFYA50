@@ -2,69 +2,116 @@
 
 using namespace std;
 
-vector<float> Atom::calculate_force(vector<Atom*> neigbouring_atoms){
+/*---------------------
+CONSTRUCTOR
+Parameters: Vec starting_position
+Sets starting position
+----------------------*/
+Atom::Atom(Vec starting_position){
 
-	vector<float> tmp;
-	tmp.insert(tmp.begin(), 0.5);
-	tmp.insert(tmp.begin(), 0.6);
-	tmp.insert(tmp.begin(), 0.7);
+	position = starting_position;
+}
+
+/*--------------------
+DESTRUCTOR
+Does nothing
+---------------------*/
+Atom::~Atom(){}
+
+/*----------------------
+FUNCTION: calculate_force
+Paramteters: vector<Atom*>
+Returns: Vec (force vector)
+-
+Calculates force on the atom
+from all neighbouring atoms 
+within cutoff.
+----------------------*/
+Vec Atom::calculate_force(vector<Atom*> neigbouring_atoms){
+
+	Vec tmp(0,0,0);
 	return tmp;
 }
 	
 
+/*----------------------
+FUNCTION: calculate_potential
+Parameters: vector<Atom*>
+Returns: float (scalar potential)
+-
+Calculates (LJ) potential on 
+the atom, from all neighbouring
+atoms within cutoff.
+----------------------*/
 float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 
 	return 0.5;
 }
 	
-vector<float> Atom::distance(Atom*){
+/*----------------------
+FUNCTION:distance_vector
+Parameters: Atom*
+Returns: Vec (vector between atoms)
+-
+Returns a Vec (vector) which is the 
+cartesian vector between the atom
+and the parameter atom.
+----------------------*/
+Vec Atom::distance_vector(Atom* other_atom){
 
 	// Take care of periodic boundry conditions
-	vector<float> tmp;
-	tmp.insert(tmp.begin(), 0.5);
-	tmp.insert(tmp.begin(), 0.6);
-	tmp.insert(tmp.begin(), 0.7);
-	return tmp;
-} 
-
-vector<float> Atom::get_velocity(){
-
-	vector<float> tmp;
-	tmp.insert(tmp.begin(), 0.5);
-	tmp.insert(tmp.begin(), 0.6);
-	tmp.insert(tmp.begin(), 0.7);
+	Vec tmp(0,0,0);
 	return tmp;
 }
 
-void Atom::set_velocity(std::vector<float>){}
-	
-vector<float> Atom::get_position(){
+/*-------------------------
+FUNCTION: next_time_step()
+Parameters: None
+Returns: Nothing
+-
+Calculates the atom paramters
+for the next time step
+--------------------------*/
+void Atom::next_time_step(){} 
 
-	vector<float> tmp;
-	tmp.insert(tmp.begin(), 0.5);
-	tmp.insert(tmp.begin(), 0.6);
-	tmp.insert(tmp.begin(), 0.7);
+/*--------------------------
+FUNCTION: update_atom
+Parameters: None
+Returns: Nothing
+-
+Changes the atom paramters
+from the state at time t to
+time t+1.
+--------------------------*/
+void Atom::update_atom(){}
+
+
+// ------- GETTERS --------
+Vec Atom::get_velocity(){
+
+	Vec tmp(0,0,0);
 	return tmp;
 }
 
-void Atom::set_position(vector<float>){
+Vec Atom::get_position(){
 
+	Vec tmp(0,0,0);
+	return tmp;
 }
 
 int Atom::get_cell_number(){
 
-	return 0;
+	return cell_number;
 }
+
+
+// -------- SETTERS --------
+void Atom::set_velocity(Vec newVelocity){}
+	
+void Atom::set_position(Vec newPosition){}
 
 void Atom::set_cell_number(int){}
 
-void Atom::next_time_step(){} //Alter everything in the atom to get to the next time step.
 
-Atom::Atom(vector<float> starting_position){
 
-	position = starting_position;
-}
 
-Atom::~Atom(){}
-
-void Atom::update_atom(){}

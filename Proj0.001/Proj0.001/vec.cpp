@@ -11,6 +11,17 @@ Vec::Vec(float new_x, float new_y, float new_z){
 	z = new_z;
 }
 
+/*-----------------------
+CONSTRUCTOR (Alternative)
+Constructs a null vector.
+------------------------*/
+Vec::Vec(){
+
+	x = 0;
+	y = 0;
+	z = 0;
+}
+
 /*-----------
 GETTERS
 -----------*/
