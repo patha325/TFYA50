@@ -13,7 +13,7 @@ private:
 
 	//Methods
 	void clear_cells(); 
-	void create_cell();
+	void create_cells();
 
 public:
 	//Methods

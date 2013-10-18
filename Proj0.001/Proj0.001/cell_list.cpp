@@ -77,6 +77,6 @@ RETURN: void
 Creates Cell-objects and adds them
 to the list_of_cells vector.
 ------------------------------ */
-void Cell_list::create_cell(){}
+void Cell_list::create_cells(){}
 
 

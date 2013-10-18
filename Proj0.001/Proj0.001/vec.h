@@ -11,6 +11,8 @@ private:
 	float z;
 
 public:
+	//TODO: Returnera enhetsvektor
+
 	//Constructor
 	Vec();
 	Vec(float x, float y, float z);
