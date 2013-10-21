@@ -29,7 +29,7 @@ Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, in
 	Atom p (test1);
 	Vec test2 (3,-1,4);
 	Atom m (test2);
-    
+
     Cell* myCell = new Cell(9,Vec(1,4,7));
     myCell->add_atom(&m);
     vector<Atom*> atomsVector;
@@ -37,6 +37,7 @@ Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, in
 
     cout << atomsVector[0]->get_position()<< endl;
 	
+
 	// Todo: Save all the input!	
 }
 
@@ -73,7 +74,18 @@ Create all atoms and add them to the
 vector list_of_atoms.
 -----------------------------*/
 void Simulation::create_list_of_atoms(){
+	/*
+	// Calculate number of atoms
+		Vec extra (0,0,0);
+	if(crystal_structure == "fcc"){
+	for(int i=1;i<=unit_cells_x;i++){
+		Vec origin (0,0,0);
+		list_of_atoms.push_back(new Atom(origin+extra,0.5));
+		extra= Vec (lattice_constant,0,0);
 
+	}
+	*/
+	}
 	//Todo: Lattice constant & crystal_structure & unit_cells_i
 	//Todo: Create all atoms in this class? Convert from fcc to atom positions.
 }

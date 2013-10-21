@@ -41,6 +41,7 @@ private:
 
 public:
 	void create_list_of_atoms(); //Create all atoms in this class? Convert from fcc to atom positions.
+	bool check_input();
 	void next_time_step(int current_time_step); //Alter everything in the simulation to get to the next time step.
 	void regulate_thermostat(); //Regulate the kinetic energy so that the temperature remains "constant"
 	void run_simulation(); //Loop through next_time_step
