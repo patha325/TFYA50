@@ -13,7 +13,13 @@ Creates the list_of_cells vector
 and the cells in the vector.
 Create cells! through cell.cpp.
 ------------------------------ */
-Cell_list::Cell_list(float cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float lattice_constant){} 
+Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float lattice_constant){
+
+    cutoff = new_cutoff;
+    cell_length = 2*cutoff; //Is this resonable?
+    
+    create_cells();
+}
 
 
 /* ------------------------------
@@ -77,6 +83,9 @@ RETURN: void
 Creates Cell-objects and adds them
 to the list_of_cells vector.
 ------------------------------ */
-void Cell_list::create_cells(){}
+void Cell_list::create_cells(){
+
+    
+}
 
 

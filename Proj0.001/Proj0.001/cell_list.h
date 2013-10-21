@@ -9,6 +9,9 @@ private:
 	//Variables
 	float cutoff; //Potential cutoff
 	float cell_length; //Length of side of cell
+    float bulk_length_x;
+    float bulk_length_y;
+    float bulk_length_z;
 	std::vector<Cell*> list_of_cells; //Vector containing all cells
 
 	//Methods

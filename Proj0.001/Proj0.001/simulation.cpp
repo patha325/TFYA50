@@ -31,9 +31,11 @@ Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, in
 	Atom m (test2);
     
     Cell* myCell = new Cell(9,Vec(1,4,7));
-    cout << myCell->get_cell_number() << endl;
-    cout << myCell->get_origin_of_cell() << endl;
-    cout << myCell->get_number_of_atoms_in_cell() << endl;
+    myCell->add_atom(&m);
+    vector<Atom*> atomsVector;
+    atomsVector.insert(atomsVector.begin(), myCell->get_atoms_in_cell().begin(), myCell->get_atoms_in_cell().end());
+
+    cout << atomsVector[0]->get_position()<< endl;
 	
 	// Todo: Save all the input!	
 }

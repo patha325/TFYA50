@@ -38,6 +38,11 @@ int Cell::get_number_of_atoms_in_cell(){
     return number_of_atoms_in_cell;
 }
 
+std::vector<Atom*> Cell::get_atoms_in_cell(){
+
+    return atoms_in_cell;
+}
+
 /*------------------
  SETTERS
 -------------------*/
@@ -48,10 +53,6 @@ void Cell::set_cell_number(int new_cell_number){
 void Cell::set_origin_of_cell(Vec new_origin){
 
     origin_of_cell = new_origin;
-}
-void Cell::set_number_of_atoms_in_cell(int number){
-
-    number_of_atoms_in_cell = number;
 }
 
 /*--------------------
@@ -65,6 +66,7 @@ to the cell.
 void Cell::add_atom(Atom* atom){
 
     atoms_in_cell.insert(atoms_in_cell.end(), atom);
+    number_of_atoms_in_cell++;
 }
 
 
@@ -79,4 +81,16 @@ pointers to Atoms.
 void Cell::clear_cell(){
 
     atoms_in_cell.clear();
+    number_of_atoms_in_cell=0;
 }
+
+
+
+
+
+
+
+
+
+
+
