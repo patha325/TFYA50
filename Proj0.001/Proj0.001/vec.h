@@ -42,7 +42,7 @@ public:
 
 	Vec operator=(Vec);
 
-	friend ostream& operator<<(ostream& os, Vec& in);
+	friend ostream& operator<<(ostream& os, Vec in);
 
 };
 

@@ -112,7 +112,7 @@ Vec operator*(float a, Vec vecA){
 	return vecA*a;
 }
 
-ostream& operator<<(ostream& os, Vec& in){
+ostream& operator<<(ostream& os, Vec in){
 	os << in.x << " " << in.y << " "<< in.z << endl;
 	return os;
 }

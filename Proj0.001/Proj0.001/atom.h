@@ -14,6 +14,7 @@ private:
 	Vec next_velocity;
 	int cell_number;
 	int number_of_neighbours;
+	float cutoff;
 		
 
 public:
@@ -30,6 +31,7 @@ public:
 	void set_velocity(Vec);
 	void set_position(Vec);
 	void set_cell_number(int);
+	void set_cutoff(float);
 
 	//Other functions
 	Vec calculate_force(std::vector<Atom*>);
