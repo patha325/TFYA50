@@ -27,9 +27,15 @@ Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, in
 	create_cell_list();
 	Vec test1 (1,2,3);
 	Atom p (test1);
-	Vec test2 (0,0,0);
+	Vec test2 (3,-1,4);
 	Atom m (test2);
-		
+
+    Cell* myCell = new Cell(9,Vec(1,4,7));
+    cout << myCell->get_cell_number() << endl;
+    cout << myCell->get_origin_of_cell() << endl;
+    cout << myCell->get_number_of_atoms_in_cell() << endl;
+	
+
 	// Todo: Save all the input!	
 }
 

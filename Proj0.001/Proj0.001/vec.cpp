@@ -131,7 +131,7 @@ Vec Vec::normalize(){
  FRIENDS
  ----------*/
 ostream& operator<<(ostream& os, Vec in){
-	os << "(" << in.x << " " << in.y << " "<< in.z << ")" << endl;
+	os << "(" << in.x << " " << in.y << " "<< in.z << ")";
 	return os;
 }
 
