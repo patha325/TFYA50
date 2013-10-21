@@ -19,7 +19,7 @@ private:
 
 public:
 	//Constructor
-	Atom (Vec);
+	Atom (Vec,float);
 	~Atom ();
 
 	//Getters

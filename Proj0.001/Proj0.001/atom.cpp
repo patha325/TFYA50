@@ -1,4 +1,5 @@
 #include "atom.h"
+#include "vec.h"
 
 using namespace std;
 
@@ -7,9 +8,10 @@ CONSTRUCTOR
 Parameters: Vec starting_position
 Sets starting position
 ----------------------*/
-Atom::Atom(Vec starting_position){
+Atom::Atom(Vec starting_position, float start_cutoff){
 
 	position = starting_position;
+	cutoff=start_cutoff;
 }
 
 /*--------------------
@@ -27,7 +29,7 @@ Calculates force on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
+Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){ //Untested!!!!!!
 
 	Vec tmp_force (0,0,0);
 	for(int i=1; i<=neighbouring_atoms.size();i++)
@@ -35,7 +37,7 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 	float r2=(distance_vector(neighbouring_atoms[i]).length());
 	r2=pow(r2,-2);
 	float r6=pow(r2,3);
-	//tmp_force+=48*r2*r6*(1*r2-0.5)*normalize(neighbouring_atoms[i]);
+	tmp_force+=-1*48*r2*r6*(1*r2-0.5)*distance_vector(neighbouring_atoms[i]).normalize();
 	}
 	return tmp_force;
 }
