@@ -25,12 +25,12 @@ Calls constructors for all atoms and the cell list.
 Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, int time_step,int steps,float temperature,float cutoff,float mass,float sigma,float epsilon,float lattice_constant,std::string crystal_structure,bool thermostat){
 	create_list_of_atoms();
 	create_cell_list();
-
-	Vec myVector(1,5,7);
-	myVector.getX();
-	myVector.length();
-	4*myVector;
-
+	Vec test1 (1,2,3);
+	Atom p (test1);
+	Vec test2 (4,5,6);
+	Atom m (test2);
+	
+	cout << p.distance_vector(&m)<<endl;
 	
 	// Todo: Save all the input!	
 }

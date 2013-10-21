@@ -58,9 +58,9 @@ cartesian vector between the atom
 and the parameter atom.
 ----------------------*/
 Vec Atom::distance_vector(Atom* other_atom){
-
+	Vec tmp =other_atom->position;
+	tmp-=position;
 	// Take care of periodic boundry conditions
-	Vec tmp(0,0,0);
 	return tmp;
 }
 
@@ -83,20 +83,22 @@ Changes the atom paramters
 from the state at time t to
 time t+1.
 --------------------------*/
-void Atom::update_atom(){}
+void Atom::update_atom(){
+position = next_position;
+velocity = next_velocity;
+// Change the cell number? Should there be a call for that?
+}
 
 
 // ------- GETTERS --------
 Vec Atom::get_velocity(){
-
-	Vec tmp(0,0,0);
-	return tmp;
+	
+	return velocity;
 }
 
 Vec Atom::get_position(){
 
-	Vec tmp(0,0,0);
-	return tmp;
+	return position;
 }
 
 int Atom::get_cell_number(){

@@ -2,6 +2,9 @@
 #define Vec_H 
 
 #include <math.h>
+#include <iostream>
+
+using namespace std;
 
 class Vec{
 
@@ -32,7 +35,15 @@ public:
 	//Operators
 	Vec operator*(float);
 	Vec operator+(Vec);
+	Vec operator-(Vec);
+	Vec& operator+=(Vec&);
+	Vec& operator-=(Vec&);
+	
+
 	Vec operator=(Vec);
+
+	friend ostream& operator<<(ostream& os, Vec& in);
+
 };
 
 Vec operator*(float,Vec);

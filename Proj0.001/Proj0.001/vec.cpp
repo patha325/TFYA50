@@ -1,4 +1,5 @@
 #include "vec.h"
+using namespace std;
 
 /*---------------------
 CONSTRUCTOR
@@ -78,6 +79,25 @@ Vec Vec::operator+(Vec vecA){
 	Vec newVec(vecA.getX()+this->getX(),vecA.getY()+this->getY(),vecA.getZ()+this->getZ());
 	return newVec;
 }
+Vec Vec::operator-(Vec vecA){
+
+	Vec newVec(this->getX()-vecA.getX(),this->getY()-vecA.getY(),this->getZ()-vecA.getZ());
+	return newVec;
+}
+Vec& Vec::operator+=(Vec& vecA){
+
+	this->x += vecA.getX();
+	this->y += vecA.getY();
+	this->z += vecA.getZ();
+	return *this;
+}
+Vec& Vec::operator-=(Vec& vecA){
+
+	this->x -= vecA.getX();
+	this->y -= vecA.getY();
+	this->z -= vecA.getZ();
+	return *this;
+}
 
 Vec Vec::operator=(Vec vecA){
 
@@ -90,4 +110,9 @@ Vec Vec::operator=(Vec vecA){
 Vec operator*(float a, Vec vecA){
 
 	return vecA*a;
+}
+
+ostream& operator<<(ostream& os, Vec& in){
+	os << in.x << " " << in.y << " "<< in.z << endl;
+	return os;
 }
