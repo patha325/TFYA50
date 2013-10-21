@@ -43,6 +43,7 @@ public:
     Vec normalize();
     
     //Friends
+
 	friend ostream& operator<<(ostream& os, Vec in);
 
 };

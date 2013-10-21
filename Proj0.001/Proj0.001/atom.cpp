@@ -27,10 +27,17 @@ Calculates force on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-Vec Atom::calculate_force(vector<Atom*> neigbouring_atoms){
+Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 
-	Vec tmp(0,0,0);
-	return tmp;
+	Vec tmp_force (0,0,0);
+	for(int i=1; i<=neighbouring_atoms.size();i++)
+	{
+	float r2=(distance_vector(neighbouring_atoms[i]).length());
+	r2=pow(r2,-2);
+	float r6=pow(r2,3);
+	//tmp_force+=48*r2*r6*(1*r2-0.5)*normalize(neighbouring_atoms[i]);
+	}
+	return tmp_force;
 }
 	
 
@@ -113,6 +120,8 @@ void Atom::set_velocity(Vec newVelocity){}
 void Atom::set_position(Vec newPosition){}
 
 void Atom::set_cell_number(int){}
+
+void Atom::set_cutoff(float){}
 
 
 
