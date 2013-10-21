@@ -27,10 +27,9 @@ Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, in
 	create_cell_list();
 	Vec test1 (1,2,3);
 	Atom p (test1);
-	Vec test2 (4,5,6);
+	Vec test2 (0,0,0);
 	Atom m (test2);
-	
-	cout << p.distance_vector(&m)<<endl;
+
 	
 	// Todo: Save all the input!	
 }

@@ -14,7 +14,6 @@ private:
 	float z;
 
 public:
-	//TODO: Returnera enhetsvektor
 
 	//Constructor
 	Vec();
@@ -38,14 +37,19 @@ public:
 	Vec operator-(Vec);
 	Vec& operator+=(Vec&);
 	Vec& operator-=(Vec&);
-	
-
 	Vec operator=(Vec);
+
+    //Other functions
+    Vec normalize();
+    
+    //Friends
 
 	friend ostream& operator<<(ostream& os, Vec in);
 
 };
 
 Vec operator*(float,Vec);
+
+
 
 #endif
