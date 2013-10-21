@@ -1,4 +1,5 @@
 #include "vec.h"
+
 using namespace std;
 
 /*---------------------
@@ -112,7 +113,35 @@ Vec operator*(float a, Vec vecA){
 	return vecA*a;
 }
 
-ostream& operator<<(ostream& os, Vec& in){
-	os << in.x << " " << in.y << " "<< in.z << endl;
+/*-------------
+ OTHER FUNCTIONS
+ -------------*/
+Vec Vec::normalize(){
+    
+    if (length()==0) {
+        return Vec(0,0,0);
+    }
+    else {
+        return (1/this->length())*(*this);
+    }
+}
+
+
+/*-----------
+ FRIENDS
+ ----------*/
+ostream& operator<<(ostream& os, Vec in){
+	os << "(" << in.x << " " << in.y << " "<< in.z << ")" << endl;
 	return os;
 }
+
+
+
+
+
+
+
+
+
+
+
