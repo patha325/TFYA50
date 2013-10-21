@@ -13,8 +13,21 @@ private:
 	int number_of_atoms_in_cell;
 
 public:
+    //Constructors
 	Cell(int cell_number, Vec);
 	~Cell();
+    
+    //Getters
+    int get_cell_number();
+    Vec get_origin_of_cell();
+    int get_number_of_atoms_in_cell();
+    
+    //Setters
+    void set_cell_number(int);
+    void set_origin_of_cell(Vec);
+    void set_number_of_atoms_in_cell(int);
+    
+    //Other functions
 	void add_atom(Atom*);
 	void clear_cell();
 };
