@@ -31,6 +31,7 @@ within cutoff.
 ----------------------*/
 Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){ //Untested!!!!!!
 
+    /*
 	Vec tmp_force (0,0,0);
 	for(int i=1; i<=neighbouring_atoms.size();i++)
 	{
@@ -40,6 +41,8 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){ //Untested!!!!!!
 	tmp_force+=-1*48*r2*r6*(1*r2-0.5)*distance_vector(neighbouring_atoms[i]).normalize();
 	}
 	return tmp_force;
+     */
+    return Vec(0,0,0);
 }
 	
 
