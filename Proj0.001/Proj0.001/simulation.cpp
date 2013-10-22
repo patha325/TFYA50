@@ -22,20 +22,44 @@ Parameters:
 Creates a simulation object. 
 Calls constructors for all atoms and the cell list. 
 ------------------------*/
-Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, int time_step,int steps,float temperature,float cutoff,float mass,float sigma,float epsilon,float lattice_constant,std::string crystal_structure,bool thermostat){
+Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, int new_time_step,int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,float new_epsilon,float new_lattice_constant,std::string new_crystal_structure,bool new_thermostat){
+	
+	unit_cells_x=new_unit_cells_x;
+	unit_cells_y=new_unit_cells_y;
+	unit_cells_z=new_unit_cells_z;
+	time_step=new_time_step;
+	steps=new_steps;
+	temperature=new_temperature;
+	cutoff=new_cutoff;
+	mass=new_mass;
+	sigma=new_sigma;
+	epsilon=new_epsilon;
+	lattice_constant=new_lattice_constant;
+	crystal_structure=new_crystal_structure;
+	thermostat=new_thermostat;
 	create_list_of_atoms();
-	create_cell_list();
+
+
+	for(int i=0;i<list_of_atoms.size();i++){
+		cout << list_of_atoms[i]->get_position()<<endl;
+	}
+
+	/* create_cell_list();
 	Vec test1 (1,2,3);
-	Atom p (test1,1);
+	%Atom p (test1,1);
 	Vec test2 (3,-1,4);
 	Atom m (test2,1);
 
-    Cell* myCell = new Cell(9,Vec(1,4,7));
-    myCell->add_atom(&m);
-    vector<Atom*> atomsVector;
-    atomsVector.insert(atomsVector.begin(), myCell->get_atoms_in_cell().begin(), myCell->get_atoms_in_cell().end());
+	test1 += test2;
 
-    cout << atomsVector[0]->get_position()<< endl;
+	cout << test1 << endl;
+	*/
+    //Cell* myCell = new Cell(9,Vec(1,4,7));
+    //myCell->add_atom(&m);
+    //vector<Atom*> atomsVector;
+    //atomsVector.insert(atomsVector.begin(), myCell->get_atoms_in_cell().begin(), myCell->get_atoms_in_cell().end());
+
+    //cout << atomsVector[0]->get_position()<< endl;
 	
 
 	// Todo: Save all the input!	
@@ -74,7 +98,11 @@ Create all atoms and add them to the
 vector list_of_atoms.
 -----------------------------*/
 void Simulation::create_list_of_atoms(){
-	/*
+
+	if(crystal_structure == "fcc"){
+		fcc_structure();
+	}
+		/*
 	// Calculate number of atoms
 		Vec extra (0,0,0);
 	if(crystal_structure == "fcc"){
@@ -89,6 +117,43 @@ void Simulation::create_list_of_atoms(){
      */
 	//Todo: Lattice constant & crystal_structure & unit_cells_i
 	//Todo: Create all atoms in this class? Convert from fcc to atom positions.
+}
+
+void Simulation::fcc_structure(){
+
+	//Split into a x_generating function and create the same for y,z
+	for(int i=0;i<unit_cells_x;i++){
+		Vec origin (0,0,0);
+		Vec extra (0,0,0);
+		float cutoff = 0.5;
+		if(i==0){
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(lattice_constant,0,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(0,lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(lattice_constant,lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(0.707*lattice_constant,0.707*lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+		}
+		else{
+			origin = Vec(i*lattice_constant,0,0);
+			extra = Vec(lattice_constant,0,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(lattice_constant,lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(0.707*lattice_constant,0.707*lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+		}
+	}
 }
 
 /*------------------------------
