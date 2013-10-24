@@ -22,9 +22,31 @@ Parameters:
 Creates a simulation object. 
 Calls constructors for all atoms and the cell list. 
 ------------------------*/
-Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, int time_step,int steps,float temperature,float cutoff,float mass,float sigma,float epsilon,float lattice_constant,std::string crystal_structure,bool thermostat){
-	create_list_of_atoms();
+Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, int new_time_step,
+                        int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
+                        float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat){
+    
+    //Save parameters
+	unit_cells_x = new_unit_cells_x;
+    unit_cells_y = new_unit_cells_y;
+    unit_cells_z = new_unit_cells_z;
+    time_step = new_time_step;
+    steps = new_steps;
+    temperature = new_temperature;
+    cutoff = new_cutoff;
+    mass = new_mass;
+    sigma = new_sigma;
+    epsilon = new_epsilon;
+    lattice_constant = new_lattice_constant;
+    crystal_structure = new_crystal_structure;
+    thermostat = new_thermostat;
+    
+    //Initial setup
+    create_list_of_atoms();
 	create_cell_list();
+    
+    //Some test stuff
+    /*
 	Vec test1 (1,2,3);
 	Atom p (test1,1);
 	Vec test2 (3,-1,4);
@@ -36,7 +58,7 @@ Simulation::Simulation (int unit_cells_x, int unit_cells_y, int unit_cells_z, in
     atomsVector.insert(atomsVector.begin(), myCell->get_atoms_in_cell().begin(), myCell->get_atoms_in_cell().end());
 
     cout << atomsVector[0]->get_position()<< endl;
-	
+	*/
 
 	// Todo: Save all the input!	
 }
@@ -146,3 +168,15 @@ void Simulation::create_cell_list(){
 	cell_list = new Cell_list(cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant);
 	cell_list->add_atoms_to_cells(list_of_atoms);
 }
+
+
+
+
+
+
+
+
+
+
+
+

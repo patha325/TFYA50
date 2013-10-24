@@ -108,6 +108,43 @@ Vec Vec::operator=(Vec vecA){
 	return *this;
 }
 
+bool Vec::operator==(const Vec vecA) const{
+
+    Vec tmp = vecA;
+    if (x==tmp.getX() and y==tmp.getY() and z==tmp.getZ()) {
+        return true;
+    }
+    else return false;
+}
+
+bool Vec::operator!=(const Vec vecA) const{
+    
+    Vec tmp = vecA;
+    if (x!=tmp.getX() or y!=tmp.getY() or z!=tmp.getZ()) {
+        return true;
+    }
+    else return false;
+}
+
+//This function is stupid, I know.
+//This is NOT a comparison of vector lengths!
+//It needs to look this way for 'maps' to work...
+bool Vec::operator<(const Vec vecA) const {
+    
+    Vec tmp = vecA;
+    Vec tmp2 = *this;
+    if (tmp2.getX() < tmp.getX()) {
+        return true;
+    }
+    else if((tmp2.getX() == tmp.getX()) and (tmp2.getY() < tmp.getY())){
+        return true;
+    }
+    else if((tmp2.getX() == tmp.getX()) and (tmp2.getY() == tmp.getY()) and (tmp2.getZ() < tmp.getZ())){
+        return true;
+    }
+    else return false;
+}
+
 Vec operator*(float a, Vec vecA){
 
 	return vecA*a;

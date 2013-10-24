@@ -20,9 +20,9 @@ public:
 	Vec(float x, float y, float z);
 
 	//Getters
-	float getX();
-	float getY();
-	float getZ();
+    float getX();
+    float getY();
+    float getZ();
 	float length();
 
 	//Setters
@@ -38,6 +38,9 @@ public:
 	Vec& operator+=(Vec&);
 	Vec& operator-=(Vec&);
 	Vec operator=(Vec);
+    bool operator==(const Vec) const;
+    bool operator!=(const Vec) const;
+    bool operator<(const Vec) const;
 
     //Other functions
     Vec normalize();
