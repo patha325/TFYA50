@@ -49,8 +49,6 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 		cout << list_of_atoms[i]->get_position()<<endl;
 	}
 
-	create_cell_list();
-
     /*
 	Vec test1 (1,2,3);
 	%Atom p (test1,1);
