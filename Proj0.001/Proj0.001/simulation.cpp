@@ -45,21 +45,29 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     create_list_of_atoms();
 	create_cell_list();
     
-    //Some test stuff
+	for(int i=0;i<list_of_atoms.size();i++){
+		cout << list_of_atoms[i]->get_position()<<endl;
+	}
+
+	create_cell_list();
+
     /*
 	Vec test1 (1,2,3);
-	Atom p (test1,1);
+	%Atom p (test1,1);
 	Vec test2 (3,-1,4);
 	Atom m (test2,1);
 
-    Cell* myCell = new Cell(9,Vec(1,4,7));
-    myCell->add_atom(&m);
-    vector<Atom*> atomsVector;
-    atomsVector.insert(atomsVector.begin(), myCell->get_atoms_in_cell().begin(), myCell->get_atoms_in_cell().end());
+	test1 += test2;
 
-    cout << atomsVector[0]->get_position()<< endl;
+	cout << test1 << endl;
 	*/
+    //Cell* myCell = new Cell(9,Vec(1,4,7));
+    //myCell->add_atom(&m);
+    //vector<Atom*> atomsVector;
+    //atomsVector.insert(atomsVector.begin(), myCell->get_atoms_in_cell().begin(), myCell->get_atoms_in_cell().end());
 
+    //cout << atomsVector[0]->get_position()<< endl;
+	
 	// Todo: Save all the input!	
 }
 
@@ -96,7 +104,11 @@ Create all atoms and add them to the
 vector list_of_atoms.
 -----------------------------*/
 void Simulation::create_list_of_atoms(){
-	/*
+
+	if(crystal_structure == "fcc"){
+		fcc_structure();
+	}
+		/*
 	// Calculate number of atoms
 		Vec extra (0,0,0);
 	if(crystal_structure == "fcc"){
@@ -111,6 +123,43 @@ void Simulation::create_list_of_atoms(){
      */
 	//Todo: Lattice constant & crystal_structure & unit_cells_i
 	//Todo: Create all atoms in this class? Convert from fcc to atom positions.
+}
+
+void Simulation::fcc_structure(){
+
+	//Split into a x_generating function and create the same for y,z
+	for(int i=0;i<unit_cells_x;i++){
+		Vec origin (0,0,0);
+		Vec extra (0,0,0);
+		float cutoff = 0.5;
+		if(i==0){
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(lattice_constant,0,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(0,lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(lattice_constant,lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(0.707*lattice_constant,0.707*lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+		}
+		else{
+			origin = Vec(i*lattice_constant,0,0);
+			extra = Vec(lattice_constant,0,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(lattice_constant,lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+			extra = Vec(0.707*lattice_constant,0.707*lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,cutoff));
+		}
+	}
 }
 
 /*------------------------------

@@ -8,7 +8,6 @@ int main(){
     
 	//initializegraphics
 	float a = 0.2; // Watch out for double warning!
-    
 /*
 Parameters:
 	int unit_cells_x				: Number of unit cells in x-direction
@@ -25,7 +24,7 @@ Parameters:
     std::string crystal_structure	: Name of chrystal structure (fcc, hcp, bcc...)
     bool thermostat					: If a thermostat is employed
  */
-	Simulation* simulation2 = new Simulation(8,4,4,0,0,a,4.4,a,a,a,4.3,"Hej!",true);
+	Simulation* simulation2 = new Simulation(5,1,1,0,0,a,a,a,a,a,a,"fcc",true);
 	simulation2->run_simulation();
 	
 	//system("pause");

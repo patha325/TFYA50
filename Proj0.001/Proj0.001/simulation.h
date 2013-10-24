@@ -62,6 +62,7 @@ public:
 		bool thermostat);
 	~Simulation ();
 	void update_atoms(); // Run through list_of_atoms and .update_atom
+	void fcc_structure();
 	// abort simulation button?
 	// handle end of simulation?
 };
