@@ -111,7 +111,7 @@ Vec Vec::operator=(Vec vecA){
 bool Vec::operator==(const Vec vecA) const{
 
     Vec tmp = vecA;
-    if (x==tmp.getX() and y==tmp.getY() and z==tmp.getZ()) {
+    if (x==tmp.getX() && y==tmp.getY() && z==tmp.getZ()) {
         return true;
     }
     else return false;
@@ -120,7 +120,7 @@ bool Vec::operator==(const Vec vecA) const{
 bool Vec::operator!=(const Vec vecA) const{
     
     Vec tmp = vecA;
-    if (x!=tmp.getX() or y!=tmp.getY() or z!=tmp.getZ()) {
+    if (x!=tmp.getX() || y!=tmp.getY() || z!=tmp.getZ()) {
         return true;
     }
     else return false;
@@ -136,10 +136,10 @@ bool Vec::operator<(const Vec vecA) const {
     if (tmp2.getX() < tmp.getX()) {
         return true;
     }
-    else if((tmp2.getX() == tmp.getX()) and (tmp2.getY() < tmp.getY())){
+    else if((tmp2.getX() == tmp.getX()) && (tmp2.getY() < tmp.getY())){
         return true;
     }
-    else if((tmp2.getX() == tmp.getX()) and (tmp2.getY() == tmp.getY()) and (tmp2.getZ() < tmp.getZ())){
+    else if((tmp2.getX() == tmp.getX()) && (tmp2.getY() == tmp.getY()) && (tmp2.getZ() < tmp.getZ())){
         return true;
     }
     else return false;

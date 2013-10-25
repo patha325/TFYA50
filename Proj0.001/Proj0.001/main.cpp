@@ -24,10 +24,10 @@ Parameters:
     std::string crystal_structure	: Name of chrystal structure (fcc, hcp, bcc...)
     bool thermostat					: If a thermostat is employed
  */
-	Simulation* simulation2 = new Simulation(5,1,1,0,0,a,a,a,a,a,a,"fcc",true);
+	Simulation* simulation2 = new Simulation(1,2,1,0,0,a,a,a,a,a,a,"fcc",true);
 	simulation2->run_simulation();
 	
-	//system("pause");
+	system("pause");
 	return 0;
 }
 

@@ -220,7 +220,7 @@ void Cell_list::create_cells(){
                 cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(x         ,plus_y     ,plus_z)]]);
                 cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(plus_x    ,plus_y     ,plus_z)]]);
                 
-                number_to_cell_vector_map.emplace(cell_number,cell_vector);
+               number_to_cell_vector_map.insert(pair<int,vector<Cell*>>(cell_number,cell_vector));
             }
         }
     }

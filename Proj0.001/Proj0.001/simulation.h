@@ -63,6 +63,7 @@ public:
 	~Simulation ();
 	void update_atoms(); // Run through list_of_atoms and .update_atom
 	void fcc_structure();
+	void structure_x(int,int);
 	// abort simulation button?
 	// handle end of simulation?
 };
