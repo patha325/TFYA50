@@ -2,12 +2,13 @@
 #define CELL_H
 
 #include <vector>
+#include <map>
 #include "atom.h"
 #include "vec.h"
 
 class Cell{
 private:
-	int cell_number; //Do we need this?
+	int cell_number; //Do we need this? Yes we do!
 	Vec origin_of_cell;// Lower left corner. ALWAYS
 	std::vector<Atom*> atoms_in_cell;
 	int number_of_atoms_in_cell;

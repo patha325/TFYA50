@@ -2,6 +2,7 @@
 #define SIMULATION_H
 
 #include <vector>
+#include <map>
 #include <string>
 #include <iostream>
 
