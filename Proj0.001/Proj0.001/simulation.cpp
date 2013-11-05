@@ -46,10 +46,16 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     create_list_of_atoms();
 	create_cell_list();
 
-	for(int i=0;i<list_of_atoms.size();i++){
+
+	// Atoms for testing
+	Atom a(Vec(0.9,1.2,0.1),0);
+	Atom b(Vec(0.1,0.1,0.1),0);
+	a.distance_vector(&b);
+
+	/*for(int i=0;i<list_of_atoms.size();i++){
 		cout << i<<endl;
 		cout << list_of_atoms[i]->get_position()<<endl;
-	}
+	}*/
 
     /*
 	Vec test1 (1,2,3);
@@ -135,7 +141,7 @@ void Simulation::fcc_structure(){
 void Simulation::structure_x(int j, int k)
 {
 	for(int i=0;i<unit_cells_x;i++){
-		cout << i << j << k << endl;
+		// cout << i << j << k << endl;
 		Vec origin (0,0,0);
 		Vec extra (0,0,0);
 		float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!

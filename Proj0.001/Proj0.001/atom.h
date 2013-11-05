@@ -15,11 +15,15 @@ private:
 	int cell_number;
 	int number_of_neighbours;
 	float cutoff;
+	float bulk_length_x;
+	float bulk_length_y;
+	float bulk_length_z;
+	float sigma;
 		
 
 public:
 	//Constructor
-	Atom (Vec,float);
+	Atom (Vec,float,float,float,float,float); 
 	~Atom ();
 
 	//Getters
