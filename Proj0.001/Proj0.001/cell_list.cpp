@@ -21,6 +21,11 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
 /*
     cout << "Cutoff: " << cutoff << endl;
     cout << "Lattice constant: " << lattice_constant << endl << endl;
+    
+    
+    cout << "Unit cells in X: " << unit_cells_x << endl;
+    cout << "Unit cells in Y: " << unit_cells_y << endl;
+    cout << "Unit cells in Z: " << unit_cells_z << endl << endl;
 */
     
     bulk_length_x = (unit_cells_x+1)*lattice_constant;
@@ -41,9 +46,9 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
     cout << "Cell length X: " << cell_length_x << endl;
     cout << "Cell length Y: " << cell_length_y << endl;
     cout << "Cell length Z: " << cell_length_z << endl << endl;
-*/    
-    
+*/
     create_cells();
+    
 }
 
 
@@ -53,7 +58,12 @@ PARAMETERS: None
 -
 Destroys cells in list_of_cells
 ------------------------------ */
-Cell_list::~Cell_list(){}
+Cell_list::~Cell_list(){
+
+    for (int i = 0; i<list_of_cells.size(); i++) {
+        delete list_of_cells[i];
+    }
+}
 
 
 /* ---
@@ -65,9 +75,45 @@ FUNCTION: Cell_list::add_atoms_to_cells()
 PARAMETERS: vector<Atoms*>
 RETURN: void
 -
-Adds all Atoms to the right cells
+Adds all Atoms to the cells
 ------------------------------ */
-void Cell_list::add_atoms_to_cells(vector<Atom*>){}
+void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
+
+/*
+    for (int i = 0 ; i<atoms_list.size(); i++) {
+        cout << "Atom " << i << ": " << atoms_list[i]->get_position() << endl;
+    }
+*/
+/*
+    for (int i = 0; i<list_of_cells.size(); i++) {
+        cout << "Cell " << i << ": "<< list_of_cells[i]->get_origin_of_cell() << endl;
+    }
+*/
+
+    for (int i = 0; i<atoms_list.size(); i++) {
+        Atom* current_atom = atoms_list[i];
+        int cell_number_iterator = 0;
+        bool found = false;
+        while (!found) {
+            if (current_atom->get_position().getX()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+lattice_constant and
+                current_atom->get_position().getY()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+lattice_constant and
+                current_atom->get_position().getZ()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+lattice_constant) {
+                
+                
+//                cout << "Atom " << i << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;
+                
+                list_of_cells[cell_number_iterator]->add_atom(current_atom);
+                found = true;
+            }
+            else {
+                cell_number_iterator++;
+            }
+        }
+    }
+    
+//    cout << "# of atoms: " << list_of_cells[0]->get_number_of_atoms_in_cell() << endl;
+
+}
 
 
 
@@ -131,9 +177,10 @@ void Cell_list::create_cells(){
     
     
     /*----
-     Creates and inserts cells into list. Gives each cell a number and an origin.
-     Creates a mapping between matrix coordinates and cell number (only used when creating 
-     the cell list structure.
+     Creates and inserts cells into list. Gives each cell a number and 
+     an origin.
+        Creates a mapping between matrix coordinates and cell number 
+     (only used when creating the cell list structure.
      ---*/
     while (current_origin.getZ()<bulk_length_z){
         while (current_origin.getY()<bulk_length_y) {
@@ -226,7 +273,7 @@ void Cell_list::create_cells(){
     }
  
 /*
-    int cell_number = 14;
+    int cell_number = 1;
     cout << cell_number << ": " << endl;
     vector<Cell*> cells =  number_to_cell_vector_map[cell_number];
     for (int i = 0; i<cells.size(); i++) {

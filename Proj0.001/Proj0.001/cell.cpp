@@ -17,7 +17,10 @@ Cell::Cell(int new_cell_number, Vec new_origin){
 DESTRUCTOR
 Does nothing
 ----------------*/
-Cell::~Cell(){}
+Cell::~Cell(){
+
+    clear_cell();
+}
 
 
 /*---------------
