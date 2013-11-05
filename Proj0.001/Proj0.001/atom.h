@@ -39,8 +39,8 @@ public:
 
 	//Other functions
 	Vec calculate_force(std::vector<Atom*>);
-	float calculate_potential(std::vector<Atom*>);
-	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? 
+	float calculate_potential(Atom*);
+	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? done
 	void next_time_step(); //Alter everything in the atom to get to the next time step.
 	void update_atom();	
 };

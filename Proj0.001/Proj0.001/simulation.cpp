@@ -47,9 +47,19 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	create_cell_list();
 
 	// Atoms for testing
-	//Atom a(Vec(0.9,1.2,0.1),0);
-	//Atom b(Vec(0.1,0.1,0.1),0);
+	Atom a(Vec(0.9,1.2,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
+	Atom b(Vec(0.1,0.1,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
+	Atom c(Vec(0,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
+	Atom d(Vec(0.1,0.1,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
+
+	vector<Atom*> atomer(3);
+	atomer[0] = &b;
+	atomer[1] = &c;
+	atomer[2] = &d;
+
 	//a.distance_vector(&b);
+	a.calculate_force(atomer);
+	//a.calculate_potential(&b);
 
 	/*for(int i=0;i<list_of_atoms.size();i++){
 		cout << i<<endl;

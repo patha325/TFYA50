@@ -32,20 +32,19 @@ Calculates force on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){ //Untested!!!!!!
-
-    /*
+Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
+    
 	Vec tmp_force (0,0,0);
-	for(int i=1; i<=neighbouring_atoms.size();i++)
+	for(int i=0; i<neighbouring_atoms.size();i++)
 	{
 	float r2=(distance_vector(neighbouring_atoms[i]).length());
 	r2=pow(r2,-2);
 	float r6=pow(r2,3);
 	tmp_force+=-1*48*r2*r6*(1*r2-0.5)*distance_vector(neighbouring_atoms[i]).normalize();
 	}
+	cout << "kraft " << tmp_force << endl;
 	return tmp_force;
-     */
-    return Vec(0,0,0);
+    
 }
 	
 
@@ -58,9 +57,27 @@ Calculates (LJ) potential on
 the atom, from all neighbouring
 atoms within cutoff.
 ----------------------*/
-float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
+float Atom::calculate_potential(Atom* neighbouring_atom){
 
-	return 0.5;
+	/*vector<float> potential_vector(neighbouring_atoms.size());
+	for(int i = 0; i < neighbouring_atoms.size(); i++){
+		Vec closest_vector = distance_vector(neighbouring_atoms[i]);
+		float distance = closest_vector.length();
+		float potential = 4*(pow(1/distance,12)-pow(1/distance,6));
+		potential_vector[i] = potential;
+	} If we want a list with all the potentials*/
+
+	/* Ska vi returnera potentialen i förhållande till alla atomer i listan eller bara den närmaste? */
+
+	/*cout << "potential " << potential_vector[0] << " " << potential_vector[1] << " " << potential_vector[2] << endl;
+	return potential_vector[0];*/
+
+	Vec closest_vector = distance_vector(neighbouring_atom);
+	float distance = closest_vector.length();
+	float potential = 4*(pow(1/distance,12)-pow(1/distance,6));
+
+	cout << "potential " << potential << endl;
+	return potential;
 }
 	
 /*----------------------
