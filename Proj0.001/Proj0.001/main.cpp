@@ -24,7 +24,14 @@ Parameters:
     std::string crystal_structure	: Name of chrystal structure (fcc, hcp, bcc...)
     bool thermostat					: If a thermostat is employed
  */
-	Simulation* simulation2 = new Simulation(5,10,5,0,0,a,a,a,a,a,a,"fcc",true);
+	int input_x;
+	int input_y;
+	int input_z;
+	cout << "Input the number of unit cells in x,y and z direction" <<endl;
+	cin >> input_x;
+	cin >> input_y;
+	cin >> input_z;
+	Simulation* simulation2 = new Simulation(input_x,input_y,input_z,0,0,a,a,a,a,a,a,"fcc",true);
 	simulation2->run_simulation();
 	
 	system("pause");
