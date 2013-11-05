@@ -149,8 +149,12 @@ RETURN: void
 -
 Removes all atoms from all cells
 ------------------------------ */
-void Cell_list::clear_cells(){}
+void Cell_list::clear_cells(){
 
+	for(int i=0; i< list_of_cells.size(); i++){
+	list_of_cells[i]->clear_cell();	 
+	}
+}
 
 /* ------------------------------
 FUNCTION: Cell_list::create_cell()

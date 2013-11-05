@@ -118,7 +118,7 @@ and everything that happes during
 the simulation.
 ----------------------------*/
 void Simulation::run_simulation(){
-
+	
 	// Todo: How often shall we update cell list?
 }
 
@@ -401,7 +401,7 @@ Alter everything in the simulation to get to the next time step.
 	update_atoms()
 	
 	{ Not every time step
-	Clear cells/cell_list
+	Clear cells/cell_list  ??clear_cells() private just nu, funkar det??
 	Fill cells/cell_list
 	}
 
