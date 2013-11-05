@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "atom.h"
 #include "cell_list.h"
@@ -63,7 +64,7 @@ public:
 	~Simulation ();
 	void update_atoms(); // Run through list_of_atoms and .update_atom
 	void fcc_structure();
-	void structure_x(int,int);
+	void fcc_structure_x(int,int);
 	// abort simulation button?
 	// handle end of simulation?
 };
