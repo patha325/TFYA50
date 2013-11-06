@@ -1,5 +1,6 @@
 #include "atom.h"
 #include "vec.h"
+#include <math.h>
 
 using namespace std;
 
@@ -8,7 +9,7 @@ CONSTRUCTOR
 Parameters: Vec starting_position
 Sets starting position
 ----------------------*/
-Atom::Atom(Vec starting_position, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, float sigma,float mass){
+Atom::Atom(Vec starting_position, Vec prev_acceleration, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, float sigma,float mass,int time_step){
 
 	position = starting_position;
 	cutoff=start_cutoff;
@@ -59,7 +60,10 @@ Vec Atom::calculate_acceleration(vector<Atom*> neighbouring_atoms){
 
 	Vec tmp_acc (0,0,0);
 	Vec tmp_force = calculate_force(neighbouring_atoms);
-	tmp_acc.setCoords(tmp_force.getX()/mass,tmp_force.getY()/mass,tmp_force.getZ()/mass); 
+	tmp_acc.setCoords(tmp_force.getX()/mass,tmp_force.getY()/mass,tmp_force.getZ()/mass);
+	
+	/*prev_acceleration = acceleration;
+	acceleration = tmp_acc; Kanske int här...*/
 	
 	cout << "acc " << tmp_acc << endl; 
 	return tmp_acc;
@@ -75,17 +79,62 @@ the atom, from closest atom.
 ----------------------*/
 float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 
-	float potential;
+	float tmp_potential;
 	for(int i = 0; i < neighbouring_atoms.size(); i++){
-		Vec closest_vector = distance_vector(neighbouring_atoms[i]);
-		float distance = closest_vector.length();
-		potential += 4*(pow(1/distance,12)-pow(1/distance,6));
+		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
+		float tmp_distance = closest_vector_tmp.length();
+		tmp_potential += 4*(pow(1/tmp_distance,12)-pow(1/tmp_distance,6));
 	}
 
 	/* Ska vi returnera potentialen i förhållande till alla atomer i listan eller bara den närmaste? ALLA! */
 
-	cout << "potential " << potential << endl;
-	return potential;
+	cout << "potential " << tmp_potential << endl;
+	return tmp_potential;
+}
+
+/*----------------------
+FUNCTION: calculate_velocity
+Parameters: none
+Returns: Vec (velocity)
+-
+Calculates velocity on 
+the atom.
+----------------------*/
+
+Vec Atom::calculate_velocity(){
+
+	Vec position_diff = position - prev_position;
+	Vec velocity_temp;
+	velocity_temp.setCoords(position_diff.getX()/time_step,position_diff.getY()/time_step,position_diff.getZ()/time_step);
+	return velocity_temp;
+}
+
+/*----------------------
+FUNCTION: calculate_kinetic_energy
+Parameters: none
+Returns: float (Kinetic_energy)
+-
+Calculates kinetik energy on 
+the atom.
+----------------------*/
+
+float Atom::calculate_kinetic_energy(){
+	
+	float kinetik_energy = mass*pow(velocity.length(),2)/2;
+	return kinetik_energy;
+}
+
+/*----------------------
+FUNCTION: calculate_temperature
+Parameters: none
+Returns: float (temperature)
+-
+Calculates temperature on 
+the atom. Ganska vagt kanske...
+----------------------*/
+
+float Atom::calculate_temperature(float E_kin){
+	return 0;
 }
 	
 /*----------------------
@@ -249,7 +298,15 @@ Returns: Nothing
 Calculates the atom paramters
 for the next time step
 --------------------------*/
-void Atom::next_time_step(){}
+Vec Atom::calculate_next_position(){
+	int time_step2 = time_step*time_step;
+	position.setCoords(position.getX() + velocity.getX()*time_step + acceleration.getX()*2/3*time_step2 - prev_acceleration.getX()*1/6*time_step2,
+		position.getY() + velocity.getY()*time_step + acceleration.getY()*2/3*time_step2 - prev_acceleration.getY()*1/6*time_step2,
+		position.getZ() + velocity.getZ()*time_step + acceleration.getZ()*2/3*time_step2 - prev_acceleration.getZ()*1/6*time_step2);
+
+	return position;
+	// Change the cell number? Should there be a call for that? Has been added in add_atoms_to_cell in cell_list
+}
 
 /*--------------------------
 FUNCTION: update_atom
@@ -258,12 +315,13 @@ Returns: Nothing
 -
 Changes the atom paramters
 from the state at time t to
-time t+1.
+time t+time_step.
+Acceleration and prev_acceleration 
+is set when calculate_acceleration 
+is called.
 --------------------------*/
 void Atom::update_atom(){
-position = next_position;
-velocity = next_velocity;
-// Change the cell number? Should there be a call for that?
+
 }
 
 
@@ -278,6 +336,15 @@ Vec Atom::get_position(){
 	return position;
 }
 
+Vec Atom::get_next_position(){
+	return next_position;
+}
+
+Vec Atom::get_acceleration(){
+
+	return acceleration;
+}
+
 int Atom::get_cell_number(){
 
 	return cell_number;
@@ -285,22 +352,46 @@ int Atom::get_cell_number(){
 
 
 // -------- SETTERS --------
-void Atom::set_velocity(Vec newVelocity){
-	velocity = newVelocity;
+void Atom::set_velocity(Vec new_velocity){
+	velocity = new_velocity;
 	return;
 }
 	
-void Atom::set_position(Vec newPosition){
-	position = newPosition;
+void Atom::set_position(Vec new_position){
+	position = new_position;
 	return;
 }
+
 
 void Atom::set_cell_number(int new_cell_number){
 	cell_number = new_cell_number;
 	return;
 }
 
-void Atom::set_cutoff(float){}
+void Atom::set_prev_position(Vec new_position){
+
+	prev_position = new_position;
+}
+
+void Atom::set_next_position(Vec next_position){
+
+	next_position = next_position;
+}
+
+void Atom::set_acceleration(Vec new_acceleration){
+	
+	acceleration = new_acceleration;
+}
+
+void Atom::set_prev_acceleration(Vec new_acceleration){
+
+	prev_acceleration = new_acceleration;
+}
+
+void Atom::set_cutoff(float new_cutoff){
+	cutoff = new_cutoff;
+	return;
+}
 
 
 

@@ -43,6 +43,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     lattice_constant = new_lattice_constant;
     crystal_structure = new_crystal_structure;
     thermostat = new_thermostat;
+	Vec prev_acceleration = Vec(0,0,0);
     
     //Initial setup
     create_list_of_atoms();
@@ -51,10 +52,10 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	number_of_atoms = list_of_atoms.size();
 
 	// Atoms for testing
-	Atom a(Vec(0,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
-	Atom b(Vec(1.8,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
-	Atom c(Vec(0,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
-	Atom d(Vec(0.1,0.1,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
+	Atom a(Vec(0,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
+	Atom b(Vec(1.8,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
+	Atom c(Vec(0,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
+	Atom d(Vec(0.1,0.1,0.1),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
 
 	vector<Atom*> atomer(1);
 	atomer[0] = &b;
@@ -172,18 +173,20 @@ void Simulation::fcc_structure_x(int j, int k)
 	for(int i=0;i<unit_cells_x;i++){
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
+			Vec acceleration (0,0,0);
+			int time_step = 1;
 			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
-			list_of_atoms.push_back(new Atom(origin,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));	
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));	
 			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));
 			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));
 			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));
-	}
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));
+			}
 
 }
 
@@ -417,6 +420,7 @@ Alter everything in the simulation to get to the next time step.
 	Save ... to txt. //Doesn't to this yet.
 ------------------------------*/
 void Simulation::next_time_step(int current_time_step){
+	/*
 	float E_pot = 0;
 	float E_kin = 0;
 	float temperature = 0;
@@ -430,12 +434,12 @@ void Simulation::next_time_step(int current_time_step){
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
 		//Kinetic energy from velocity
-		E_kin += atom->calculate_kinetic();
+		E_kin += atom->calculate_kinetic_energy();
 		//Temperature
 		temperature += atom->calculate_temperature(E_kin);
 		//Calculate next position with help from velocity, previous acceleration and current acceleration
 		atom->set_next_position(atom->calculate_next_position());
-		//Vec new_acceleration = atom->calculate_acceleration(neighbouring_atoms);
+		Vec new_acceleration = atom->calculate_acceleration(neighbouring_atoms);
 		
 		//Update everything except position for the atom
 		//Velocity
@@ -460,7 +464,7 @@ void Simulation::next_time_step(int current_time_step){
 			add_atoms_to_cells();
 	}
 	*/
-	
+	/*
 	temperature = temperature/number_of_atoms;
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;
@@ -468,6 +472,7 @@ void Simulation::next_time_step(int current_time_step){
 	cout << "number of atoms " << number_of_atoms << endl;
 	
 	return;
+	*/
 }
 
 /*------------------------------
