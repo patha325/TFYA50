@@ -51,15 +51,15 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	number_of_atoms = list_of_atoms.size();
 
 	// Atoms for testing
-	Atom a(Vec(0.9,1.2,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
-	Atom b(Vec(0.1,0.1,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
-	Atom c(Vec(0,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
-	Atom d(Vec(0.1,0.1,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
+	Atom a(Vec(0,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
+	Atom b(Vec(1.8,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
+	Atom c(Vec(0,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
+	Atom d(Vec(0.1,0.1,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
 
-	vector<Atom*> atomer(3);
+	vector<Atom*> atomer(1);
 	atomer[0] = &b;
-	atomer[1] = &c;
-	atomer[2] = &d;
+	//atomer[1] = &c;
+	//atomer[2] = &d;
 
 	//a.distance_vector(&b);
 	a.calculate_force(atomer);
@@ -172,16 +172,16 @@ void Simulation::fcc_structure_x(int j, int k)
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
 			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
-			list_of_atoms.push_back(new Atom(origin,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma));	
+			list_of_atoms.push_back(new Atom(origin,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));	
 			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma));
+			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));
 			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma));
+			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));
 			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma));
+			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));
 			}
 
 }

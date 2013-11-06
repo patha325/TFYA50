@@ -8,7 +8,7 @@ CONSTRUCTOR
 Parameters: Vec starting_position
 Sets starting position
 ----------------------*/
-Atom::Atom(Vec starting_position, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, float sigma){
+Atom::Atom(Vec starting_position, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, float sigma,float mass){
 
 	position = starting_position;
 	cutoff=start_cutoff;
@@ -38,15 +38,32 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 	for(int i=0; i<neighbouring_atoms.size();i++)
 	{
 	float r2=(distance_vector(neighbouring_atoms[i]).length());
-	r2=pow(r2,-2);
-	float r6=pow(r2,3);
-	tmp_force+=-1*48*r2*r6*(1*r2-0.5)*distance_vector(neighbouring_atoms[i]).normalize();
+	tmp_force += -48*(pow(r2,-13)-0.5*pow(r2,-7))*distance_vector(neighbouring_atoms[i]).normalize();
+	cout << "längd " << r2 << endl;
 	}
 	cout << "kraft " << tmp_force << endl;
 	return tmp_force;
     
 }
+
+/*----------------------
+FUNCTION: calculate_acceleration
+Paramteters: vector<Atom*>
+Returns: Vec (acceleration vector)
+-
+Calculates acceleration on the atom
+from closest atom.
+----------------------*/
+
+Vec Atom::calculate_acceleration(vector<Atom*> neighbouring_atoms){
+
+	Vec tmp_acc (0,0,0);
+	Vec tmp_force = calculate_force(neighbouring_atoms);
+	tmp_acc.setCoords(tmp_force.getX()/mass,tmp_force.getY()/mass,tmp_force.getZ()/mass); 
 	
+	cout << "acc " << tmp_acc << endl; 
+	return tmp_acc;
+}
 
 /*----------------------
 FUNCTION: calculate_potential
@@ -54,27 +71,18 @@ Parameters: vector<Atom*>
 Returns: float (scalar potential)
 -
 Calculates (LJ) potential on 
-the atom, from all neighbouring
-atoms within cutoff.
+the atom, from closest atom.
 ----------------------*/
-float Atom::calculate_potential(Atom* neighbouring_atom){
+float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 
-	/*vector<float> potential_vector(neighbouring_atoms.size());
+	float potential;
 	for(int i = 0; i < neighbouring_atoms.size(); i++){
 		Vec closest_vector = distance_vector(neighbouring_atoms[i]);
 		float distance = closest_vector.length();
-		float potential = 4*(pow(1/distance,12)-pow(1/distance,6));
-		potential_vector[i] = potential;
-	} If we want a list with all the potentials*/
+		potential += 4*(pow(1/distance,12)-pow(1/distance,6));
+	}
 
-	/* Ska vi returnera potentialen i förhållande till alla atomer i listan eller bara den närmaste? */
-
-	/*cout << "potential " << potential_vector[0] << " " << potential_vector[1] << " " << potential_vector[2] << endl;
-	return potential_vector[0];*/
-
-	Vec closest_vector = distance_vector(neighbouring_atom);
-	float distance = closest_vector.length();
-	float potential = 4*(pow(1/distance,12)-pow(1/distance,6));
+	/* Ska vi returnera potentialen i förhållande till alla atomer i listan eller bara den närmaste? ALLA! */
 
 	cout << "potential " << potential << endl;
 	return potential;
@@ -87,7 +95,7 @@ Returns: Vec (vector between atoms)
 -
 Returns a Vec (vector) which is the 
 cartesian vector between the atom
-and the parameter atom.
+and the parameter atom. Jobbar förmodligen i nm när den används i potential mm...
 ----------------------*/
 Vec Atom::distance_vector(Atom* other_atom){
 	Vec tmp =other_atom->position;
@@ -229,8 +237,7 @@ Vec Atom::distance_vector(Atom* other_atom){
 		shortest_vec = l8;
 	}
 
-	// Returns the vector to the closest atom
-	cout << "Kortaste" << shortest_vec << endl;
+	// Returns the vector to the closest atom from list
 	return shortest_vec;
 }
 
