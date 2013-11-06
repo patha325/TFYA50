@@ -285,11 +285,20 @@ int Atom::get_cell_number(){
 
 
 // -------- SETTERS --------
-void Atom::set_velocity(Vec newVelocity){}
+void Atom::set_velocity(Vec newVelocity){
+	velocity = newVelocity;
+	return;
+}
 	
-void Atom::set_position(Vec newPosition){}
+void Atom::set_position(Vec newPosition){
+	position = newPosition;
+	return;
+}
 
-void Atom::set_cell_number(int){}
+void Atom::set_cell_number(int new_cell_number){
+	cell_number = new_cell_number;
+	return;
+}
 
 void Atom::set_cutoff(float){}
 
