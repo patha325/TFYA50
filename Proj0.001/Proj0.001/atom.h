@@ -19,11 +19,12 @@ private:
 	float bulk_length_y;
 	float bulk_length_z;
 	float sigma;
+	float mass;
 		
 
 public:
 	//Constructor
-	Atom (Vec,float,float,float,float,float); 
+	Atom (Vec,float,float,float,float,float,float); 
 	~Atom ();
 
 	//Getters
@@ -39,7 +40,8 @@ public:
 
 	//Other functions
 	Vec calculate_force(std::vector<Atom*>);
-	float calculate_potential(Atom*);
+	Vec calculate_acceleration(std::vector<Atom*>);
+	float calculate_potential(std::vector<Atom*>);
 	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? done
 	void next_time_step(); //Alter everything in the atom to get to the next time step.
 	void update_atom();	
