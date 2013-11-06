@@ -109,6 +109,8 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
                 cell_number_iterator++;
             }
         }
+		//Malin och Jessica hälsar!
+		current_atom->set_cell_number(cell_number_iterator);
     }
     
 //    cout << "# of atoms: " << list_of_cells[0]->get_number_of_atoms_in_cell() << endl;
@@ -131,7 +133,10 @@ vector<Atom*> Cell_list::get_neighbours(Atom* atom){
     vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
     vector<Atom*> neighbouring_atoms;
     for (int i = 0; i < neighbouring_cells.size(); i++) {
-        neighbouring_atoms.insert(neighbouring_atoms.end(), neighbouring_cells[i]->get_atoms_in_cell().begin(), neighbouring_cells[i]->get_atoms_in_cell().end());
+		// MJ Lagt till att ens egen cell är inte neighbouring
+		if (neighbouring_cells[i]->get_atoms_in_cell().size() != 0 && neighbouring_cells[i]->get_cell_number() != cell_number){
+			neighbouring_atoms.insert(neighbouring_atoms.end(), neighbouring_cells[i]->get_atoms_in_cell().begin(), neighbouring_cells[i]->get_atoms_in_cell().end());
+		}
     }
     
 	return neighbouring_atoms;

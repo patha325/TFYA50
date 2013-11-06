@@ -352,33 +352,46 @@ int Atom::get_cell_number(){
 
 
 // -------- SETTERS --------
-void Atom::set_velocity(Vec newVelocity){}
+void Atom::set_velocity(Vec new_velocity){
+	velocity = new_velocity;
+	return;
+}
 	
-void Atom::set_position(Vec newPosition){}
-
-void Atom::set_prev_position(Vec Position){
-
-	prev_position = Position;
+void Atom::set_position(Vec new_position){
+	position = new_position;
+	return;
 }
 
-void Atom::set_next_position(Vec nextPosition){
 
-	next_position = nextPosition;
+void Atom::set_cell_number(int new_cell_number){
+	cell_number = new_cell_number;
+	return;
 }
 
-void Atom::set_acceleration(Vec newAcceleration){
+void Atom::set_prev_position(Vec new_position){
+
+	prev_position = new_position;
+}
+
+void Atom::set_next_position(Vec next_position){
+
+	next_position = next_position;
+}
+
+void Atom::set_acceleration(Vec new_acceleration){
 	
-	acceleration = newAcceleration;
+	acceleration = new_acceleration;
 }
 
-void Atom::set_prev_acceleration(Vec Acceleration){
+void Atom::set_prev_acceleration(Vec new_acceleration){
 
-	prev_acceleration = Acceleration;
+	prev_acceleration = new_acceleration;
 }
 
-void Atom::set_cell_number(int){}
-
-void Atom::set_cutoff(float){}
+void Atom::set_cutoff(float new_cutoff){
+	cutoff = new_cutoff;
+	return;
+}
 
 
 

@@ -1,6 +1,8 @@
 #include "simulation.h"
+#include <math.h>
 
 using namespace std;
+
 
 /*-----------------------
 CONSTRUCTOR
@@ -47,6 +49,8 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     create_list_of_atoms();
 	create_cell_list();
 
+	number_of_atoms = list_of_atoms.size();
+
 	// Atoms for testing
 	Atom a(Vec(0,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
 	Atom b(Vec(1.8,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
@@ -61,6 +65,10 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	//a.distance_vector(&b);
 	a.calculate_force(atomer);
 	//a.calculate_potential(&b);
+
+	//Testing next_time_step
+	next_time_step(3);
+	
 
 	/*for(int i=0;i<list_of_atoms.size();i++){
 		cout << i<<endl;
@@ -155,9 +163,9 @@ void Simulation::create_list_of_atoms(){
 
 void Simulation::fcc_structure(){
 	for(int k=0;k<unit_cells_z;k++){//Create the cells in z
-	for(int j=0;j<unit_cells_y;j++){//Create the cells in y
-	fcc_structure_x(j,k);// Create the cells in x
-	}
+		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
+			fcc_structure_x(j,k);// Create the cells in x
+		}
 	}
 }
 void Simulation::fcc_structure_x(int j, int k)
@@ -397,20 +405,75 @@ Paramteters: int
 Returns: Nothing
 -
 Alter everything in the simulation to get to the next time step.
-	Calculate distances
-	Calculate potential
-	Calculate force
-	Calculate velocities
-	update_atoms()
+	Calculate potential and kinetic energy
+	Calculate velocity
+	Calculate acceleration
+	Calculate next position
+
+	Update atom's position, prev position, velocity, acceleration, prev acceleration
 	
-	{ Not every time step
-	Clear cells/cell_list  ??clear_cells() private just nu, funkar det??
+	{ Not every time step 
+	Clear cells/cell_list
 	Fill cells/cell_list
 	}
 
-	Save ... to txt.
+	Save ... to txt. //Doesn't to this yet.
 ------------------------------*/
-void Simulation::next_time_step(int current_time_step){}
+void Simulation::next_time_step(int current_time_step){
+	/*
+	float E_pot = 0;
+	float E_kin = 0;
+	float temperature = 0;
+	
+	for(int i = 0; i < number_of_atoms; i++){
+		Atom* atom = list_of_atoms[i];
+
+		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
+		cout << "number of neighbouring atoms = " << neighbouring_atoms.size() << endl;
+
+		//Calculate potential energy
+		E_pot += atom->calculate_potential(neighbouring_atoms);
+		//Kinetic energy from velocity
+		E_kin += atom->calculate_kinetic_energy();
+		//Temperature
+		temperature += atom->calculate_temperature(E_kin);
+		//Calculate next position with help from velocity, previous acceleration and current acceleration
+		atom->set_next_position(atom->calculate_next_position());
+		Vec new_acceleration = atom->calculate_acceleration(neighbouring_atoms);
+		
+		//Update everything except position for the atom
+		//Velocity
+		atom->set_velocity(atom->calculate_velocity());
+		//Previous position
+		atom->set_prev_position(atom->get_position());
+		//Previous acceleration
+		atom->set_prev_acceleration(atom->get_acceleration());
+		//Acceleration
+		atom->set_acceleration(new_acceleration);
+	}
+	
+	for(int i = 0; i < number_of_atoms; i++){
+		Atom* atom = list_of_atoms[i];
+		//Update position
+		atom->set_position(atom->get_next_position());
+	}
+	
+	/*
+	if fmod(current_time_step, 5) == 0{
+			clear_cells();
+			add_atoms_to_cells();
+	}
+	*/
+	/*
+	temperature = temperature/number_of_atoms;
+	cout << "E_pot " << E_pot << endl;
+	cout << "E_kin " << E_kin << endl;
+	cout << "temperature " << temperature << endl;
+	cout << "number of atoms " << number_of_atoms << endl;
+	
+	return;
+	*/
+}
 
 /*------------------------------
 FUNCTION regulate_thermostat
