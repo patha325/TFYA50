@@ -47,6 +47,8 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     
     //Initial setup
     create_list_of_atoms();
+	cout << "Total number of atoms: " << list_of_atoms.size() << endl;
+
 	create_cell_list();
 
 	number_of_atoms = list_of_atoms.size();

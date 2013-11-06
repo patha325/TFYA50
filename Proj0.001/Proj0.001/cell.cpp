@@ -11,6 +11,7 @@ Cell::Cell(int new_cell_number, Vec new_origin){
 
     cell_number = new_cell_number;
     origin_of_cell = new_origin;
+	number_of_atoms_in_cell = 0;
 }
 
 /*----------------
