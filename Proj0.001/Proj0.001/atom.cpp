@@ -92,6 +92,15 @@ float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 	return tmp_potential;
 }
 
+/*----------------------
+FUNCTION: calculate_velocity
+Parameters: none
+Returns: Vec (velocity)
+-
+Calculates velocity on 
+the atom.
+----------------------*/
+
 Vec Atom::calculate_velocity(){
 
 	Vec position_diff = position - prev_position;
@@ -100,10 +109,32 @@ Vec Atom::calculate_velocity(){
 	return velocity_temp;
 }
 
-float Atom::calculate_kinetik_energy(){
+/*----------------------
+FUNCTION: calculate_kinetic_energy
+Parameters: none
+Returns: float (Kinetic_energy)
+-
+Calculates kinetik energy on 
+the atom.
+----------------------*/
+
+float Atom::calculate_kinetic_energy(){
 	
 	float kinetik_energy = mass*pow(velocity.length(),2)/2;
 	return kinetik_energy;
+}
+
+/*----------------------
+FUNCTION: calculate_temperature
+Parameters: none
+Returns: float (temperature)
+-
+Calculates temperature on 
+the atom. Ganska vagt kanske...
+----------------------*/
+
+float Atom::calculate_temperature(float E_kin){
+	return 0;
 }
 	
 /*----------------------

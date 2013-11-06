@@ -52,7 +52,8 @@ public:
 	Vec calculate_acceleration(std::vector<Atom*>);
 	float calculate_potential(std::vector<Atom*>);
 	Vec calculate_velocity();
-	float calculate_kinetik_energy();
+	float calculate_kinetic_energy();
+	float calculate_temperature(float);
 	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? done
 	Vec calculate_next_position();
 	void update_atom();	
