@@ -41,16 +41,17 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     lattice_constant = new_lattice_constant;
     crystal_structure = new_crystal_structure;
     thermostat = new_thermostat;
+	Vec prev_acceleration = Vec(0,0,0);
     
     //Initial setup
     create_list_of_atoms();
 	create_cell_list();
 
 	// Atoms for testing
-	Atom a(Vec(0,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
-	Atom b(Vec(1.8,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
-	Atom c(Vec(0,0,0),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
-	Atom d(Vec(0.1,0.1,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass);
+	Atom a(Vec(0,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
+	Atom b(Vec(1.8,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
+	Atom c(Vec(0,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
+	Atom d(Vec(0.1,0.1,0.1),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,mass,time_step);
 
 	vector<Atom*> atomer(1);
 	atomer[0] = &b;
@@ -164,17 +165,19 @@ void Simulation::fcc_structure_x(int j, int k)
 	for(int i=0;i<unit_cells_x;i++){
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
+			Vec acceleration (0,0,0);
+			int time_step = 1;
 			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
-			list_of_atoms.push_back(new Atom(origin,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));	
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));	
 			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));
 			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));
 			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass));
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));
 			}
 
 }

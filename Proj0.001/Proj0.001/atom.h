@@ -11,7 +11,8 @@ private:
 	Vec velocity;
 	Vec prev_position;
 	Vec next_position;
-	Vec next_velocity;
+	Vec acceleration;			// Needed to calculate nex pos.
+	Vec prev_acceleration;		// Needed to calculate nex pos.
 	int cell_number;
 	int number_of_neighbours;
 	float cutoff;
@@ -20,21 +21,29 @@ private:
 	float bulk_length_z;
 	float sigma;
 	float mass;
+	float time_step;
+	float total_energy;
 		
 
 public:
 	//Constructor
-	Atom (Vec,float,float,float,float,float,float); 
+	Atom (Vec,Vec,float,float,float,float,float,float,int); 
 	~Atom ();
 
 	//Getters
 	Vec get_velocity();
 	Vec get_position();
+	Vec get_next_position();
+	Vec get_acceleration();
 	int get_cell_number();
 
 	//Setters
 	void set_velocity(Vec);
 	void set_position(Vec);
+	void set_next_position(Vec);
+	void set_prev_position(Vec);
+	void set_acceleration(Vec);
+	void set_prev_acceleration(Vec);
 	void set_cell_number(int);
 	void set_cutoff(float);
 
@@ -42,8 +51,10 @@ public:
 	Vec calculate_force(std::vector<Atom*>);
 	Vec calculate_acceleration(std::vector<Atom*>);
 	float calculate_potential(std::vector<Atom*>);
+	Vec calculate_velocity();
+	float calculate_kinetik_energy();
 	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? done
-	void next_time_step(); //Alter everything in the atom to get to the next time step.
+	Vec calculate_next_position();
 	void update_atom();	
 };
 
