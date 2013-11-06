@@ -20,7 +20,7 @@ private:
     std::map<int,std::vector<Cell*>> number_to_cell_vector_map; //Vector with neighbouring cells
     
 	//Methods
-	void clear_cells();
+	
     void add_to_map(int,std::vector<Cell*>);
 
 public:
@@ -30,6 +30,7 @@ public:
 	void add_atoms_to_cells(std::vector<Atom*>);
     void create_cells();
 	std::vector<Atom*> get_neighbours(Atom* atom); 
+	void clear_cells();
 };
 
 #endif

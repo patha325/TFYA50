@@ -39,6 +39,7 @@ private:
 
 	//Methods
 	void create_cell_list();
+	int calculate_number_of_atoms();
 	
 
 public:

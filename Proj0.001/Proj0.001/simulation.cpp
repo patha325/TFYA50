@@ -1,6 +1,8 @@
 #include "simulation.h"
+#include <math.h>
 
 using namespace std;
+
 
 /*-----------------------
 CONSTRUCTOR
@@ -46,6 +48,8 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     create_list_of_atoms();
 	create_cell_list();
 
+	number_of_atoms = list_of_atoms.size();
+
 	// Atoms for testing
 	Atom a(Vec(0.9,1.2,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
 	Atom b(Vec(0.1,0.1,0.1),0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma);
@@ -60,6 +64,9 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	//a.distance_vector(&b);
 	a.calculate_force(atomer);
 	//a.calculate_potential(&b);
+
+	//Testing next_time_step
+	next_time_step(3);
 
 	/*for(int i=0;i<list_of_atoms.size();i++){
 		cout << i<<endl;
@@ -407,7 +414,45 @@ Alter everything in the simulation to get to the next time step.
 
 	Save ... to txt.
 ------------------------------*/
-void Simulation::next_time_step(int current_time_step){}
+void Simulation::next_time_step(int current_time_step){
+	float E_pot = 0;
+	float E_kin = 0;
+	float temperature = 0;
+	
+	for(int i = 0; i < number_of_atoms; i++){
+		Atom* atom = list_of_atoms[i];
+		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
+		Vec position = atom->get_position();
+		cout << "position " << position << endl;
+
+		//Vec acceleration = atom.calculate_acceleration(neighbouring_atoms);
+		//atom.set_next_position(atom.calculate_next_position());
+		
+		E_pot += 2*i;
+		//E_pot += atom->calculate_potential(neighbouring_atoms);
+		E_kin += i;
+		//E_kin += atom->calculate_kinetic(); //E_kin = E_tot_forAnAtom - E_pot
+		temperature += i;
+		//all_temperatures[i] = atom->calculate_temperature();
+
+		/* acceleration, force => next position
+		E_pot
+		E_kin
+		Temperature
+		Save everything to a .txt file
+		Update atom.position = atom.next_position*/
+
+		/*if fmod(current_time_step, 5) == 0{
+			clear_cells()
+			ad_atoms_to_cells()
+		}*/
+	}
+	temperature = temperature/number_of_atoms;
+	cout << "E_pot " << E_pot << endl;
+	cout << "E_kin " << E_kin << endl;
+	cout << "temperature " << temperature << endl;
+	cout << "number of atoms " << number_of_atoms << endl;
+}
 
 /*------------------------------
 FUNCTION regulate_thermostat
