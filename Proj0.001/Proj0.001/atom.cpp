@@ -106,7 +106,7 @@ Vec Atom::calculate_velocity(){
 	Vec position_diff = position - prev_position;
 	Vec tmp_velocity;
 	tmp_velocity.setCoords(position_diff.getX()/time_step,position_diff.getY()/time_step,position_diff.getZ()/time_step);
-	return velocity_tmp;
+	return tmp_velocity;
 }
 
 /*----------------------
