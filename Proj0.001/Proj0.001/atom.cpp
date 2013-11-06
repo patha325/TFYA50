@@ -24,6 +24,9 @@ Does nothing
 ---------------------*/
 Atom::~Atom(){}
 
+//----------Other functions-------------------
+
+
 /*----------------------
 FUNCTION: calculate_force
 Paramteters: vector<Atom*>
@@ -361,7 +364,6 @@ void Atom::set_position(Vec new_position){
 	position = new_position;
 	return;
 }
-
 
 void Atom::set_cell_number(int new_cell_number){
 	cell_number = new_cell_number;
