@@ -104,9 +104,9 @@ the atom.
 Vec Atom::calculate_velocity(){
 
 	Vec position_diff = position - prev_position;
-	Vec velocity_temp;
-	velocity_temp.setCoords(position_diff.getX()/time_step,position_diff.getY()/time_step,position_diff.getZ()/time_step);
-	return velocity_temp;
+	Vec tmp_velocity;
+	tmp_velocity.setCoords(position_diff.getX()/time_step,position_diff.getY()/time_step,position_diff.getZ()/time_step);
+	return velocity_tmp;
 }
 
 /*----------------------
@@ -120,8 +120,8 @@ the atom.
 
 float Atom::calculate_kinetic_energy(){
 	
-	float kinetik_energy = mass*pow(velocity.length(),2)/2;
-	return kinetik_energy;
+	float tmp_kinetic_energy = mass*pow(velocity.length(),2)/2;
+	return tmp_kinetic_energy;
 }
 
 /*----------------------
