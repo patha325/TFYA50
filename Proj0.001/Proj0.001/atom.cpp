@@ -79,7 +79,7 @@ the atom, from closest atom.
 ----------------------*/
 float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 
-	float tmp_potential;
+	float tmp_potential = 0;
 	for(int i = 0; i < neighbouring_atoms.size(); i++){
 		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
 		float tmp_distance = closest_vector_tmp.length();

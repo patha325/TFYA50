@@ -420,7 +420,7 @@ Alter everything in the simulation to get to the next time step.
 	Save ... to txt. //Doesn't to this yet.
 ------------------------------*/
 void Simulation::next_time_step(int current_time_step){
-	/*
+	
 	float E_pot = 0;
 	float E_kin = 0;
 	float temperature = 0;
@@ -464,7 +464,7 @@ void Simulation::next_time_step(int current_time_step){
 			add_atoms_to_cells();
 	}
 	*/
-	/*
+	
 	temperature = temperature/number_of_atoms;
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;
@@ -472,7 +472,6 @@ void Simulation::next_time_step(int current_time_step){
 	cout << "number of atoms " << number_of_atoms << endl;
 	
 	return;
-	*/
 }
 
 /*------------------------------

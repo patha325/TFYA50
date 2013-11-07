@@ -131,11 +131,13 @@ vector<Atom*> Cell_list::get_neighbours(Atom* atom){
 
     int cell_number = atom->get_cell_number();
     vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
+	cout << "number of neighbouring cells " << neighbouring_cells.size() << endl;
     vector<Atom*> neighbouring_atoms;
     for (int i = 0; i < neighbouring_cells.size(); i++) {
-		// MJ Lagt till att ens egen cell är inte neighbouring
-		if (neighbouring_cells[i]->get_atoms_in_cell().size() != 0 && neighbouring_cells[i]->get_cell_number() != cell_number){
-			neighbouring_atoms.insert(neighbouring_atoms.end(), neighbouring_cells[i]->get_atoms_in_cell().begin(), neighbouring_cells[i]->get_atoms_in_cell().end());
+		cout << i << endl;
+		if (neighbouring_cells[i]->get_atoms_in_cell().size() != 0){
+			cout << "hej"  << neighbouring_cells[i]->get_atoms_in_cell().size() << endl;
+			neighbouring_atoms.insert(neighbouring_atoms.end(), neighbouring_cells[i]->get_atoms_in_cell()[0]);
 		}
     }
     
