@@ -39,11 +39,10 @@ within cutoff.
 Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
     
 	Vec tmp_force (0,0,0);
-	for(int i=0; i<neighbouring_atoms.size();i++)
-	{
-	float r2=(distance_vector(neighbouring_atoms[i]).length());
-	tmp_force += -48*(pow(r2,-13)-0.5*pow(r2,-7))*distance_vector(neighbouring_atoms[i]).normalize();
-	cout << "längd " << r2 << endl;
+	for(int i=0; i<neighbouring_atoms.size();i++){
+		float r2=(distance_vector(neighbouring_atoms[i]).length());
+		tmp_force += -48*(pow(r2,-13)-0.5*pow(r2,-7))*distance_vector(neighbouring_atoms[i]).normalize();
+		//cout << "längd " << r2 << endl;
 	}
 	cout << "kraft " << tmp_force << endl;
 	return tmp_force;
@@ -82,7 +81,7 @@ the atom, from closest atom.
 ----------------------*/
 float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 
-	float tmp_potential;
+	float tmp_potential = 0;
 	for(int i = 0; i < neighbouring_atoms.size(); i++){
 		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
 		float tmp_distance = closest_vector_tmp.length();

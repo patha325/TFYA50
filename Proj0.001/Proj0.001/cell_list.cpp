@@ -150,7 +150,9 @@ vector<Atom*> Cell_list::get_neighbours(Atom* atom){
 //		cout << "Atoms to add: " << atoms_to_add.size() << endl;
 		for (int j = 0; j < atoms_to_add.size(); j++){
 //			cout << atoms_to_add[j]->get_position() << endl;
-			neighbouring_atoms.push_back(atoms_to_add[j]);
+			if (atom->distance_vector(atoms_to_add[j]).length() != 0){
+				neighbouring_atoms.push_back(atoms_to_add[j]);
+			}
 		}
 		// MJ
 		/*
