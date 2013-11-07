@@ -13,6 +13,7 @@ private:
 	Vec next_position;
 	Vec acceleration;			// Needed to calculate nex pos.
 	Vec prev_acceleration;		// Needed to calculate nex pos.
+	Vec next_acceleration;		// Needed to calculate nex vel.
 	int cell_number;
 	int number_of_neighbours;
 	float cutoff;
@@ -27,7 +28,7 @@ private:
 
 public:
 	//Constructor
-	Atom (Vec,Vec,float,float,float,float,float,float,int); 
+	Atom (Vec,Vec,float,float,float,float,float,float,float); 
 	~Atom ();
 
 	//Getters
@@ -36,6 +37,7 @@ public:
 	Vec get_next_position();
 	Vec get_acceleration();
 	int get_cell_number();
+	Vec get_prev_position();
 
 	//Setters
 	void set_velocity(Vec);

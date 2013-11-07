@@ -25,7 +25,7 @@ Creates a simulation object.
 Calls constructors for all atoms and the cell list. 
 ------------------------*/
 
-Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, int new_time_step,
+Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
                         float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat){
     
@@ -66,11 +66,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 	//a.distance_vector(&b);
 	a.calculate_force(atomer);
-	//a.calculate_potential(&b);
-
-	//Testing next_time_step
-	next_time_step(3);
-	
+	//a.calculate_potential(&b);	
 
 	/*for(int i=0;i<list_of_atoms.size();i++){
 		cout << i<<endl;
@@ -129,7 +125,13 @@ and everything that happes during
 the simulation.
 ----------------------------*/
 void Simulation::run_simulation(){
-	
+	//World is already created
+	int i = 0;
+	while(i < steps){
+		next_time_step(i);
+		i++;
+	}
+
 	// Todo: How often shall we update cell list?
 }
 
@@ -176,7 +178,6 @@ void Simulation::fcc_structure_x(int j, int k)
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
-			int time_step = 1;
 			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));	
 			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
@@ -431,7 +432,7 @@ void Simulation::next_time_step(int current_time_step){
 		Atom* atom = list_of_atoms[i];
 
 		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
-		cout << "number of neighbouring atoms = " << neighbouring_atoms.size() << endl;
+		//cout << "number of neighbouring atoms = " << neighbouring_atoms.size() << endl;
 
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
@@ -446,18 +447,24 @@ void Simulation::next_time_step(int current_time_step){
 		//Update everything except position for the atom
 		//Velocity
 		atom->set_velocity(atom->calculate_velocity());
+		//cout << "atom " << i << " velocity " << atom->get_velocity() << endl;
 		//Previous position
 		atom->set_prev_position(atom->get_position());
+		
 		//Previous acceleration
 		atom->set_prev_acceleration(atom->get_acceleration());
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
+		//cout << "atom " << i << " acceleration " << atom->get_acceleration() << endl;
 	}
 	
 	for(int i = 0; i < number_of_atoms; i++){
 		Atom* atom = list_of_atoms[i];
 		//Update position
 		atom->set_position(atom->get_next_position());
+		cout << "atom " << i << " previous position " << atom->get_prev_position() << endl;
+		cout << "atom " << i << " position " << atom->get_position() << endl;
+		cout << "atom " << i << " next position " << atom->get_next_position() << endl;
 	}
 	
 	/*
@@ -471,7 +478,7 @@ void Simulation::next_time_step(int current_time_step){
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;
 	cout << "temperature " << temperature << endl;
-	cout << "number of atoms " << number_of_atoms << endl;
+	cout << "number of atoms " << number_of_atoms << endl << endl;
 	
 	return;
 	
@@ -507,7 +514,6 @@ constructor. Adds all atoms to the
 cell list.
 ------------------------------*/
 void Simulation::create_cell_list(){
-
 	cell_list = new Cell_list(cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant);
 	cell_list->add_atoms_to_cells(list_of_atoms);
 }

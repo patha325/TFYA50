@@ -9,13 +9,22 @@ CONSTRUCTOR
 Parameters: Vec starting_position
 Sets starting position
 ----------------------*/
-Atom::Atom(Vec starting_position, Vec prev_acceleration, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, float sigma,float mass,int time_step){
+Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, float new_sigma, float new_mass, float new_time_step){
 
 	position = starting_position;
-	cutoff=start_cutoff;
+	prev_acceleration = new_prev_acceleration;
+	cutoff = start_cutoff;
+	sigma = new_sigma;
 	bulk_length_x = unit_cells_x*sigma;
 	bulk_length_y = unit_cells_y*sigma;
 	bulk_length_z = unit_cells_z*sigma;
+	mass = new_mass;
+	time_step = new_time_step;
+	velocity = Vec (0, 0, 0);
+	prev_position = position;
+	next_position = Vec (0, 0, 0);
+	acceleration = Vec (0, 0, 0);
+	next_acceleration = Vec (0, 0, 0);
 }
 
 /*--------------------
@@ -44,7 +53,7 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 		tmp_force += -48*(pow(r2,-13)-0.5*pow(r2,-7))*distance_vector(neighbouring_atoms[i]).normalize();
 		//cout << "längd " << r2 << endl;
 	}
-	cout << "kraft " << tmp_force << endl;
+	//cout << "kraft " << tmp_force << endl;
 	return tmp_force;
     
 }
@@ -62,12 +71,12 @@ Vec Atom::calculate_acceleration(vector<Atom*> neighbouring_atoms){
 
 	Vec tmp_acc (0,0,0);
 	Vec tmp_force = calculate_force(neighbouring_atoms);
-	tmp_acc.setCoords(tmp_force.getX()/mass,tmp_force.getY()/mass,tmp_force.getZ()/mass);
+	tmp_acc.setCoords(-tmp_force.getX()/mass,-tmp_force.getY()/mass,-tmp_force.getZ()/mass);
 	
 	/*prev_acceleration = acceleration;
 	acceleration = tmp_acc; Kanske int här...*/
 	
-	cout << "acc " << tmp_acc << endl; 
+	//cout << "acc " << tmp_acc << endl; 
 	return tmp_acc;
 }
 
@@ -85,12 +94,14 @@ float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 	for(int i = 0; i < neighbouring_atoms.size(); i++){
 		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
 		float tmp_distance = closest_vector_tmp.length();
+		
 		tmp_potential += 4*(pow(1/tmp_distance,12)-pow(1/tmp_distance,6));
+		//cout << "tmp_potential " << tmp_potential << endl;
 	}
 
 	/* Ska vi returnera potentialen i förhållande till alla atomer i listan eller bara den närmaste? ALLA! */
 
-	cout << "potential " << tmp_potential << endl;
+	//cout << "potential " << tmp_potential << endl;
 	return tmp_potential;
 }
 
@@ -136,7 +147,9 @@ the atom. Ganska vagt kanske...
 ----------------------*/
 
 float Atom::calculate_temperature(float E_kin){
-	return 0;
+	
+	float k_b = 8.617342e-5; //[eV][K]^{-1}
+	return 2/(3*k_b)*E_kin;
 }
 	
 /*----------------------
@@ -293,20 +306,24 @@ Vec Atom::distance_vector(Atom* other_atom){
 }
 
 /*-------------------------
-FUNCTION: next_time_step()
+FUNCTION: calculate_next_position()
 Parameters: None
-Returns: Nothing
+Returns: next_position
 -
-Calculates the atom paramters
-for the next time step
+Calculates next position för an atom
 --------------------------*/
 Vec Atom::calculate_next_position(){
-	int time_step2 = time_step*time_step;
-	position.setCoords(position.getX() + velocity.getX()*time_step + acceleration.getX()*2/3*time_step2 - prev_acceleration.getX()*1/6*time_step2,
-		position.getY() + velocity.getY()*time_step + acceleration.getY()*2/3*time_step2 - prev_acceleration.getY()*1/6*time_step2,
-		position.getZ() + velocity.getZ()*time_step + acceleration.getZ()*2/3*time_step2 - prev_acceleration.getZ()*1/6*time_step2);
+	float time_step2 = time_step*time_step;
+	//You should not change atom attributes, Markus!
+	Vec next_position (0,0,0);
 
-	return position;
+	next_position.setCoords(
+		position.getX() + velocity.getX()*time_step + acceleration.getX()*1/2*time_step2,
+		position.getY() + velocity.getY()*time_step + acceleration.getY()*1/2*time_step2, 
+		position.getZ() + velocity.getZ()*time_step + acceleration.getZ()*1/2*time_step2);
+
+
+	return next_position;
 	// Change the cell number? Should there be a call for that? Has been added in add_atoms_to_cell in cell_list
 }
 
@@ -352,6 +369,11 @@ int Atom::get_cell_number(){
 	return cell_number;
 }
 
+Vec Atom::get_prev_position(){
+
+	return prev_position;
+}
+
 
 // -------- SETTERS --------
 void Atom::set_velocity(Vec new_velocity){
@@ -374,9 +396,9 @@ void Atom::set_prev_position(Vec new_position){
 	prev_position = new_position;
 }
 
-void Atom::set_next_position(Vec next_position){
+void Atom::set_next_position(Vec new_next_position){
 
-	next_position = next_position;
+	next_position = new_next_position;
 }
 
 void Atom::set_acceleration(Vec new_acceleration){
