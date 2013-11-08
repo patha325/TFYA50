@@ -23,7 +23,6 @@ Cell::~Cell(){
     clear_cell();
 }
 
-
 /*---------------
  GETTERS
  --------------*/
@@ -72,7 +71,6 @@ void Cell::add_atom(Atom* atom){
     atoms_in_cell.insert(atoms_in_cell.end(), atom);
     number_of_atoms_in_cell++;
 }
-
 
 /*---------------------
 FUNCTION: clear_cell()

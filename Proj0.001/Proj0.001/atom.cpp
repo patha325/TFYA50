@@ -48,7 +48,7 @@ within cutoff.
 Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
     
 	Vec tmp_force (0,0,0);
-	for(int i=0; i<neighbouring_atoms.size();i++){
+	for(int i=0; i < neighbouring_atoms.size(); i++){
 		float r2=(distance_vector(neighbouring_atoms[i]).length());
 		tmp_force += -48*(pow(r2,-13)-0.5*pow(r2,-7))*distance_vector(neighbouring_atoms[i]).normalize();
 		//cout << "längd " << r2 << endl;
@@ -94,14 +94,8 @@ float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 	for(int i = 0; i < neighbouring_atoms.size(); i++){
 		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
 		float tmp_distance = closest_vector_tmp.length();
-		
 		tmp_potential += 4*(pow(1/tmp_distance,12)-pow(1/tmp_distance,6));
-		//cout << "tmp_potential " << tmp_potential << endl;
 	}
-
-	/* Ska vi returnera potentialen i förhållande till alla atomer i listan eller bara den närmaste? ALLA! */
-
-	//cout << "potential " << tmp_potential << endl;
 	return tmp_potential;
 }
 
@@ -310,7 +304,7 @@ FUNCTION: calculate_next_position()
 Parameters: None
 Returns: next_position
 -
-Calculates next position för an atom
+Calculates next position for an atom
 --------------------------*/
 Vec Atom::calculate_next_position(){
 	float time_step2 = time_step*time_step;
@@ -339,7 +333,7 @@ Acceleration and prev_acceleration
 is set when calculate_acceleration 
 is called.
 --------------------------*/
-void Atom::update_atom(){
+void Atom::update_atom(){ // Needed??
 
 }
 

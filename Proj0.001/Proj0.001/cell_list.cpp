@@ -113,7 +113,6 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
                 cell_number_iterator++;
             }
         }
-		//Malin och Jessica hälsar!
 		current_atom->set_cell_number(cell_number_iterator);
     }
     
@@ -127,7 +126,6 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
 }
 
 
-
 /* ------------------------------
 FUNCTION: Cell_list::get_neighbours()
 PARAMETERS: Atom* atom
@@ -139,34 +137,17 @@ are neighbours to the parameter Atom.
 vector<Atom*> Cell_list::get_neighbours(Atom* atom){
 
     int cell_number = atom->get_cell_number();
-//	cout << "Cell number: " << cell_number << endl;
     vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
     vector<Atom*> neighbouring_atoms;
-
-    for (int i = 0; i < neighbouring_cells.size(); i++) {
-		cout << i << endl;
-		if (neighbouring_cells[i]->get_atoms_in_cell().size() != 0){
-			neighbouring_atoms.insert(neighbouring_atoms.end(), neighbouring_cells[i]->get_atoms_in_cell()[0]);
-		}
-//		cout << "So far: " << neighbouring_atoms.size() << endl;
-//		cout << "Cell number: " << neighbouring_cells[i]->get_cell_number() << endl;
-		vector<Atom*> atoms_to_add = neighbouring_cells[i]->get_atoms_in_cell();
-//		cout << "Atoms to add: " << atoms_to_add.size() << endl;
 		
+    for (int i = 0; i < neighbouring_cells.size(); i++) {
+		vector<Atom*> atoms_to_add = neighbouring_cells[i]->get_atoms_in_cell();
 		for (int j = 0; j < atoms_to_add.size(); j++){
-//			cout << atoms_to_add[j]->get_position() << endl;
-			if (atom->distance_vector(atoms_to_add[j]).length() != 0){
-				neighbouring_atoms.push_back(atoms_to_add[j]);
-			}
+			 if (atom->distance_vector(atoms_to_add[j]).length() != 0){
+				 neighbouring_atoms.push_back(atoms_to_add[j]);
+			 }
 		}
-		// MJ
-		/*
-		if (neighbouring_cells[i]->get_atoms_in_cell().size() != 0){
-			neighbouring_atoms.insert(neighbouring_atoms.end(), neighbouring_cells[i]->get_atoms_in_cell().begin(), neighbouring_cells[i]->get_atoms_in_cell().end());
-		}
-		*/
     }
-    
 	return neighbouring_atoms;
 } 
 
@@ -329,10 +310,3 @@ void Cell_list::add_to_map(int key, vector<Cell*> entry){
     number_to_cell_vector_map.insert(pair<int, vector<Cell*>>(key,entry));
 }
 */
-
-
-
-
-
-
-

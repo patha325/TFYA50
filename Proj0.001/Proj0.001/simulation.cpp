@@ -247,7 +247,6 @@ void Simulation::next_time_step(int current_time_step){
 		Atom* atom = list_of_atoms[i];
 
 		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
-		//cout << "number of neighbouring atoms = " << neighbouring_atoms.size() << endl;
 
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
@@ -262,7 +261,6 @@ void Simulation::next_time_step(int current_time_step){
 		//Update everything except position for the atom
 		//Velocity
 		atom->set_velocity(atom->calculate_velocity());
-		//cout << "atom " << i << " velocity " << atom->get_velocity() << endl;
 		//Previous position
 		atom->set_prev_position(atom->get_position());
 		
@@ -270,7 +268,6 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_prev_acceleration(atom->get_acceleration());
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
-		//cout << "atom " << i << " acceleration " << atom->get_acceleration() << endl;
 	}
 	
 	for(int i = 0; i < number_of_atoms; i++){
@@ -282,12 +279,11 @@ void Simulation::next_time_step(int current_time_step){
 		cout << "atom " << i << " next position " << atom->get_next_position() << endl;
 	}
 	
-	/*
-	if fmod(current_time_step, 5) == 0{
-			clear_cells();
-			add_atoms_to_cells();
+	if (fmod(current_time_step, 5.0) == 0){
+			cell_list->clear_cells();
+			cell_list->add_atoms_to_cells(list_of_atoms);
 	}
-	*/
+	
 	
 	temperature = temperature/number_of_atoms;
 	cout << "E_pot " << E_pot << endl;
