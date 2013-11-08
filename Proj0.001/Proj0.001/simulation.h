@@ -17,7 +17,7 @@ private:
 	//Variables
 	std::vector<Atom*> list_of_atoms;
 	int number_of_atoms;
-	int time_step; //Given in femtoseconds
+	float time_step; //Given in femtoseconds
 	int steps;
 	float temperature;
 	float cutoff;
@@ -52,7 +52,7 @@ public:
 	Simulation (int unit_cells_x,
 		int unit_cells_y, // unit_cells is a material parameter.
 		int unit_cells_z,
-		int time_step,
+		float time_step,
 		int steps,
 		float temperature,
 		float cutoff,

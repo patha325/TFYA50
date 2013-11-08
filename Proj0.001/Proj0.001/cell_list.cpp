@@ -38,6 +38,7 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
     cout << "Bulk length Z: " << bulk_length_z << endl << endl;
 */
     
+	//Could be an issue if cell_length:s are a multiple of lattice_constant
     cell_length_x = bulk_length_x/floor(bulk_length_x/cutoff);
     cell_length_y = bulk_length_y/floor(bulk_length_y/cutoff);
     cell_length_z = bulk_length_z/floor(bulk_length_z/cutoff);
@@ -218,6 +219,8 @@ void Cell_list::create_cells(){
         Creates a mapping between matrix coordinates and cell number 
      (only used when creating the cell list structure.
      ---*/
+	
+	// This while loop takes a very long time to compute if sigma is big. Maybe consider optimizing?
     while (current_origin.getZ()<bulk_length_z){
         while (current_origin.getY()<bulk_length_y) {
             while (current_origin.getX()<bulk_length_x) {
