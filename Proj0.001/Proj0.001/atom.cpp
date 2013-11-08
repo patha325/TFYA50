@@ -24,6 +24,9 @@ Does nothing
 ---------------------*/
 Atom::~Atom(){}
 
+//----------Other functions-------------------
+
+
 /*----------------------
 FUNCTION: calculate_force
 Paramteters: vector<Atom*>
@@ -36,11 +39,10 @@ within cutoff.
 Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
     
 	Vec tmp_force (0,0,0);
-	for(int i=0; i<neighbouring_atoms.size();i++)
-	{
-	float r2=(distance_vector(neighbouring_atoms[i]).length());
-	tmp_force += -48*(pow(r2,-13)-0.5*pow(r2,-7))*distance_vector(neighbouring_atoms[i]).normalize();
-	cout << "längd " << r2 << endl;
+	for(int i=0; i<neighbouring_atoms.size();i++){
+		float r2=(distance_vector(neighbouring_atoms[i]).length());
+		tmp_force += -48*(pow(r2,-13)-0.5*pow(r2,-7))*distance_vector(neighbouring_atoms[i]).normalize();
+		//cout << "längd " << r2 << endl;
 	}
 	cout << "kraft " << tmp_force << endl;
 	return tmp_force;
@@ -104,9 +106,9 @@ the atom.
 Vec Atom::calculate_velocity(){
 
 	Vec position_diff = position - prev_position;
-	Vec velocity_temp;
-	velocity_temp.setCoords(position_diff.getX()/time_step,position_diff.getY()/time_step,position_diff.getZ()/time_step);
-	return velocity_temp;
+	Vec tmp_velocity;
+	tmp_velocity.setCoords(position_diff.getX()/time_step,position_diff.getY()/time_step,position_diff.getZ()/time_step);
+	return tmp_velocity;
 }
 
 /*----------------------
@@ -120,8 +122,8 @@ the atom.
 
 float Atom::calculate_kinetic_energy(){
 	
-	float kinetik_energy = mass*pow(velocity.length(),2)/2;
-	return kinetik_energy;
+	float tmp_kinetic_energy = mass*pow(velocity.length(),2)/2;
+	return tmp_kinetic_energy;
 }
 
 /*----------------------
@@ -361,7 +363,6 @@ void Atom::set_position(Vec new_position){
 	position = new_position;
 	return;
 }
-
 
 void Atom::set_cell_number(int new_cell_number){
 	cell_number = new_cell_number;

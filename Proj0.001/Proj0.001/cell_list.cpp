@@ -83,8 +83,8 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
     for (int i = 0 ; i<atoms_list.size(); i++) {
         cout << "Atom " << i << ": " << atoms_list[i]->get_position() << endl;
     }
-*/
-/*
+
+
     for (int i = 0; i<list_of_cells.size(); i++) {
         cout << "Cell " << i << ": "<< list_of_cells[i]->get_origin_of_cell() << endl;
     }
@@ -103,6 +103,9 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
 //                cout << "Atom " << i << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;
                 
                 list_of_cells[cell_number_iterator]->add_atom(current_atom);
+
+//				cout << "Cell with number " << cell_number_iterator << " has " << list_of_cells[cell_number_iterator]->get_number_of_atoms_in_cell() << " atoms in it." << endl;
+
                 found = true;
             }
             else {
@@ -113,6 +116,11 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
 		current_atom->set_cell_number(cell_number_iterator);
     }
     
+/*	for (int i = 0; i < list_of_cells.size(); i++){
+	
+		cout << "Number of atoms in cell " << i << " is: " << list_of_cells[i]->get_number_of_atoms_in_cell() << endl;
+	}
+	*/
 //    cout << "# of atoms: " << list_of_cells[0]->get_number_of_atoms_in_cell() << endl;
 
 }
@@ -130,15 +138,32 @@ are neighbours to the parameter Atom.
 vector<Atom*> Cell_list::get_neighbours(Atom* atom){
 
     int cell_number = atom->get_cell_number();
+//	cout << "Cell number: " << cell_number << endl;
     vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
-	cout << "number of neighbouring cells " << neighbouring_cells.size() << endl;
     vector<Atom*> neighbouring_atoms;
+
     for (int i = 0; i < neighbouring_cells.size(); i++) {
 		cout << i << endl;
 		if (neighbouring_cells[i]->get_atoms_in_cell().size() != 0){
-			cout << "hej"  << neighbouring_cells[i]->get_atoms_in_cell().size() << endl;
 			neighbouring_atoms.insert(neighbouring_atoms.end(), neighbouring_cells[i]->get_atoms_in_cell()[0]);
 		}
+//		cout << "So far: " << neighbouring_atoms.size() << endl;
+//		cout << "Cell number: " << neighbouring_cells[i]->get_cell_number() << endl;
+		vector<Atom*> atoms_to_add = neighbouring_cells[i]->get_atoms_in_cell();
+//		cout << "Atoms to add: " << atoms_to_add.size() << endl;
+		
+		for (int j = 0; j < atoms_to_add.size(); j++){
+//			cout << atoms_to_add[j]->get_position() << endl;
+			if (atom->distance_vector(atoms_to_add[j]).length() != 0){
+				neighbouring_atoms.push_back(atoms_to_add[j]);
+			}
+		}
+		// MJ
+		/*
+		if (neighbouring_cells[i]->get_atoms_in_cell().size() != 0){
+			neighbouring_atoms.insert(neighbouring_atoms.end(), neighbouring_cells[i]->get_atoms_in_cell().begin(), neighbouring_cells[i]->get_atoms_in_cell().end());
+		}
+		*/
     }
     
 	return neighbouring_atoms;
