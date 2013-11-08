@@ -148,6 +148,9 @@ void Simulation::create_list_of_atoms(){
 	if(crystal_structure == "fcc"){
 		fcc_structure();
 	}
+	if(crystal_structure == "bcc"){
+		bcc_structure();
+	}
 		/*
 	// Calculate number of atoms
 		Vec extra (0,0,0);
@@ -189,218 +192,30 @@ void Simulation::fcc_structure_x(int j, int k)
 			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));
-			}
+	}
+}
+void Simulation::bcc_structure(){
+	for(int k=0;k<unit_cells_z;k++){//Create the cells in z
+		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
+			bcc_structure_x(j,k);// Create the cells in x
+		}
+	}
+}
+void Simulation::bcc_structure_x(int j, int k)
+{
+	for(int i=0;i<unit_cells_x;i++){
+		Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
+		Vec extra (0,0,0);
+		Vec acceleration (0,0,0);
+		float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
+		list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));	
+		extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
+		extra +=origin;
+		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,mass,time_step));
+	}
+
 
 }
-
-	/* BIG BLOCK TO CREATE NEW STRUCTURE.
-	for(int i=0;i<unit_cells_x;i++){
-		cout << k << j << i << endl;
-
-		Vec origin (0,0,0);
-		Vec extra (0,0,0);
-		float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
-		if(i==0 && j==0 && k==0){//The first cell, starting corner, in x,y,z.
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,0,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0,lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			//
-			extra = Vec(0,0,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,0,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-
-		}
-		else if(j==0 && k==0){//The cells in x but not the starting corner.
-			origin = Vec(i*lattice_constant,0,0);
-			extra = Vec(lattice_constant,0,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			//
-			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			//
-			extra = Vec(0,0,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			
-			extra = Vec(lattice_constant,0,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			
-			extra = Vec(0,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-		}
-		else if(i==0 && k==0){//The cells in y but not the starting corner. But not tested? 
-			origin = Vec(0,j*lattice_constant,0);
-			extra = Vec(0,lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			//
-			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			//
-			extra = Vec(0,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-
-		}
-			else if(i==0 && j==0){//The cells in z but not the starting corner. 
-			origin= Vec(0,0,k*lattice_constant);
-			extra = Vec(0,0,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,0,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			// Face centered
-			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-
-			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-				
-		}
-		else{// All that is not a starting side in x, y or z //THINK ABOUT THIS, IS IT CORRECT?? Not now. // REWRITE
-			origin =Vec(i*lattice_constant,j*lattice_constant,k*lattice_constant);
-			extra=Vec(lattice_constant,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			
-			/*			
-			origin =Vec(i*lattice_constant,j*lattice_constant,k*lattice_constant);
-			extra = Vec(lattice_constant,0,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			//
-			extra = Vec(lattice_constant,0,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(lattice_constant,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			//
-			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0,lattice_constant,lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			//
-			extra = Vec(lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			extra = Vec(0.5*lattice_constant,lattice_constant,0.5*lattice_constant);
-			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,cutoff));
-			*/			
-			
-		
-	
-
-
 
 /*------------------------------
 FUNCTION next_time_step
