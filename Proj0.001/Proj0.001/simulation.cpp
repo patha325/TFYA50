@@ -88,7 +88,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 		fs.close();
 	}
 	// Write out time_step to energytemp.
-	fs2 << time_step <<endl;
+	fs2 << steps << " " << time_step << " " << 0 << " " << 0 <<endl;
 	fs2.close();
 		   	
 	// Todo: Save all the input!	
@@ -222,30 +222,24 @@ Alter everything in the simulation to get to the next time step.
 
 	Update atom's position, prev position, velocity, acceleration, prev acceleration
 	
-	{ Not every time step 
+	Not every time step:
 	Clear cells/cell_list
 	Fill cells/cell_list
-	}
 
-	Save ... to txt. //Doesn't to this yet.
+	Save energies and temperature to txt.
 ------------------------------*/
 void Simulation::next_time_step(int current_time_step){
 	
 	float E_pot = 0;
 	float E_kin = 0;
-	float temperature = 0;
+	//float temperature = 0;
 	
 	for(int i = 0; i < number_of_atoms; i++){
 		Atom* atom = list_of_atoms[i];
-
 		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
 
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
-		//Kinetic energy from velocity
-		E_kin += atom->calculate_kinetic_energy();
-		//Temperature
-		temperature += atom->calculate_temperature(E_kin);
 		//Calculate next position with help from velocity, previous acceleration and current acceleration
 		atom->set_next_position(atom->calculate_next_position());
 		Vec new_acceleration = atom->calculate_acceleration(neighbouring_atoms);
@@ -254,12 +248,21 @@ void Simulation::next_time_step(int current_time_step){
 		//Velocity
 		atom->set_velocity(atom->calculate_velocity());
 		//Previous position
-		atom->set_prev_position(atom->get_position());
-		
+		atom->set_prev_position(atom->get_position());		
 		//Previous acceleration
 		atom->set_prev_acceleration(atom->get_acceleration());
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
+	}
+	
+	float k_b = 8.617342e-5; //[eV][K]^{-1}
+	if(current_time_step == 0){
+		E_kin = 3/2*k_b*temperature*number_of_atoms;
+		total_energy = E_pot + E_kin;
+	}
+	else{
+		E_kin = total_energy - E_pot;
+		temperature = (2*E_kin)/(3*k_b*number_of_atoms);
 	}
 	
 	for(int i = 0; i < number_of_atoms; i++){
@@ -277,7 +280,8 @@ void Simulation::next_time_step(int current_time_step){
 	}
 	
 	
-	temperature = temperature/number_of_atoms;
+	//temperature = temperature/number_of_atoms;
+	cout << "total_energy " << total_energy << endl;
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;
 	cout << "temperature " << temperature << endl;
@@ -285,7 +289,7 @@ void Simulation::next_time_step(int current_time_step){
 	
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	std::ofstream fs2("energytemp.txt", ios::app);
-	fs2 << E_pot << " " << E_kin << " " << temperature <<endl;
+	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
 
 

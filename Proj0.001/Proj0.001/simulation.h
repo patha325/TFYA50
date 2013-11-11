@@ -25,6 +25,7 @@ private:
 	int unit_cells_x;
 	int unit_cells_y;
 	int unit_cells_z;
+	float total_energy;
 
 
 
