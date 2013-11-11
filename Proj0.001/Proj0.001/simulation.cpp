@@ -18,7 +18,7 @@ Parameters:
 	float sigma						: Material constant sigma
 	float epsilon					: Material constan epsilon
 	float lattice_constant			: Lattice constant
-	std::string crystal_structure	: Name of chrystal structure (fcc, hcp, bcc...)
+	std::string crystal_structure	: Name of chrystal structure (scc, fcc, hcp, bcc...)
 	bool thermostat					: If a thermostat is employed
 -
 Creates a simulation object. 
@@ -68,40 +68,24 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	a.calculate_force(atomer);
 	//a.calculate_potential(&b);	
 
-	/*for(int i=0;i<list_of_atoms.size();i++){
-		cout << i<<endl;
-		cout << list_of_atoms[i]->get_position()<<endl;
-	}*/
+	//Clear files that will be written to for every simulation.
+	std::ofstream fs("atoms.txt", ios::trunc);	
+	std::ofstream fs2("energytemp.txt", ios::trunc);
 
-	std::ofstream fs("example.txt", ios::trunc);
+	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
+	
 	for(int i=0;i<list_of_atoms.size();i++){
 		//cout << i<<endl;
 		//cout << list_of_atoms[i]->get_position()<<endl;
 		//	ofstream myfile;
 		//myfile.open ("example.txt");
-		std::ofstream fs("example.txt", ios::app);
+		std::ofstream fs("atoms.txt", ios::app); 
 		fs << list_of_atoms[i]->get_position()<<endl;
-	
 		fs.close();
 	}
 
-    /*
-	Vec test1 (1,2,3);
-	%Atom p (test1,1);
-	Vec test2 (3,-1,4);
-	Atom m (test2,1);
 
-	test1 += test2;
-
-	cout << test1 << endl;
-	*/
-    //Cell* myCell = new Cell(9,Vec(1,4,7));
-    //myCell->add_atom(&m);
-    //vector<Atom*> atomsVector;
-    //atomsVector.insert(atomsVector.begin(), myCell->get_atoms_in_cell().begin(), myCell->get_atoms_in_cell().end());
-
-    //cout << atomsVector[0]->get_position()<< endl;
-	
+	   	
 	// Todo: Save all the input!	
 }
 
@@ -141,33 +125,36 @@ Parameters: None
 Returns: Nothing
 -
 Create all atoms and add them to the
-vector list_of_atoms.
+vector list_of_atoms. Uses help functions xcc_structure() and xcc_structure_x()
 -----------------------------*/
 void Simulation::create_list_of_atoms(){
-
-	if(crystal_structure == "fcc"){
+	if(crystal_structure == "scc"){
+		scc_structure();
+	}
+	else if(crystal_structure == "fcc"){
 		fcc_structure();
 	}
-	if(crystal_structure == "bcc"){
+	else if(crystal_structure == "bcc"){
 		bcc_structure();
 	}
-		/*
-	// Calculate number of atoms
-		Vec extra (0,0,0);
-	if(crystal_structure == "fcc"){
-	for(int i=1;i<=unit_cells_x;i++){
-		Vec origin (0,0,0);
-		list_of_atoms.push_back(new Atom(origin+extra,0.5));
-		extra= Vec (lattice_constant,0,0);
-
-	}
-	
-	}
-     */
-	//Todo: Lattice constant & crystal_structure & unit_cells_i
-	//Todo: Create all atoms in this class? Convert from fcc to atom positions.
 }
-
+void Simulation::scc_structure(){
+		for(int k=0;k<unit_cells_z;k++){//Create the cells in z
+		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
+			scc_structure_x(j,k);// Create the cells in x
+		}
+	}
+}
+void Simulation::scc_structure_x(int j, int k)
+{
+	for(int i=0;i<unit_cells_x;i++){
+			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
+			Vec extra (0,0,0);
+			Vec acceleration (0,0,0);
+			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step));	
+	}
+}
 void Simulation::fcc_structure(){
 	for(int k=0;k<unit_cells_z;k++){//Create the cells in z
 		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
@@ -291,6 +278,12 @@ void Simulation::next_time_step(int current_time_step){
 	cout << "temperature " << temperature << endl;
 	cout << "number of atoms " << number_of_atoms << endl << endl;
 	
+	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
+	std::ofstream fs2("energytemp.txt", ios::app); 
+	fs2 << E_pot << " " << E_kin << " " << temperature <<endl;
+	fs2.close();
+
+
 	return;
 }
 
