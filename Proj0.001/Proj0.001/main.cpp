@@ -23,6 +23,8 @@ Parameters:
     bool thermostat					: If a thermostat is employed
  */
 
+
+
 	//initializegraphics
 	float a = 0.2; // Watch out for double warning!
 
@@ -34,10 +36,13 @@ Parameters:
 	float input_temperature = a;
 	float input_cutoff = a;
 	float input_mass = a;
-	float input_sigma;
+	float input_sigma=a;
 	float input_epsilon = a;
 	float input_lattice_constant = a;
-	string input_crystal_structure;
+	string input_crystal_structure = "fcc";
+	string input_material;
+
+
 
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
 	cin >> input_x;
@@ -47,10 +52,16 @@ Parameters:
 	cin >> input_time_step;
 	cout << "Input the wanted number of steps:" << endl;
 	cin >> input_steps;
-	cout << "Input wanted sigma:" << endl;
-	cin >> input_sigma;
-	cout << "Input wanted crystal structure (scc, fcc or bcc):" << endl;
-	cin >> input_crystal_structure;
+	cout << "Input wanted material (Ar):" << endl;
+	cin >> input_material;
+
+	if (input_material == "Ar"){
+		input_sigma = 4.40; //[Å]
+		input_epsilon = 0.010333; //[eV]
+		input_crystal_structure = "fcc";
+		input_mass = 3.7211e10; //[eV/c^2]
+	}
+
 
 	input_lattice_constant = input_sigma;
 	//input_time_step = 1;

@@ -9,12 +9,13 @@ CONSTRUCTOR
 Parameters: Vec starting_position
 Sets starting position
 ----------------------*/
-Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, float new_sigma, float new_mass, float new_time_step){
+Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, float new_sigma, float new_epsilon, float new_mass, float new_time_step){
 
 	position = starting_position;
 	prev_acceleration = new_prev_acceleration;
 	cutoff = start_cutoff;
 	sigma = new_sigma;
+	epsilon = new_epsilon;
 	bulk_length_x = unit_cells_x*sigma;
 	bulk_length_y = unit_cells_y*sigma;
 	bulk_length_z = unit_cells_z*sigma;
@@ -51,11 +52,8 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 	for(int i=0; i < neighbouring_atoms.size(); i++){
 		float r2=(distance_vector(neighbouring_atoms[i]).length());
 		tmp_force += -48*(pow(r2,-13)-0.5*pow(r2,-7))*distance_vector(neighbouring_atoms[i]).normalize();
-		//cout << "längd " << r2 << endl;
 	}
-	//cout << "kraft " << tmp_force << endl;
 	return tmp_force;
-    
 }
 
 /*----------------------
@@ -94,7 +92,7 @@ float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 	for(int i = 0; i < neighbouring_atoms.size(); i++){
 		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
 		float tmp_distance = closest_vector_tmp.length();
-		tmp_potential += 4*(pow(1/tmp_distance,12)-pow(1/tmp_distance,6));
+		tmp_potential += 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
 	}
 	return tmp_potential;
 }

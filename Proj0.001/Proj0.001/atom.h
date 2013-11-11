@@ -21,6 +21,7 @@ private:
 	float bulk_length_y;
 	float bulk_length_z;
 	float sigma;
+	float epsilon;
 	float mass;
 	float time_step;
 	float total_energy;
@@ -28,7 +29,7 @@ private:
 
 public:
 	//Constructor
-	Atom (Vec,Vec,float,float,float,float,float,float,float); 
+	Atom (Vec,Vec,float,float,float,float,float,float,float,float); 
 	~Atom ();
 
 	//Getters
