@@ -19,7 +19,7 @@ Parameters:
     float sigma						: Material constant sigma, not the one in the LJ-potential
     float epsilon					: Material constan epsilon
     float lattice_constant			: Lattice constant
-    std::string crystal_structure	: Name of chrystal structure (fcc, hcp, bcc...)
+    std::string crystal_structure	: Name of chrystal structure (scc, fcc, hcp, bcc...)
     bool thermostat					: If a thermostat is employed
  */
 
@@ -49,7 +49,7 @@ Parameters:
 	cin >> input_steps;
 	cout << "Input wanted sigma:" << endl;
 	cin >> input_sigma;
-	cout << "Input wanted crystal structure (fcc or bcc):" << endl;
+	cout << "Input wanted crystal structure (scc, fcc or bcc):" << endl;
 	cin >> input_crystal_structure;
 
 	input_lattice_constant = input_sigma;
@@ -65,9 +65,6 @@ Parameters:
 
 /*
 Origo in the botom left corner, we are in the first octant! all atoms have positive coordinates. (when not moving)
-
-
-
 
 
 */
