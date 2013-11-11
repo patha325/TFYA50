@@ -29,7 +29,7 @@ private:
 
 public:
 	//Constructor
-	Atom (Vec,Vec,float,float,float,float,float,float,float,float); 
+	Atom (Vec,Vec,float,int,int,int,float,float,float,float); 
 	~Atom ();
 
 	//Getters

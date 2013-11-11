@@ -53,6 +53,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 	number_of_atoms = list_of_atoms.size();
 
+	/*
 	// Atoms for testing
 	Atom a(Vec(0,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,epsilon, mass,time_step);
 	Atom b(Vec(1.8,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,epsilon, mass,time_step);
@@ -66,7 +67,8 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 	//a.distance_vector(&b);
 	a.calculate_force(atomer);
-	//a.calculate_potential(&b);	
+	//a.calculate_potential(&b);
+	*/
 
 	//Clear files that will be written to for every simulation.
 	std::ofstream fs("atoms.txt", ios::trunc);	
@@ -74,7 +76,9 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
 	
-	for(int i=0;i<list_of_atoms.size();i++){
+	for(string::size_type i = 0; i < list_of_atoms.size();i++){
+		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
+
 		//cout << i<<endl;
 		//cout << list_of_atoms[i]->get_position()<<endl;
 		//	ofstream myfile;
