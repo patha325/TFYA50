@@ -84,7 +84,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 		fs.close();
 	}
 	// Write out steps, time_step and a dummy index to energytemp.
-	fs2 << steps << " " << time_step << " " << 0 <<endl;
+	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
 	fs2.close();
 		   	
 	// Todo: Save all the input!	
@@ -298,7 +298,7 @@ void Simulation::next_time_step(int current_time_step){
 	
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	std::ofstream fs2("energytemp.txt", ios::app);
-	fs2 << E_pot << " " << E_kin << " " << temperature <<endl;
+	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
 
 
