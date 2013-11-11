@@ -175,13 +175,13 @@ void Simulation::fcc_structure_x(int j, int k)
 			Vec acceleration (0,0,0);
 			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma, epsilon, mass,time_step));	
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
+			extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0);
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon, mass,time_step));
-			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
+			extra = Vec(0,0.5f*lattice_constant,0.5f*lattice_constant);
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon, mass,time_step));
-			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
+			extra = Vec(0.5f*lattice_constant,0,0.5f*lattice_constant);
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step));
 	}
@@ -201,7 +201,7 @@ void Simulation::bcc_structure_x(int j, int k)
 		Vec acceleration (0,0,0);
 		float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 		list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step));	
-		extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
+		extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0.5f*lattice_constant);
 		extra +=origin;
 		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step));
 	}
@@ -255,7 +255,7 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_acceleration(new_acceleration);
 	}
 	
-	float k_b = 8.617342e-5; //[eV][K]^{-1}
+	float k_b = 8.617342e-5f; //[eV][K]^{-1}
 	if(current_time_step == 0){
 		E_kin = 3/2*k_b*temperature*number_of_atoms;
 		total_energy = E_pot + E_kin;
