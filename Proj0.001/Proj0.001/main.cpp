@@ -52,8 +52,10 @@ Parameters:
 	cin >> input_time_step;
 	cout << "Input the wanted number of steps:" << endl;
 	cin >> input_steps;
-	cout << "Input wanted material (Ar):" << endl;
+	cout << "Input wanted material (must choose Ar atm):" << endl;
 	cin >> input_material;
+	cout << "Start temperature (K):" << endl;
+	cin >> input_temperature;
 
 	if (input_material == "Ar"){
 		input_sigma = 4.40; //[Å]
