@@ -1,7 +1,33 @@
 #include "simulation.h"
 #include <iostream>
 #include "vec.h"
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <vector>
 using namespace std;
+
+	//initialvalues for get_input_file()
+	string string1;
+	string string2;
+	float float1;
+	float float2;
+	float float3;
+	string file = "data.txt";
+
+void get_input_file(string intresting,string file){
+istringstream iss;
+string line;
+std::ifstream in(file);
+while(getline(in,line)){
+	istringstream iss(line);
+	iss>>string1>>float1>>float2>>string2>>float3;
+	if(string1==intresting){
+	break;
+		}
+	}
+in.close();
+}
 
 
 int main(){
@@ -41,7 +67,9 @@ Parameters:
 	float input_lattice_constant = a;
 	string input_crystal_structure = "fcc";
 	string input_material;
+	
 
+	
 
 
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
@@ -57,21 +85,21 @@ Parameters:
 	cout << "Start temperature (K):" << endl;
 	cin >> input_temperature;
 
-	if (input_material == "Ar"){
-		input_sigma = 4.40; //[Å]
-		input_epsilon = 0.010333; //[eV]
-		input_crystal_structure = "fcc";
-		input_mass = 3.7211e10; //[eV/c^2]
-	}
+	get_input_file(input_material,file);
+	input_sigma = float1; //[Å]
+	input_epsilon = float2; //[eV]
+	input_crystal_structure = string2;
+	input_mass = float3; //[eV/c^2]
+	
 
 
 	input_lattice_constant = input_sigma;
 	//input_time_step = 1;
-
+	
 	Simulation* simulation2 = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
 		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,false);
 	simulation2->run_simulation();
-	
+	cout<<float1<<" "<<float2<<" "<<float3<<" "<<string1<<" "<<string2<<endl;
 	system("pause");
 	return 0;
 }
@@ -81,3 +109,5 @@ Origo in the botom left corner, we are in the first octant! all atoms have posit
 
 
 */
+
+

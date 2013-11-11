@@ -9,8 +9,10 @@ CONSTRUCTOR
 Parameters: Vec starting_position
 Sets starting position
 ----------------------*/
+
 Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, 
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus){
+
 
 	position = starting_position;
 	prev_acceleration = new_prev_acceleration;
@@ -51,9 +53,13 @@ within cutoff.
 Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
     
 	Vec tmp_force (0,0,0);
-	for(int i=0; i < neighbouring_atoms.size(); i++){
-		float r2=(distance_vector(neighbouring_atoms[i]).length());
-		tmp_force += -48*(pow(r2,-13)-0.5*pow(r2,-7))*distance_vector(neighbouring_atoms[i]).normalize();
+	for(string::size_type i=0; i < neighbouring_atoms.size(); i++){
+		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
+
+		float r= distance_vector(neighbouring_atoms[i]).length();
+		float r2 = pow(r,-13);
+		float r3 = pow(r,-7);
+		tmp_force += -48*(r2-r3/2)*distance_vector(neighbouring_atoms[i]).normalize();
 	}
 	return tmp_force;
 }
@@ -91,7 +97,9 @@ the atom, from closest atom.
 float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 
 	float tmp_potential = 0;
-	for(int i = 0; i < neighbouring_atoms.size(); i++){
+	for(string::size_type i = 0; i < neighbouring_atoms.size(); i++){
+		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
+
 		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
 		float tmp_distance = closest_vector_tmp.length();
 		tmp_potential += 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
@@ -142,8 +150,10 @@ the atom. Ganska vagt kanske...
 
 float Atom::calculate_temperature(float E_kin){
 	
+
 	float k_b = 8.617342e-5; //[eV][K]^{-1}
 	return (2*E_kin)/(3*k_b);
+
 }
 	
 /*----------------------
@@ -405,21 +415,25 @@ void Atom::set_cell_number(int new_cell_number){
 void Atom::set_prev_position(Vec new_position){
 
 	prev_position = new_position;
+	return;
 }
 
 void Atom::set_next_position(Vec new_next_position){
 
 	next_position = new_next_position;
+	return;
 }
 
 void Atom::set_acceleration(Vec new_acceleration){
 	
 	acceleration = new_acceleration;
+	return;
 }
 
 void Atom::set_prev_acceleration(Vec new_acceleration){
 
 	prev_acceleration = new_acceleration;
+	return;
 }
 
 void Atom::set_cutoff(float new_cutoff){
