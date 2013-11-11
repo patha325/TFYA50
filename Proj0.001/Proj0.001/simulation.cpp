@@ -83,9 +83,10 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 		fs << list_of_atoms[i]->get_position()<<endl;
 		fs.close();
 	}
-
-
-	   	
+	// Write out time_step to energytemp.
+	fs2 << time_step <<endl;
+	fs2.close();
+		   	
 	// Todo: Save all the input!	
 }
 
@@ -296,7 +297,7 @@ void Simulation::next_time_step(int current_time_step){
 	cout << "number of atoms " << number_of_atoms << endl << endl;
 	
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
-	std::ofstream fs2("energytemp.txt", ios::app); 
+	std::ofstream fs2("energytemp.txt", ios::app);
 	fs2 << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
 
