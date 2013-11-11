@@ -83,8 +83,8 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 		fs << list_of_atoms[i]->get_position()<<endl;
 		fs.close();
 	}
-	// Write out time_step to energytemp.
-	fs2 << time_step <<endl;
+	// Write out steps, time_step and a dummy index to energytemp.
+	fs2 << steps << " " << time_step << " " << 0 <<endl;
 	fs2.close();
 		   	
 	// Todo: Save all the input!	
