@@ -60,7 +60,7 @@ Parameters:
 	float input_time_step;
 	int input_steps;
 	float input_temperature = a;
-	float input_cutoff = a;
+	float input_cutoff = 4.4;
 	float input_mass = a;
 	float input_sigma=a;
 	float input_epsilon = a;

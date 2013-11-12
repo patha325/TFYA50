@@ -192,6 +192,20 @@ void Cell_list::create_cells(){
     float max_orgin_x; //Highest x-value a cell-origin can take
     float max_orgin_y; //Highest y-value a cell-origin can take
     float max_orgin_z; //Highest z-value a cell-origin can take
+
+	/*
+	cout << "Max origin x: " << max_orgin_x << endl;
+	cout << "Max origin x: " << max_orgin_y << endl;
+	cout << "Max origin x: " << max_orgin_z << endl;
+	*/
+
+	cout  << "Bulk x: " << bulk_length_x << endl;
+	cout  << "Bulk y: " << bulk_length_y << endl;
+	cout  << "Bulk z: " << bulk_length_z << endl;
+
+	cout << "Cell length x: " << cell_length_x << endl;
+	cout << "Cell length y: " << cell_length_y << endl;
+	cout << "Cell length z: " << cell_length_z << endl;
     
     
     /*----
@@ -202,9 +216,13 @@ void Cell_list::create_cells(){
      ---*/
 	
 	// This while loop takes a very long time to compute if sigma is big. Maybe consider optimizing?
+	cout << "Start" << endl;
     while (current_origin.getZ()<bulk_length_z){
+//		cout << "1 ";
         while (current_origin.getY()<bulk_length_y) {
+//			cout << "2 ";
             while (current_origin.getX()<bulk_length_x) {
+//				cout << "3 ";
             
                 list_of_cells.insert(list_of_cells.end(), new Cell(i,current_origin));
                 vec_to_number_map.insert(pair<Vec,int>(current_matrix_coordinates,i));
@@ -224,6 +242,8 @@ void Cell_list::create_cells(){
         current_matrix_coordinates = current_matrix_coordinates + Vec(-current_matrix_coordinates.getX(),-current_matrix_coordinates.getY(),1);
         max_orgin_z = current_origin.getZ();
     }
+	cout << "Stop" << endl;
+	cout << i << endl;
 
 
 

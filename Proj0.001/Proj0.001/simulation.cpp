@@ -45,7 +45,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     thermostat = new_thermostat;
 	Vec prev_acceleration = Vec(0,0,0);
 	
-	k_b = 8.617342e-5; //[eV][K]^{-1}
+	k_b = 8.617342e-5f; //[eV][K]^{-1}
 	initial_velocity_modulus = sqrt((3*k_b*temperature)/(mass));
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
@@ -147,7 +147,7 @@ void Simulation::scc_structure_x(int j, int k)
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
-			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
+			float cutoff = 0.5f; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step,initial_velocity_modulus));
 	}
 }
