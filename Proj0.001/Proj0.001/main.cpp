@@ -72,7 +72,7 @@ Parameters:
 
 	
 
-
+	
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
 	cin >> input_x;
 	cin >> input_y;
@@ -83,27 +83,37 @@ Parameters:
 	cin >> input_steps;
 	cout << "Input wanted material (must choose Ar atm):" << endl;
 	cin >> input_material;
+	get_input_file(input_material,file);
 	cout << "Start temperature (K):" << endl;
 	cin >> input_temperature;
 	cout << "Input cutoff multiples of lattice_constant:" <<endl;
 	cin >> input_cutoff;
-	input_cutoff = input_cutoff*lattice_constant;
-	get_input_file(input_material,file);
+	input_cutoff = input_cutoff*lattice;
+
+	cout << endl << "------------" << endl;
+	cout << "- RUNNING -" << endl;
+	cout << "-----------" << endl << endl;
+	
 	input_sigma = sigma; //[Å]
 	input_epsilon = epsilon; //[eV]
 	input_crystal_structure = structure;
 	input_mass = mass; //[eV/c^2]
+	input_lattice_constant=lattice;
 
-	
+	cout << "Sigma: " << sigma << endl;
+	cout << "Epsilon: "<<epsilon<<endl;
+	cout<<"Structure: "<<structure<<endl;
+	cout<<"Mass: "<<mass<<endl;
+	cout<<"Lattice: "<<lattice<<endl;
 
 
-	input_lattice_constant = lattice;
-	//input_time_step = 1;
+		//input_time_step = 1;
 	
 	Simulation* simulation2 = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
 		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,false);
+
+	cout << "Running simulation..." << endl << endl;
 	simulation2->run_simulation();
-	cout<<float1<<" "<<float2<<" "<<float3<<" "<<string1<<" "<<string2<<endl;
 	system("pause");
 	return 0;
 }

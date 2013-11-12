@@ -25,7 +25,7 @@ Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff,
 	mass = new_mass;
 	time_step = new_time_step;
 	velocity = initial_velocity_modulus * generate_random_vector();
-	cout << "velocity " << velocity << endl;
+//	cout << "velocity " << velocity << endl;
 	prev_position = position;
 	next_position = Vec (0, 0, 0);
 	acceleration = Vec (0, 0, 0);

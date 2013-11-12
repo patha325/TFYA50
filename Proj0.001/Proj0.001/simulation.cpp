@@ -55,16 +55,13 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 	create_cell_list();
 
-
 	number_of_atoms = list_of_atoms.size();	
-
 
 	//Clear files that will be written to for every simulation.
 	std::ofstream fs("atoms.txt", ios::trunc);	
 	std::ofstream fs2("energytemp.txt", ios::trunc);
 
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
-	
 	for(string::size_type i = 0; i < list_of_atoms.size();i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
@@ -233,15 +230,15 @@ void Simulation::next_time_step(int current_time_step){
 
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
-		cout << "atom " << i << " E_pot " << E_pot << endl;
+//		cout << "atom " << i << " E_pot " << E_pot << endl;
 		//Calculate kinetic energy
 		tmp_E_kin = atom->calculate_kinetic_energy();
-		cout << "atom " << i << " tmp_E_kin " << tmp_E_kin << endl;
+//		cout << "atom " << i << " tmp_E_kin " << tmp_E_kin << endl;
 		E_kin += tmp_E_kin;
 		
 		//Calculate temperature
 		temperature += atom->calculate_temperature(tmp_E_kin);
-		cout << "atom " << i << " temperature " << temperature << endl;
+//		cout << "atom " << i << " temperature " << temperature << endl;
 		//Calculate next position with help from velocity, previous acceleration and current acceleration
 		atom->set_next_position(atom->calculate_next_position());
 		Vec new_acceleration = atom->calculate_acceleration(neighbouring_atoms);
@@ -251,7 +248,7 @@ void Simulation::next_time_step(int current_time_step){
 		if(current_time_step != 0){
 			atom->set_velocity(atom->calculate_velocity());
 		}
-		cout << "atom " << i << " velocity " << atom->get_velocity() << endl;
+//		cout << "atom " << i << " velocity " << atom->get_velocity() << endl;
 		//Previous position
 		atom->set_prev_position(atom->get_position());		
 		//Previous acceleration
