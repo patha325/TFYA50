@@ -201,7 +201,7 @@ void Cell_list::create_cells(){
      (only used when creating the cell list structure.
      ---*/
 	
-	// This while loop takes a very long time to compute if sigma is big. Maybe consider optimizing?
+
     while (current_origin.getZ()<bulk_length_z){
         while (current_origin.getY()<bulk_length_y) {
             while (current_origin.getX()<bulk_length_x) {

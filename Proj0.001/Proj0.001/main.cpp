@@ -42,7 +42,7 @@ Parameters:
     float temperature				: Simulation temperature
     float cutoff					: Cutoff distance for potential calculations
     float mass						: Mass of an atom
-    float sigma						: Material constant sigma, not the one in the LJ-potential
+    float sigma						: Material constant sigma LJ-potential
     float epsilon					: Material constan epsilon
     float lattice_constant			: Lattice constant
     std::string crystal_structure	: Name of chrystal structure (scc, fcc, hcp, bcc...)
