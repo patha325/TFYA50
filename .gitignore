@@ -35,7 +35,8 @@
 *.pdb
 *.sql
 *.sqlite
-*.txt
+atoms.txt
+energytemp.txt
 
 # OS generated files #
 ######################

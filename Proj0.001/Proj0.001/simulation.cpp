@@ -163,7 +163,6 @@ void Simulation::fcc_structure_x(int j, int k)
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
-			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 
 			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma, epsilon, mass,time_step,initial_velocity_modulus));
 			extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0);

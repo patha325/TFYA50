@@ -102,7 +102,9 @@ float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 
 		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
 		float tmp_distance = closest_vector_tmp.length();
-		tmp_potential += 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
+		if(tmp_distance <= cutoff){
+			tmp_potential += 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
+		}
 	}
 	return tmp_potential;
 }
