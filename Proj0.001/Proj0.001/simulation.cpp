@@ -45,7 +45,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     thermostat = new_thermostat;
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
-	k_b = 8.617342e-5; //[eV][K]^{-1}
+	k_b = 8.617342e-5f; //[eV][K]^{-1}
 	initial_velocity_modulus = sqrt((3*k_b*temperature)/(mass));
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
@@ -161,8 +161,10 @@ void Simulation::scc_structure_x(int j, int k)
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
-			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
+
+			float cutoff = 0.5f; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
+
 	}
 }
 void Simulation::fcc_structure(){
@@ -247,19 +249,20 @@ void Simulation::next_time_step(int current_time_step){
 	float tmp_E_kin = 0;
 		
 	for(int i = 0; i < number_of_atoms; i++){
+		//cout << "Before timestep - atom " << i << endl;
 		Atom* atom = list_of_atoms[i];
 		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
-		//cout << "atom " << i << " E_pot " << E_pot << endl;
+		//cout << "    E_pot " << E_pot << endl;
 		//Calculate kinetic energy
 		tmp_E_kin = atom->calculate_kinetic_energy();
-		//cout << "atom " << i << " tmp_E_kin " << tmp_E_kin << endl;
+		//cout << "    tmp_E_kin " << tmp_E_kin << endl;
 		E_kin += tmp_E_kin;
 		
 		//Calculate temperature
 		temperature += atom->calculate_temperature(tmp_E_kin);
-		//cout << "atom " << i << " temperature " << temperature << endl;
+		//cout << "    temperature " << temperature << endl;
 
 		//Calculate next position with help from velocity, previous acceleration and current acceleration
 		atom->set_next_position(atom->calculate_next_position());
@@ -305,15 +308,15 @@ void Simulation::next_time_step(int current_time_step){
 		cout << "    acceleration " << atom->get_acceleration() << endl;
 
 	}
-	cout << "-------------------------------------------" << endl << endl;
 	
-	/*
+	
+	
 	cout << "total_energy " << total_energy << endl;
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;
 	cout << "temperature " << temperature << endl;
-	cout << "number of atoms " << number_of_atoms << endl << endl;
-	*/
+	//cout << "number of atoms " << number_of_atoms << endl << endl;
+	cout << "-------------------------------------------" << endl << endl;
 
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	std::ofstream fs2("energytemp.txt", ios::app);

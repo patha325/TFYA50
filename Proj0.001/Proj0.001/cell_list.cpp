@@ -80,17 +80,6 @@ Adds all Atoms to the cells
 ------------------------------ */
 void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
 
-/*
-    for (int i = 0 ; i<atoms_list.size(); i++) {
-        cout << "Atom " << i << ": " << atoms_list[i]->get_position() << endl;
-    }
-
-
-    for (int i = 0; i<list_of_cells.size(); i++) {
-        cout << "Cell " << i << ": "<< list_of_cells[i]->get_origin_of_cell() << endl;
-    }
-*/
-
     for (int i = 0; i<atoms_list.size(); i++) {
         Atom* current_atom = atoms_list[i];
         int cell_number_iterator = 0;
@@ -115,14 +104,6 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
         }
 		current_atom->set_cell_number(cell_number_iterator);
     }
-    
-/*	for (int i = 0; i < list_of_cells.size(); i++){
-	
-		cout << "Number of atoms in cell " << i << " is: " << list_of_cells[i]->get_number_of_atoms_in_cell() << endl;
-	}
-	*/
-//    cout << "# of atoms: " << list_of_cells[0]->get_number_of_atoms_in_cell() << endl;
-
 }
 
 
@@ -191,8 +172,7 @@ void Cell_list::create_cells(){
     int i = 0; //Cell number
     float max_orgin_x; //Highest x-value a cell-origin can take
     float max_orgin_y; //Highest y-value a cell-origin can take
-    float max_orgin_z; //Highest z-value a cell-origin can take
-    
+    float max_orgin_z; //Highest z-value a cell-origin can take    
     
     /*----
      Creates and inserts cells into list. Gives each cell a number and 
@@ -201,10 +181,12 @@ void Cell_list::create_cells(){
      (only used when creating the cell list structure.
      ---*/
 	
-
     while (current_origin.getZ()<bulk_length_z){
+//		cout << "1 ";
         while (current_origin.getY()<bulk_length_y) {
+//			cout << "2 ";
             while (current_origin.getX()<bulk_length_x) {
+//				cout << "3 ";
             
                 list_of_cells.insert(list_of_cells.end(), new Cell(i,current_origin));
                 vec_to_number_map.insert(pair<Vec,int>(current_matrix_coordinates,i));
@@ -224,6 +206,11 @@ void Cell_list::create_cells(){
         current_matrix_coordinates = current_matrix_coordinates + Vec(-current_matrix_coordinates.getX(),-current_matrix_coordinates.getY(),1);
         max_orgin_z = current_origin.getZ();
     }
+	cout << "Stop" << endl;
+	cout << i << endl;
+
+
+
     
     //Number of cells in each direction
     int cells_x = max_orgin_x/cell_length_x;
