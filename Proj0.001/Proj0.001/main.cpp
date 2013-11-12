@@ -52,7 +52,7 @@ Parameters:
 
 
 	//initializegraphics
-	float a = 0.2; // Watch out for double warning!
+	float a = 0.2f; // Watch out for double warning!
 
 	int input_x;
 	int input_y;
@@ -60,7 +60,7 @@ Parameters:
 	float input_time_step;
 	int input_steps;
 	float input_temperature = a;
-	float input_cutoff = 4.4;
+	float input_cutoff = 4.4f;
 	float input_mass = a;
 	float input_sigma=a;
 	float input_epsilon = a;
