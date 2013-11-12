@@ -46,7 +46,7 @@ Calculates force on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
+Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){ 
     
 	Vec tmp_force (0,0,0);
 	for(string::size_type i=0; i < neighbouring_atoms.size(); i++){

@@ -224,6 +224,9 @@ void Cell_list::create_cells(){
         current_matrix_coordinates = current_matrix_coordinates + Vec(-current_matrix_coordinates.getX(),-current_matrix_coordinates.getY(),1);
         max_orgin_z = current_origin.getZ();
     }
+
+
+
     
     //Number of cells in each direction
     int cells_x = max_orgin_x/cell_length_x;
