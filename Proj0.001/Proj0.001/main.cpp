@@ -53,7 +53,7 @@ Parameters:
 
 
 	//initializegraphics
-	float a = 0.2; // Watch out for double warning!
+	float a = 0.2f; // Watch out for double warning!
 
 	int input_x;
 	int input_y;

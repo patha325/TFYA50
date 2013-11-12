@@ -45,7 +45,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     thermostat = new_thermostat;
 	Vec prev_acceleration = Vec(0,0,0);
 	
-	k_b = 8.617342e-5; //[eV][K]^{-1}
+	k_b = 8.617342e-5f; //[eV][K]^{-1}
 	initial_velocity_modulus = sqrt((3*k_b*temperature)/(mass));
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
@@ -165,13 +165,13 @@ void Simulation::fcc_structure_x(int j, int k)
 			Vec acceleration (0,0,0);
 			
 			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma, epsilon, mass,time_step,initial_velocity_modulus));
-			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
+			extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0);
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon, mass,time_step,initial_velocity_modulus));
-			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
+			extra = Vec(0,0.5f*lattice_constant,0.5f*lattice_constant);
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon, mass,time_step,initial_velocity_modulus));
-			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
+			extra = Vec(0.5f*lattice_constant,0,0.5f*lattice_constant);
 
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step,initial_velocity_modulus));
@@ -192,7 +192,7 @@ void Simulation::bcc_structure_x(int j, int k)
 		Vec acceleration (0,0,0);
 		
 		list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step,initial_velocity_modulus));	
-		extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
+		extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0.5f*lattice_constant);
 
 		extra +=origin;
 		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step,initial_velocity_modulus));

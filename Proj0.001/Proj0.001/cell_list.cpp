@@ -15,7 +15,7 @@ Create cells! through cell.cpp.
 ------------------------------ */
 Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant){
 
-    cutoff = new_cutoff;
+    cutoff = new_cutoff; 
     lattice_constant = new_lattice_constant;
     
 /*
@@ -61,7 +61,7 @@ Destroys cells in list_of_cells
 ------------------------------ */
 Cell_list::~Cell_list(){
 
-    for (int i = 0; i<list_of_cells.size(); i++) {
+    for (string::size_type i = 0; i<list_of_cells.size(); i++) {
         delete list_of_cells[i];
     }
 }
@@ -91,7 +91,7 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
     }
 */
 
-    for (int i = 0; i<atoms_list.size(); i++) {
+    for (string::size_type i = 0; i<atoms_list.size(); i++) {
         Atom* current_atom = atoms_list[i];
         int cell_number_iterator = 0;
         bool found = false;
@@ -140,9 +140,9 @@ vector<Atom*> Cell_list::get_neighbours(Atom* atom){
     vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
     vector<Atom*> neighbouring_atoms;
 		
-    for (int i = 0; i < neighbouring_cells.size(); i++) {
+    for (string::size_type i = 0; i < neighbouring_cells.size(); i++) {
 		vector<Atom*> atoms_to_add = neighbouring_cells[i]->get_atoms_in_cell();
-		for (int j = 0; j < atoms_to_add.size(); j++){
+		for (string::size_type j = 0; j < atoms_to_add.size(); j++){
 			 if (atom->distance_vector(atoms_to_add[j]).length() != 0){
 				 neighbouring_atoms.push_back(atoms_to_add[j]);
 			 }
@@ -165,7 +165,7 @@ Removes all atoms from all cells
 ------------------------------ */
 void Cell_list::clear_cells(){
 
-	for(int i=0; i< list_of_cells.size(); i++){
+	for(string::size_type i=0; i< list_of_cells.size(); i++){
 	list_of_cells[i]->clear_cell();	 
 	}
 }
@@ -192,6 +192,20 @@ void Cell_list::create_cells(){
     float max_orgin_x; //Highest x-value a cell-origin can take
     float max_orgin_y; //Highest y-value a cell-origin can take
     float max_orgin_z; //Highest z-value a cell-origin can take
+
+	/*
+	cout << "Max origin x: " << max_orgin_x << endl;
+	cout << "Max origin x: " << max_orgin_y << endl;
+	cout << "Max origin x: " << max_orgin_z << endl;
+	*/
+
+	cout  << "Bulk x: " << bulk_length_x << endl;
+	cout  << "Bulk y: " << bulk_length_y << endl;
+	cout  << "Bulk z: " << bulk_length_z << endl;
+
+	cout << "Cell length x: " << cell_length_x << endl;
+	cout << "Cell length y: " << cell_length_y << endl;
+	cout << "Cell length z: " << cell_length_z << endl;
     
     
     /*----
@@ -202,9 +216,13 @@ void Cell_list::create_cells(){
      ---*/
 	
 	// This while loop takes a very long time to compute if sigma is big. Maybe consider optimizing?
+	cout << "Start" << endl;
     while (current_origin.getZ()<bulk_length_z){
+//		cout << "1 ";
         while (current_origin.getY()<bulk_length_y) {
+//			cout << "2 ";
             while (current_origin.getX()<bulk_length_x) {
+//				cout << "3 ";
             
                 list_of_cells.insert(list_of_cells.end(), new Cell(i,current_origin));
                 vec_to_number_map.insert(pair<Vec,int>(current_matrix_coordinates,i));
@@ -224,11 +242,16 @@ void Cell_list::create_cells(){
         current_matrix_coordinates = current_matrix_coordinates + Vec(-current_matrix_coordinates.getX(),-current_matrix_coordinates.getY(),1);
         max_orgin_z = current_origin.getZ();
     }
+	cout << "Stop" << endl;
+	cout << i << endl;
+
+
+
     
     //Number of cells in each direction
-    int cells_x = max_orgin_x/cell_length_x;
-    int cells_y = max_orgin_y/cell_length_y;
-    int cells_z = max_orgin_z/cell_length_z;
+    int cells_x = int(max_orgin_x/cell_length_x);
+    int cells_y = int(max_orgin_y/cell_length_y);
+    int cells_z = int(max_orgin_z/cell_length_z);
  
 /*
     cout << "Numbers of cells X: " << cells_x << endl;
@@ -239,15 +262,15 @@ void Cell_list::create_cells(){
     /*---
      Creates a mapping from cell number to a vector of all neighbouring cells.
      ---*/
-    for (int z = 0; z<cells_z; z++){
-        for (int y = 0; y<cells_y; y++){
-            for (int x = 0; x<cells_x; x++) {
-                int minus_x = x-1;
-                int minus_y = y-1;
-                int minus_z = z-1;
-                int plus_x = x+1;
-                int plus_y = y+1;
-                int plus_z = z+1;
+    for (float z = 0; z<cells_z; z++){
+        for (float y = 0; y<cells_y; y++){
+            for (float x = 0; x<cells_x; x++) {
+                float minus_x = x-1;  // Dessa kan bli int om Vec inte används nedan...
+                float minus_y = y-1;
+                float minus_z = z-1;
+                float plus_x = x+1;
+                float plus_y = y+1;
+                float plus_z = z+1;
                 if (minus_x<0) minus_x += cells_x;
                 if (minus_y<0) minus_y += cells_y;
                 if (minus_z<0) minus_z += cells_z;
