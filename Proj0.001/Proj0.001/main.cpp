@@ -8,21 +8,22 @@
 using namespace std;
 
 	//initialvalues for get_input_file()
-	string string1;
-	string string2;
-	float float1;
-	float float2;
-	float float3;
+	string atom;
+	string structure;
+	float sigma;
+	float epsilon;
+	float mass;
+	float lattice;
 	string file = "data.txt";
 
 void get_input_file(string intresting,string file){
 istringstream iss;
 string line;
-std::ifstream in(file);
+ifstream in(file);
 while(getline(in,line)){
 	istringstream iss(line);
-	iss>>string1>>float1>>float2>>string2>>float3;
-	if(string1==intresting){
+	iss>>atom>>sigma>>epsilon>>structure>>mass>>lattice;
+	if(atom==intresting){
 	break;
 		}
 	}
@@ -52,7 +53,7 @@ Parameters:
 
 
 	//initializegraphics
-	float a = 0.2; // Watch out for double warning!
+	float a = 0.2f; // Watch out for double warning!
 
 	int input_x;
 	int input_y;
@@ -60,7 +61,7 @@ Parameters:
 	float input_time_step;
 	int input_steps;
 	float input_temperature = a;
-	float input_cutoff = 4.4;
+	float input_cutoff;
 	float input_mass = a;
 	float input_sigma=a;
 	float input_epsilon = a;
@@ -71,7 +72,7 @@ Parameters:
 
 	
 
-
+	
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
 	cin >> input_x;
 	cin >> input_y;
@@ -82,24 +83,37 @@ Parameters:
 	cin >> input_steps;
 	cout << "Input wanted material (must choose Ar atm):" << endl;
 	cin >> input_material;
+	get_input_file(input_material,file);
 	cout << "Start temperature (K):" << endl;
 	cin >> input_temperature;
+	cout << "Input cutoff multiples of lattice_constant:" <<endl;
+	cin >> input_cutoff;
+	input_cutoff = input_cutoff*lattice;
 
-	get_input_file(input_material,file);
-	input_sigma = float1; //[Å]
-	input_epsilon = float2; //[eV]
-	input_crystal_structure = string2;
-	input_mass = float3; //[eV/c^2]
+	cout << endl << "------------" << endl;
+	cout << "- RUNNING -" << endl;
+	cout << "-----------" << endl << endl;
 	
+	input_sigma = sigma; //[Å]
+	input_epsilon = epsilon; //[eV]
+	input_crystal_structure = structure;
+	input_mass = mass; //[eV/c^2]
+	input_lattice_constant=lattice;
+
+	cout << "Sigma: " << sigma << endl;
+	cout << "Epsilon: "<<epsilon<<endl;
+	cout<<"Structure: "<<structure<<endl;
+	cout<<"Mass: "<<mass<<endl;
+	cout<<"Lattice: "<<lattice<<endl;
 
 
-	input_lattice_constant = input_sigma;
-	//input_time_step = 1;
+		//input_time_step = 1;
 	
 	Simulation* simulation2 = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
 		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,false);
+
+	cout << "Running simulation..." << endl << endl;
 	simulation2->run_simulation();
-	cout<<float1<<" "<<float2<<" "<<float3<<" "<<string1<<" "<<string2<<endl;
 	system("pause");
 	return 0;
 }

@@ -32,7 +32,9 @@ private:
 public:
 	//Constructor
 
+
 	Atom (Vec,Vec,float,float,float,float,float,float,float,float,float,float);
+
 
 	~Atom ();
 

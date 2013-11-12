@@ -10,7 +10,9 @@ Parameters: Vec starting_position
 Sets starting position
 ----------------------*/
 
+
 Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, float new_lattice_constant,
+
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus){
 
 
@@ -26,7 +28,7 @@ Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff,
 	mass = new_mass;
 	time_step = new_time_step;
 	velocity = initial_velocity_modulus * generate_random_vector();
-	cout << "velocity " << velocity << endl;
+//	cout << "velocity " << velocity << endl;
 	prev_position = position;
 	next_position = position;
 	//next_position = Vec (0, 0, 0);
@@ -153,7 +155,7 @@ the atom. Ganska vagt kanske...
 float Atom::calculate_temperature(float E_kin){
 	
 
-	float k_b = 8.617342e-5; //[eV][K]^{-1}
+	float k_b = 8.617342e-5f; //[eV][K]^{-1}
 	return (2*E_kin)/(3*k_b);
 
 }
@@ -343,9 +345,9 @@ with modulus 1
 --------------------------*/
 
 Vec Atom::generate_random_vector(){
-	float x = ((double) rand() / (RAND_MAX));
-	float y = ((double) rand() / (RAND_MAX));
-	float z = ((double) rand() / (RAND_MAX));
+	float x = ((float) rand() / (RAND_MAX));
+	float y = ((float) rand() / (RAND_MAX));
+	float z = ((float) rand() / (RAND_MAX));
 	float vec_mod = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 	return Vec (x/vec_mod, y/vec_mod, z/vec_mod);
 }

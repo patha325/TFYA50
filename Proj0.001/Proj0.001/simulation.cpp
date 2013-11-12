@@ -55,16 +55,13 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 	create_cell_list();
 
-
 	number_of_atoms = list_of_atoms.size();	
-
 
 	//Clear files that will be written to for every simulation.
 	std::ofstream fs("atoms.txt", ios::trunc);	
 	std::ofstream fs2("energytemp.txt", ios::trunc);
 
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
-	
 	for(string::size_type i = 0; i < list_of_atoms.size();i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
@@ -162,8 +159,10 @@ void Simulation::scc_structure_x(int j, int k)
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
 
+
 			float cutoff = 0.5f; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
+
 
 	}
 }
@@ -180,6 +179,7 @@ void Simulation::fcc_structure_x(int j, int k)
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
+
 			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 
 			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma, epsilon, mass,time_step,initial_velocity_modulus));
@@ -190,6 +190,7 @@ void Simulation::fcc_structure_x(int j, int k)
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon, mass,time_step,initial_velocity_modulus));
 			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
+
 
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
@@ -208,10 +209,12 @@ void Simulation::bcc_structure_x(int j, int k)
 		Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 		Vec extra (0,0,0);
 		Vec acceleration (0,0,0);
+
 		float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 
 		list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));	
 		extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
+
 
 		extra +=origin;
 		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
@@ -254,15 +257,19 @@ void Simulation::next_time_step(int current_time_step){
 		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
+
 		//cout << "    E_pot " << E_pot << endl;
 		//Calculate kinetic energy
 		tmp_E_kin = atom->calculate_kinetic_energy();
 		//cout << "    tmp_E_kin " << tmp_E_kin << endl;
+
 		E_kin += tmp_E_kin;
 		
 		//Calculate temperature
 		temperature += atom->calculate_temperature(tmp_E_kin);
+
 		//cout << "    temperature " << temperature << endl;
+
 
 		//Calculate next position with help from velocity, previous acceleration and current acceleration
 		atom->set_next_position(atom->calculate_next_position());
@@ -273,7 +280,9 @@ void Simulation::next_time_step(int current_time_step){
 		if(current_time_step != 0){
 			atom->set_velocity(atom->calculate_velocity());
 		}
+
 		//cout << "atom " << i << " velocity " << atom->get_velocity() << endl;
+
 		//Previous position
 		atom->set_prev_position(atom->get_position());		
 		//Previous acceleration
