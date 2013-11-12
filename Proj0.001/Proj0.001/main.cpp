@@ -8,21 +8,22 @@
 using namespace std;
 
 	//initialvalues for get_input_file()
-	string string1;
-	string string2;
-	float float1;
-	float float2;
-	float float3;
+	string atom;
+	string structure;
+	float sigma;
+	float epsilon;
+	float mass;
+	float lattice;
 	string file = "data.txt";
 
 void get_input_file(string intresting,string file){
 istringstream iss;
 string line;
-std::ifstream in(file);
+ifstream in(file);
 while(getline(in,line)){
 	istringstream iss(line);
-	iss>>string1>>float1>>float2>>string2>>float3;
-	if(string1==intresting){
+	iss>>atom>>sigma>>epsilon>>structure>>mass>>lattice;
+	if(atom==intresting){
 	break;
 		}
 	}
@@ -60,7 +61,7 @@ Parameters:
 	float input_time_step;
 	int input_steps;
 	float input_temperature = a;
-	float input_cutoff = a;
+	float input_cutoff;
 	float input_mass = a;
 	float input_sigma=a;
 	float input_epsilon = a;
@@ -84,16 +85,19 @@ Parameters:
 	cin >> input_material;
 	cout << "Start temperature (K):" << endl;
 	cin >> input_temperature;
-
+	cout << "Input cutoff multiples of lattice_constant:" <<endl;
+	cin >> input_cutoff;
+	input_cutoff = input_cutoff*lattice_constant;
 	get_input_file(input_material,file);
-	input_sigma = float1; //[Å]
-	input_epsilon = float2; //[eV]
-	input_crystal_structure = string2;
-	input_mass = float3; //[eV/c^2]
+	input_sigma = sigma; //[Å]
+	input_epsilon = epsilon; //[eV]
+	input_crystal_structure = structure;
+	input_mass = mass; //[eV/c^2]
+
 	
 
 
-	input_lattice_constant = input_sigma;
+	input_lattice_constant = lattice;
 	//input_time_step = 1;
 	
 	Simulation* simulation2 = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
