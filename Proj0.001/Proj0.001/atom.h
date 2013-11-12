@@ -25,11 +25,14 @@ private:
 	float mass;
 	float time_step;
 	float total_energy;
+	float initial_velocity_modulus;
 		
 
 public:
 	//Constructor
-	Atom (Vec,Vec,float,int,int,int,float,float,float,float); 
+
+	Atom (Vec,Vec,float,float,float,float,float,float,float,float,float);
+
 	~Atom ();
 
 	//Getters
@@ -59,6 +62,7 @@ public:
 	float calculate_temperature(float);
 	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? done
 	Vec calculate_next_position();
+	Vec generate_random_vector();
 	void update_atom();	
 };
 

@@ -44,6 +44,10 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     crystal_structure = new_crystal_structure;
     thermostat = new_thermostat;
 	Vec prev_acceleration = Vec(0,0,0);
+	
+	k_b = 8.617342e-5; //[eV][K]^{-1}
+	initial_velocity_modulus = sqrt((3*k_b*temperature)/(mass));
+	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
     //Initial setup
     create_list_of_atoms();
@@ -51,24 +55,9 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 	create_cell_list();
 
-	number_of_atoms = list_of_atoms.size();
 
-	/*
-	// Atoms for testing
-	Atom a(Vec(0,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,epsilon, mass,time_step);
-	Atom b(Vec(1.8,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,epsilon, mass,time_step);
-	Atom c(Vec(0,0,0),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,epsilon, mass,time_step);
-	Atom d(Vec(0.1,0.1,0.1),prev_acceleration,0,new_unit_cells_x,new_unit_cells_y,new_unit_cells_z,sigma,epsilon, mass,time_step);
+	number_of_atoms = list_of_atoms.size();	
 
-	vector<Atom*> atomer(1);
-	atomer[0] = &b;
-	//atomer[1] = &c;
-	//atomer[2] = &d;
-
-	//a.distance_vector(&b);
-	a.calculate_force(atomer);
-	//a.calculate_potential(&b);
-	*/
 
 	//Clear files that will be written to for every simulation.
 	std::ofstream fs("atoms.txt", ios::trunc);	
@@ -87,8 +76,10 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 		fs << list_of_atoms[i]->get_position()<<endl;
 		fs.close();
 	}
-	// Write out time_step to energytemp.
-	fs2 << steps << " " << time_step << " " << 0 << " " << 0 <<endl;
+
+	// Write out steps, time_step and dummy index to energytemp.
+	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
+
 	fs2.close();
 		   	
 	// Todo: Save all the input!	
@@ -157,7 +148,7 @@ void Simulation::scc_structure_x(int j, int k)
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
 			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
-			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step));	
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step,initial_velocity_modulus));
 	}
 }
 void Simulation::fcc_structure(){
@@ -174,16 +165,18 @@ void Simulation::fcc_structure_x(int j, int k)
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
 			float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
-			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma, epsilon, mass,time_step));	
-			extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0);
+
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma, epsilon, mass,time_step,initial_velocity_modulus));
+			extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon, mass,time_step));
-			extra = Vec(0,0.5f*lattice_constant,0.5f*lattice_constant);
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon, mass,time_step,initial_velocity_modulus));
+			extra = Vec(0,0.5*lattice_constant,0.5*lattice_constant);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon, mass,time_step));
-			extra = Vec(0.5f*lattice_constant,0,0.5f*lattice_constant);
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon, mass,time_step,initial_velocity_modulus));
+			extra = Vec(0.5*lattice_constant,0,0.5*lattice_constant);
+
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step));
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step,initial_velocity_modulus));
 	}
 }
 void Simulation::bcc_structure(){
@@ -200,16 +193,18 @@ void Simulation::bcc_structure_x(int j, int k)
 		Vec extra (0,0,0);
 		Vec acceleration (0,0,0);
 		float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
-		list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step));	
-		extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0.5f*lattice_constant);
+
+		list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step,initial_velocity_modulus));	
+		extra = Vec(0.5*lattice_constant,0.5*lattice_constant,0.5*lattice_constant);
+
 		extra +=origin;
-		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step));
+		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,sigma,epsilon,mass,time_step,initial_velocity_modulus));
 	}
 
 
 }
 
-/*------------------------------
+/*----------------------------
 FUNCTION next_time_step
 Paramteters: int
 Returns: Nothing
@@ -232,7 +227,8 @@ void Simulation::next_time_step(int current_time_step){
 	
 	float E_pot = 0;
 	float E_kin = 0;
-	//float temperature = 0;
+	float temperature = 0;
+	float tmp_E_kin = 0;
 	
 	for(int i = 0; i < number_of_atoms; i++){
 		Atom* atom = list_of_atoms[i];
@@ -240,13 +236,25 @@ void Simulation::next_time_step(int current_time_step){
 
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
+		cout << "atom " << i << " E_pot " << E_pot << endl;
+		//Calculate kinetic energy
+		tmp_E_kin = atom->calculate_kinetic_energy();
+		cout << "atom " << i << " tmp_E_kin " << tmp_E_kin << endl;
+		E_kin += tmp_E_kin;
+		
+		//Calculate temperature
+		temperature += atom->calculate_temperature(tmp_E_kin);
+		cout << "atom " << i << " temperature " << temperature << endl;
 		//Calculate next position with help from velocity, previous acceleration and current acceleration
 		atom->set_next_position(atom->calculate_next_position());
 		Vec new_acceleration = atom->calculate_acceleration(neighbouring_atoms);
 		
 		//Update everything except position for the atom
 		//Velocity
-		atom->set_velocity(atom->calculate_velocity());
+		if(current_time_step != 0){
+			atom->set_velocity(atom->calculate_velocity());
+		}
+		cout << "atom " << i << " velocity " << atom->get_velocity() << endl;
 		//Previous position
 		atom->set_prev_position(atom->get_position());		
 		//Previous acceleration
@@ -255,23 +263,15 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_acceleration(new_acceleration);
 	}
 	
-	float k_b = 8.617342e-5f; //[eV][K]^{-1}
-	if(current_time_step == 0){
-		E_kin = 3/2*k_b*temperature*number_of_atoms;
-		total_energy = E_pot + E_kin;
-	}
-	else{
-		E_kin = total_energy - E_pot;
-		temperature = (2*E_kin)/(3*k_b*number_of_atoms);
-	}
+
+	temperature = temperature/number_of_atoms;
+	total_energy = E_pot + E_kin;
+
 	
 	for(int i = 0; i < number_of_atoms; i++){
 		Atom* atom = list_of_atoms[i];
 		//Update position
 		atom->set_position(atom->get_next_position());
-		cout << "atom " << i << " previous position " << atom->get_prev_position() << endl;
-		cout << "atom " << i << " position " << atom->get_position() << endl;
-		cout << "atom " << i << " next position " << atom->get_next_position() << endl;
 	}
 	
 	if (fmod(current_time_step, 5.0) == 0){
@@ -280,7 +280,7 @@ void Simulation::next_time_step(int current_time_step){
 	}
 	
 	
-	//temperature = temperature/number_of_atoms;
+	
 	cout << "total_energy " << total_energy << endl;
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;

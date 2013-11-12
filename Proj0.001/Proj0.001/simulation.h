@@ -22,10 +22,14 @@ private:
 	float temperature;
 	float cutoff;
 	bool thermostat;
+	float initial_velocity_modulus;
 	int unit_cells_x;
 	int unit_cells_y;
 	int unit_cells_z;
 	float total_energy;
+
+	//Boltzmann constant
+	float k_b;
 
 
 

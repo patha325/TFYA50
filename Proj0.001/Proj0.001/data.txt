@@ -1,0 +1,3 @@
+Type sigma epsilon crystal_structure mass
+Ar 4.40 0.010333 fcc 3.8211e10
+Br 2.20 0.005111 bcc 1.8211e10
