@@ -21,8 +21,7 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
 /*
     cout << "Cutoff: " << cutoff << endl;
     cout << "Lattice constant: " << lattice_constant << endl << endl;
-    
-    
+      
     cout << "Unit cells in X: " << unit_cells_x << endl;
     cout << "Unit cells in Y: " << unit_cells_y << endl;
     cout << "Unit cells in Z: " << unit_cells_z << endl << endl;
@@ -80,6 +79,7 @@ Adds all Atoms to the cells
 ------------------------------ */
 void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
 
+
 /*
     for (int i = 0 ; i<atoms_list.size(); i++) {
         cout << "Atom " << i << ": " << atoms_list[i]->get_position() << endl;
@@ -115,14 +115,6 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
         }
 		current_atom->set_cell_number(cell_number_iterator);
     }
-    
-/*	for (int i = 0; i < list_of_cells.size(); i++){
-	
-		cout << "Number of atoms in cell " << i << " is: " << list_of_cells[i]->get_number_of_atoms_in_cell() << endl;
-	}
-	*/
-//    cout << "# of atoms: " << list_of_cells[0]->get_number_of_atoms_in_cell() << endl;
-
 }
 
 
@@ -191,22 +183,26 @@ void Cell_list::create_cells(){
     int i = 0; //Cell number
     float max_orgin_x; //Highest x-value a cell-origin can take
     float max_orgin_y; //Highest y-value a cell-origin can take
-    float max_orgin_z; //Highest z-value a cell-origin can take
+
+    float max_orgin_z; //Highest z-value a cell-origin can take    
+
 
 	/*
 	cout << "Max origin x: " << max_orgin_x << endl;
 	cout << "Max origin x: " << max_orgin_y << endl;
 	cout << "Max origin x: " << max_orgin_z << endl;
 	*/
-
+	/*
 	cout  << "Bulk x: " << bulk_length_x << endl;
 	cout  << "Bulk y: " << bulk_length_y << endl;
 	cout  << "Bulk z: " << bulk_length_z << endl;
-
+	*/
+	/*
 	cout << "Cell length x: " << cell_length_x << endl;
 	cout << "Cell length y: " << cell_length_y << endl;
 	cout << "Cell length z: " << cell_length_z << endl;
-    
+    */
+
     
     /*----
      Creates and inserts cells into list. Gives each cell a number and 
@@ -215,14 +211,12 @@ void Cell_list::create_cells(){
      (only used when creating the cell list structure.
      ---*/
 	
-	// This while loop takes a very long time to compute if sigma is big. Maybe consider optimizing?
-	cout << "Start" << endl;
+
+	cout << endl << "Creating cells... " << endl;
+
     while (current_origin.getZ()<bulk_length_z){
-//		cout << "1 ";
         while (current_origin.getY()<bulk_length_y) {
-//			cout << "2 ";
             while (current_origin.getX()<bulk_length_x) {
-//				cout << "3 ";
             
                 list_of_cells.insert(list_of_cells.end(), new Cell(i,current_origin));
                 vec_to_number_map.insert(pair<Vec,int>(current_matrix_coordinates,i));
@@ -242,10 +236,9 @@ void Cell_list::create_cells(){
         current_matrix_coordinates = current_matrix_coordinates + Vec(-current_matrix_coordinates.getX(),-current_matrix_coordinates.getY(),1);
         max_orgin_z = current_origin.getZ();
     }
-	cout << "Stop" << endl;
-	cout << i << endl;
 
-
+	cout << "Cells created!" << endl;
+	cout << "Created in total " << i << " cells." << endl << endl;
 
     
     //Number of cells in each direction
