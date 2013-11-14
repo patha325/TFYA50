@@ -24,7 +24,7 @@ void changeSize(int w, int h) {
 	// (you cant make a window of zero width).
 	if (h == 0)
 		h = 1;
-	float ratio =  w * 1.0 / h;
+	float ratio =  w * 1.0f / h;
 
 	// Use the Projection Matrix
 	glMatrixMode(GL_PROJECTION);
@@ -36,39 +36,18 @@ void changeSize(int w, int h) {
 	glViewport(0, 0, w, h);
 
 	// Set the correct perspective.
-	gluPerspective(45.0f, ratio, 0.1f, 100.0f);
+	gluPerspective(45.0f, ratio, 0.1f, 500.0f);
 
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void drawSnowMan() {
-
-	glColor3f(1.0f, 1.0f, 1.0f);
-
-// Draw Body
-
-	glTranslatef(0.0f ,0.75f, 0.0f);
-	glutSolidSphere(0.75f,20,20);
-
-// Draw Head
-	glTranslatef(0.0f, 1.0f, 0.0f);
-	glutSolidSphere(0.25f,20,20);
-
-// Draw Eyes
-	glPushMatrix();
-	glColor3f(0.0f,0.0f,0.0f);
-	glTranslatef(0.05f, 0.10f, 0.18f);
-	glutSolidSphere(0.05f,10,10);
-	glTranslatef(-0.1f, 0.0f, 0.0f);
-	glutSolidSphere(0.05f,10,10);
-	glPopMatrix();
-
-// Draw Nose
-	glColor3f(1.0f, 0.5f , 0.5f);
-	glRotatef(0.0f,1.0f, 0.0f, 0.0f);
-	glutSolidCone(0.08f,0.5f,10,2);
+void drawAtom() {
+	glColor3f(0.0f, 1.0f, 0.0f); // Make the atoms green
+	glutSolidSphere(0.75f,20,20); // Make the atoms spheres.
+	
 }
+
 
 void computePos(float deltaMove) {
 
@@ -100,23 +79,13 @@ void renderScene(void) {
 				x+lx, 1.0f,  z+lz,
 				0.0f, 1.0f,  0.0f);
 
-// Draw ground
-
-	glColor3f(0.9f, 0.9f, 0.9f);
-	glBegin(GL_QUADS);
-		glVertex3f(-100.0f, 0.0f, -100.0f);
-		glVertex3f(-100.0f, 0.0f,  100.0f);
-		glVertex3f( 100.0f, 0.0f,  100.0f);
-		glVertex3f( 100.0f, 0.0f, -100.0f);
-	glEnd();
-
-// Draw 36 SnowMen
-
+	// Draw atoms
 	for(int i = -3; i < 3; i++)
-		for(int j=-3; j < 3; j++) {
+		for(int j=-3; j < 3; j++) 
+			for(int k=0; k<3; k++) {
 			glPushMatrix();
-			glTranslatef(i*10.0,0,j * 10.0);
-			drawSnowMan();
+			glTranslatef(i*10.0f,k*10.0f,j * 10.0f); // Change position of next drawn atom.
+			drawAtom();
 			glPopMatrix();
 		}
 
@@ -124,7 +93,7 @@ void renderScene(void) {
 }
 
 
-void pressKey(int key, int xx, int yy) {
+void pressKey(int key, int xx, int yy) { // HUR RÖRA SIG I Y???
 
 	switch (key) {
 		case GLUT_KEY_LEFT : deltaAngle = -0.01f; break;
@@ -144,7 +113,7 @@ void releaseKey(int key, int x, int y) {
 	}
 }
 
-int main(int argc, char **argv) {
+void plotter(int argc, char** argv) {
 
 	// init GLUT and create window
 	glutInit(&argc, argv);
@@ -152,7 +121,7 @@ int main(int argc, char **argv) {
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(320,320);
 	glutCreateWindow("Lighthouse3D - GLUT Tutorial");
-
+	glClearColor(1,1,1,1); // Make the background white
 	// register callbacks
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
@@ -169,6 +138,4 @@ int main(int argc, char **argv) {
 
 	// enter GLUT event processing cycle
 	glutMainLoop();
-
-	return 1;
 }

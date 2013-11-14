@@ -36,14 +36,21 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>L:\TFYA50\freeglut\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>L:\TFYA50\freeglut\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>L:\TFYA50\GraphicsTestProject\GraphicsTestProject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>OpenGL32.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -60,6 +67,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\GraphicsTestProject\GraphicsTestProject\GraphicsTestProject.h" />
     <ClInclude Include="vec.h" />
     <ClInclude Include="atom.h" />
     <ClInclude Include="cell.h" />
@@ -67,12 +75,19 @@
     <ClInclude Include="simulation.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\GraphicsTestProject\GraphicsTestProject\GraphicsTestProject.cpp" />
     <ClCompile Include="vec.cpp" />
     <ClCompile Include="atom.cpp" />
     <ClCompile Include="cell.cpp" />
     <ClCompile Include="cell_list.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="simulation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="atoms.txt" />
+    <None Include="data.txt" />
+    <None Include="example.txt" />
+    <None Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
