@@ -10,24 +10,28 @@ Parameters: Vec starting_position
 Sets starting position
 ----------------------*/
 
-Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, float unit_cells_x, float unit_cells_y, float unit_cells_z, 
+
+Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
+
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus){
 
 
 	position = starting_position;
 	prev_acceleration = new_prev_acceleration;
 	cutoff = start_cutoff;
+	lattice_constant = new_lattice_constant;
 	sigma = new_sigma;
 	epsilon = new_epsilon;
-	bulk_length_x = unit_cells_x*sigma;
-	bulk_length_y = unit_cells_y*sigma;
-	bulk_length_z = unit_cells_z*sigma;
+	bulk_length_x = unit_cells_x*lattice_constant;
+	bulk_length_y = unit_cells_y*lattice_constant;
+	bulk_length_z = unit_cells_z*lattice_constant;
 	mass = new_mass;
 	time_step = new_time_step;
 	velocity = initial_velocity_modulus * generate_random_vector();
-	cout << "velocity " << velocity << endl;
+//	cout << "velocity " << velocity << endl;
 	prev_position = position;
-	next_position = Vec (0, 0, 0);
+	next_position = position;
+	//next_position = Vec (0, 0, 0);
 	acceleration = Vec (0, 0, 0);
 	next_acceleration = Vec (0, 0, 0);
 }
@@ -50,18 +54,21 @@ Calculates force on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
+Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){ 
     
 	Vec tmp_force (0,0,0);
 	for(string::size_type i=0; i < neighbouring_atoms.size(); i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
-		float r= distance_vector(neighbouring_atoms[i]).length();
-		float r2 = pow(r,-13);
+		float r = distance_vector(neighbouring_atoms[i]).length();
+		float r2 = pow(r,-12);
 		float r3 = pow(r,-7);
-		tmp_force += -48*(r2-r3/2)*distance_vector(neighbouring_atoms[i]).normalize();
+		if (r <= cutoff){
+			tmp_force += (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
+		}
 	}
 	return tmp_force;
+
 }
 
 /*----------------------
@@ -102,7 +109,9 @@ float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
 
 		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
 		float tmp_distance = closest_vector_tmp.length();
-		tmp_potential += 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
+		if(tmp_distance <= cutoff){
+			tmp_potential += 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
+		}
 	}
 	return tmp_potential;
 }
@@ -149,9 +158,8 @@ the atom. Ganska vagt kanske...
 ----------------------*/
 
 float Atom::calculate_temperature(float E_kin){
-	
 
-	float k_b = 8.617342e-5; //[eV][K]^{-1}
+	float k_b = 8.617342e-5f; //[eV][K]^{-1}
 	return (2*E_kin)/(3*k_b);
 
 }
@@ -341,9 +349,9 @@ with modulus 1
 --------------------------*/
 
 Vec Atom::generate_random_vector(){
-	float x = ((double) rand() / (RAND_MAX));
-	float y = ((double) rand() / (RAND_MAX));
-	float z = ((double) rand() / (RAND_MAX));
+	float x = ((float) rand() / (RAND_MAX));
+	float y = ((float) rand() / (RAND_MAX));
+	float z = ((float) rand() / (RAND_MAX));
 	float vec_mod = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 	return Vec (x/vec_mod, y/vec_mod, z/vec_mod);
 }

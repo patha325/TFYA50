@@ -20,6 +20,7 @@ private:
 	float bulk_length_x;
 	float bulk_length_y;
 	float bulk_length_z;
+	float lattice_constant;
 	float sigma;
 	float epsilon;
 	float mass;
@@ -31,7 +32,9 @@ private:
 public:
 	//Constructor
 
-	Atom (Vec,Vec,float,float,float,float,float,float,float,float,float);
+
+	Atom (Vec,Vec,float,int,int,int,float,float,float,float,float,float);
+
 
 	~Atom ();
 

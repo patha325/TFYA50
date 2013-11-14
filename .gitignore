@@ -2,7 +2,6 @@
 ###################
 *.com
 *.class
-*.dll
 *.exe
 *.o
 *.so
@@ -35,6 +34,8 @@
 *.pdb
 *.sql
 *.sqlite
+atoms.txt
+energytemp.txt
 
 # OS generated files #
 ######################

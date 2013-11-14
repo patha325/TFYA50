@@ -40,7 +40,7 @@
     <IncludePath>L:\TFYA50\freeglut\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>\\fillager.liu.se\matja307\TFYA50\freeglut\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>L:\TFYA50\freeglut\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
