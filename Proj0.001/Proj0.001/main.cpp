@@ -5,8 +5,15 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-using namespace std;
+#include "GraphicsTestProject.h"
 
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
+using namespace std;
 	//initialvalues for get_input_file()
 	string atom;
 	string structure;
@@ -31,7 +38,11 @@ in.close();
 }
 
 
-int main(){
+int main(int argc, char** argv){
+
+
+	
+
     
 /*
 Parameters:
@@ -49,8 +60,6 @@ Parameters:
     std::string crystal_structure	: Name of chrystal structure (scc, fcc, hcp, bcc...)
     bool thermostat					: If a thermostat is employed
  */
-
-
 
 	//initializegraphics
 	float a = 0.2f; // Watch out for double warning!
@@ -115,6 +124,10 @@ Parameters:
 
 	simulation2->run_simulation();
 	system("pause");
+
+	plotter(argc, argv);
+
+
 	return 0;
 }
 
