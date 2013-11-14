@@ -79,6 +79,7 @@ Adds all Atoms to the cells
 ------------------------------ */
 void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
 
+
 /*
     for (int i = 0 ; i<atoms_list.size(); i++) {
         cout << "Atom " << i << ": " << atoms_list[i]->get_position() << endl;
@@ -114,14 +115,6 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
         }
 		current_atom->set_cell_number(cell_number_iterator);
     }
-    
-/*	for (int i = 0; i < list_of_cells.size(); i++){
-	
-		cout << "Number of atoms in cell " << i << " is: " << list_of_cells[i]->get_number_of_atoms_in_cell() << endl;
-	}
-	*/
-//    cout << "# of atoms: " << list_of_cells[0]->get_number_of_atoms_in_cell() << endl;
-
 }
 
 
@@ -190,7 +183,9 @@ void Cell_list::create_cells(){
     int i = 0; //Cell number
     float max_orgin_x; //Highest x-value a cell-origin can take
     float max_orgin_y; //Highest y-value a cell-origin can take
-    float max_orgin_z; //Highest z-value a cell-origin can take
+
+    float max_orgin_z; //Highest z-value a cell-origin can take    
+
 
 	/*
 	cout << "Max origin x: " << max_orgin_x << endl;
@@ -207,6 +202,7 @@ void Cell_list::create_cells(){
 	cout << "Cell length y: " << cell_length_y << endl;
 	cout << "Cell length z: " << cell_length_z << endl;
     */
+
     
     /*----
      Creates and inserts cells into list. Gives each cell a number and 
@@ -215,6 +211,7 @@ void Cell_list::create_cells(){
      (only used when creating the cell list structure.
      ---*/
 	
+
 	cout << endl << "Creating cells... " << endl;
 
     while (current_origin.getZ()<bulk_length_z){
