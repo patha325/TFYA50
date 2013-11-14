@@ -67,6 +67,7 @@ Parameters:
 	float input_lattice_constant = a;
 	string input_crystal_structure = "fcc";
 	string input_material;
+	bool input_thermostat = false;
 	
 
 	
@@ -97,7 +98,7 @@ Parameters:
 	//input_time_step = 1;
 	
 	Simulation* simulation2 = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
-		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,false);
+		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat);
 	simulation2->run_simulation();
 	cout<<float1<<" "<<float2<<" "<<float3<<" "<<string1<<" "<<string2<<endl;
 	system("pause");
@@ -105,7 +106,7 @@ Parameters:
 }
 
 /*
-Origo in the botom left corner, we are in the first octant! all atoms have positive coordinates. (when not moving)
+Origo in the bottom left corner, we are in the first octant! all atoms have positive coordinates. (when not moving)
 
 
 */

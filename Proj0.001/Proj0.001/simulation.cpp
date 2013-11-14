@@ -242,18 +242,27 @@ void Simulation::next_time_step(int current_time_step){
 		cout << "atom " << i << " tmp_E_kin " << tmp_E_kin << endl;
 		E_kin += tmp_E_kin;
 		
-		//Calculate temperature
-		temperature += atom->calculate_temperature(tmp_E_kin);
-		cout << "atom " << i << " temperature " << temperature << endl;
 		//Calculate next position with help from velocity, previous acceleration and current acceleration
 		atom->set_next_position(atom->calculate_next_position());
 		Vec new_acceleration = atom->calculate_acceleration(neighbouring_atoms);
 		
-		//Update everything except position for the atom
-		//Velocity
+		//Calculate temperature if not first time step
 		if(current_time_step != 0){
-			atom->set_velocity(atom->calculate_velocity());
+			Vec new_velocity = atom->calculate_velocity();
+			if (thermostat){
+				//Update velocity so temperature is constant
+				float new_velocity_modulus = new_velocity.length();
+				float right_modulus = initial_velocity_modulus/new_velocity_modulus;
+				atom->set_velocity(right_modulus*new_velocity);
+			}
+			else{
+				temperature += atom->calculate_temperature(tmp_E_kin);
+				cout << "atom " << i << " temperature " << temperature << endl;
+				//Update velocity where total energy is constant
+				atom->set_velocity(new_velocity);
+			}	
 		}
+		
 		cout << "atom " << i << " velocity " << atom->get_velocity() << endl;
 		//Previous position
 		atom->set_prev_position(atom->get_position());		
@@ -263,8 +272,9 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_acceleration(new_acceleration);
 	}
 	
-
-	temperature = temperature/number_of_atoms;
+	if (!thermostat){
+		temperature = temperature/number_of_atoms;
+	}
 	total_energy = E_pot + E_kin;
 
 	
