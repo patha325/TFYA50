@@ -83,12 +83,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="simulation.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="atoms.txt" />
-    <None Include="data.txt" />
-    <None Include="example.txt" />
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

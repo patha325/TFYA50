@@ -60,12 +60,15 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 	for(string::size_type i=0; i < neighbouring_atoms.size(); i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
-		float r= distance_vector(neighbouring_atoms[i]).length();
-		float r2 = pow(r,-13);
+		float r = distance_vector(neighbouring_atoms[i]).length();
+		float r2 = pow(r,-12);
 		float r3 = pow(r,-7);
-		tmp_force += -48*(r2-r3/2)*distance_vector(neighbouring_atoms[i]).normalize();
+		if (r <= cutoff){
+			tmp_force += (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
+		}
 	}
 	return tmp_force;
+
 }
 
 /*----------------------
@@ -155,7 +158,6 @@ the atom. Ganska vagt kanske...
 ----------------------*/
 
 float Atom::calculate_temperature(float E_kin){
-	
 
 	float k_b = 8.617342e-5f; //[eV][K]^{-1}
 	return (2*E_kin)/(3*k_b);

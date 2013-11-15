@@ -106,6 +106,7 @@ void Simulation::run_simulation(){
 
 	cout << "--------------------------------- Init -----" << endl;
 	cout << "temperature " << temperature << endl;
+	/*
 	for(int i = 0; i < number_of_atoms; i++){
 		Atom* atom = list_of_atoms[i];
 		cout << "atom " << i << endl;
@@ -115,6 +116,7 @@ void Simulation::run_simulation(){
 		cout << "    acceleration " << atom->get_acceleration() << endl;
 
 		}
+		*/
 	cout << "-------------------------------------------" << endl << endl;
 
 	int i = 0;
@@ -241,11 +243,13 @@ Alter everything in the simulation to get to the next time step.
 ------------------------------*/
 void Simulation::next_time_step(int current_time_step){
 	
-	cout << "----------------------------------- t=" << current_time_step << " -----" << endl;
+	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
 
 	float E_pot = 0;
 	float E_kin = 0;
-	float temperature = 0;
+	if (!thermostat){
+		float temperature = 0;
+	}
 	float tmp_E_kin = 0;
 		
 	for(int i = 0; i < number_of_atoms; i++){
@@ -261,24 +265,34 @@ void Simulation::next_time_step(int current_time_step){
 		//cout << "    tmp_E_kin " << tmp_E_kin << endl;
 
 		E_kin += tmp_E_kin;
-		
-		//Calculate temperature
-		temperature += atom->calculate_temperature(tmp_E_kin);
-
-		//cout << "    temperature " << temperature << endl;
-
 
 		//Calculate next position with help from velocity, previous acceleration and current acceleration
 		atom->set_next_position(atom->calculate_next_position());
 		Vec new_acceleration = atom->calculate_acceleration(neighbouring_atoms);
 		
-		//Update everything except position for the atom
-		//Velocity
+		//Calculate temperature if not first time step
 		if(current_time_step != 0){
-			atom->set_velocity(atom->calculate_velocity());
+			Vec new_velocity = atom->calculate_velocity();
+			if (thermostat){
+				//Update velocity so temperature is constant
+				float new_velocity_modulus = new_velocity.length();
+				float right_modulus = 0;
+				if (new_velocity_modulus != 0){
+					float right_modulus = initial_velocity_modulus/new_velocity_modulus;
+				}
+				else{
+					right_modulus = initial_velocity_modulus;
+					new_velocity = atom->generate_random_vector();
+				}
+				atom->set_velocity(right_modulus*new_velocity);
+			}
+			else{
+				//temperature += atom->calculate_temperature(tmp_E_kin);
+				//Update velocity where total energy is constant
+				atom->set_velocity(new_velocity);
+			}
+			temperature += atom->calculate_temperature(tmp_E_kin);
 		}
-
-		//cout << "atom " << i << " velocity " << atom->get_velocity() << endl;
 
 		//Previous position
 		atom->set_prev_position(atom->get_position());		
@@ -288,8 +302,10 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_acceleration(new_acceleration);
 	}
 	
-
+	//if (!thermostat){
+	//cout << "not thermostat" << endl;
 	temperature = temperature/number_of_atoms;
+	//}
 	total_energy = E_pot + E_kin;
 
 	
@@ -303,8 +319,8 @@ void Simulation::next_time_step(int current_time_step){
 			cell_list->clear_cells();
 			cell_list->add_atoms_to_cells(list_of_atoms);
 	}
-
 	
+	/*
 	for(int i = 0; i < number_of_atoms; i++){
 		Atom* atom = list_of_atoms[i];
 		cout << "atom " << i << endl;
@@ -313,6 +329,22 @@ void Simulation::next_time_step(int current_time_step){
 		cout << "    abs_value of velocity " << atom->get_velocity().length() << endl;
 		cout << "    acceleration " << atom->get_acceleration() << endl;
 
+	}
+	*/
+
+	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
+	// Write to file every time step
+	// Seperate the positions for different timesteps
+	for(string::size_type i = 0; i < list_of_atoms.size();i++){
+		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
+
+		//cout << i<<endl;
+		//cout << list_of_atoms[i]->get_position()<<endl;
+		//	ofstream myfile;
+		//myfile.open ("example.txt");
+		std::ofstream fs("atoms.txt", ios::app); 
+		fs << list_of_atoms[i]->get_position()<<endl;
+		fs.close();
 	}
 	
 	

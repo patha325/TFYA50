@@ -72,21 +72,18 @@ Parameters:
 	float input_temperature = a;
 	float input_cutoff;
 	float input_mass = a;
-	float input_sigma=a;
+	float input_sigma = a;
 	float input_epsilon = a;
 	float input_lattice_constant = a;
 	string input_crystal_structure = "fcc";
 	string input_material;
-	
-
-	
-
+	bool input_thermostat = false;
 	
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
 	cin >> input_x;
 	cin >> input_y;
 	cin >> input_z;
-	cout << "Input the wanted time step size:" << endl;
+	cout << "Input the wanted time step size:" << endl; 
 	cin >> input_time_step;
 	cout << "Input the wanted number of steps:" << endl;
 	cin >> input_steps;
@@ -98,6 +95,8 @@ Parameters:
 	cout << "Input cutoff multiples of lattice_constant:" <<endl;
 	cin >> input_cutoff;
 	input_cutoff = input_cutoff*lattice;
+	cout << "Simulate with thermostat? (Yes = 1/No = 0)" << endl;
+	cin >> input_thermostat;
 
 	cout << endl << "------------" << endl;
 	cout << "- RUNNING -" << endl;
@@ -106,22 +105,23 @@ Parameters:
 	input_sigma = sigma; //[Å]
 	input_epsilon = epsilon; //[eV]
 	input_crystal_structure = structure;
-	input_mass = mass; //[eV/c^2]
+	input_mass = mass; //[eV/c^2]=[eV][Å]^2[fs]^-2
 	input_lattice_constant=lattice;
 
-	cout << "Sigma: " << sigma << endl;
+	cout << "Sigma: "<< sigma << endl;
 	cout << "Epsilon: "<<epsilon<<endl;
-	cout<<"Structure: "<<structure<<endl;
-	cout<<"Mass: "<<mass<<endl;
-	cout<<"Lattice: "<<lattice<<endl;
+	cout << "Structure: "<<structure<<endl;
+	cout << "Mass: "<<mass<<endl;
+	cout << "Lattice: "<<lattice<<endl;
 
 
 		//input_time_step = 1;
 	
 	Simulation* simulation2 = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
-		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,false);
+		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat);
 
 	cout << "Running simulation..." << endl << endl;
+
 	simulation2->run_simulation();
 	system("pause");
 
@@ -134,7 +134,7 @@ Parameters:
 }
 
 /*
-Origo in the botom left corner, we are in the first octant! all atoms have positive coordinates. (when not moving)
+Origo in the bottom left corner, we are in the first octant! all atoms have positive coordinates. (when not moving)
 
 
 */

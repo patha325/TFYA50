@@ -57,10 +57,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="atoms.txt" />
-    <None Include="data.txt" />
-    <None Include="example.txt" />
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
 </Project>
