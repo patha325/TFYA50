@@ -35,7 +35,7 @@ void releaseKey(int key, int x, int y);
 
 void processNormalKeys(unsigned char key, int x, int y);
 
-void plotter(int argc, char** argv,std::vector<Atom*>);
+void plotter(int argc, char** argv,std::vector<Atom*>,int);
 
 
 

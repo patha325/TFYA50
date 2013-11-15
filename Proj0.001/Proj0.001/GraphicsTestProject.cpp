@@ -26,6 +26,7 @@ float deltaMove = 0;
 float deltaMoveY = 0;
 
 std::vector<Atom*> list_of_atoms;
+int number_of_atoms;
 
 void changeSize(int w, int h) {
 
@@ -96,14 +97,17 @@ void renderScene(void) {
 				0.0f, 1.0f,  0.0f);
 
 	// Draw atoms
-
-		for(string::size_type i = 0; i < list_of_atoms.size();i++){
+	for(string::size_type k=0; k < list_of_atoms.size()/number_of_atoms;k++){
+		for(int i = 0; i < number_of_atoms;i++){
 		glPushMatrix();
 		glTranslatef(list_of_atoms[i]->get_position().getX(),list_of_atoms[i]->get_position().getY(),list_of_atoms[i]->get_position().getZ());
 		drawAtom();
 		glPopMatrix();
 		}
-	
+		if(k>0){
+			system("pause");
+		}
+	}
 	glutSwapBuffers();
 }
 
@@ -132,17 +136,16 @@ void releaseKey(int key, int xxx, int yyy) {
 	}
 }
 
-
-
-void plotter(int argc, char** argv,std::vector<Atom*> incoming_list_of_atoms) {
+void plotter(int argc, char** argv,std::vector<Atom*> incoming_list_of_atoms,int incoming_number_of_atoms) {
 
 	list_of_atoms=incoming_list_of_atoms;
+	number_of_atoms=incoming_number_of_atoms;
 	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(320,320);
-	glutCreateWindow("Lighthouse3D - GLUT Tutorial");
+	glutCreateWindow("Atoms");
 	glClearColor(1,1,1,1); // Make the background white
 	// register callbacks
 	glutDisplayFunc(renderScene);
