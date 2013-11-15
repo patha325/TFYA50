@@ -75,6 +75,7 @@ public:
 	void fcc_structure_x(int,int);
 	void bcc_structure();
 	void bcc_structure_x(int,int);
+	std::vector<Atom*> get_list_of_atoms();
 	
 	// abort simulation button?
 	// handle end of simulation?

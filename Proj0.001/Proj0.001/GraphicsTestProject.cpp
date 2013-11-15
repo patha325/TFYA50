@@ -16,11 +16,13 @@ float angle = 0.0f;
 // actual vector representing the camera's direction
 float lx=0.0f,lz=-1.0f;
 // XZ position of the camera
-float x=0.0f, z=5.0f;
+float x=0.0f, z=30.0f;
 // the key states. These variables will be zero
 //when no key is being presses
 float deltaAngle = 0.0f;
 float deltaMove = 0;
+
+std::vector<Atom*> list_of_atoms;
 
 void changeSize(int w, int h) {
 
@@ -84,15 +86,14 @@ void renderScene(void) {
 				0.0f, 1.0f,  0.0f);
 
 	// Draw atoms
-	for(int i = -3; i < 3; i++)
-		for(int j=-3; j < 3; j++) 
-			for(int k=0; k<3; k++) {
-			glPushMatrix();
-			glTranslatef(i*10.0f,k*10.0f,j * 10.0f); // Change position of next drawn atom.
-			drawAtom();
-			glPopMatrix();
-		}
 
+		for(string::size_type i = 0; i < list_of_atoms.size();i++){
+		glPushMatrix();
+		glTranslatef(list_of_atoms[i]->get_position().getX(),list_of_atoms[i]->get_position().getY(),list_of_atoms[i]->get_position().getZ());
+		drawAtom();
+		glPopMatrix();
+		}
+	
 	glutSwapBuffers();
 }
 
@@ -117,8 +118,9 @@ void releaseKey(int key, int x, int y) {
 	}
 }
 
-void plotter(int argc, char** argv,std::vector<Atom*> list_of_atoms) {
+void plotter(int argc, char** argv,std::vector<Atom*> incoming_list_of_atoms) {
 
+	list_of_atoms=incoming_list_of_atoms;
 	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -130,16 +132,12 @@ void plotter(int argc, char** argv,std::vector<Atom*> list_of_atoms) {
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
 	glutIdleFunc(renderScene);
-
 	glutSpecialFunc(pressKey);
-
 	// here are the new entries
 	glutIgnoreKeyRepeat(1);
 	glutSpecialUpFunc(releaseKey);
-
 	// OpenGL init
 	glEnable(GL_DEPTH_TEST);
-
 	// enter GLUT event processing cycle
 	glutMainLoop();
 }

@@ -125,7 +125,9 @@ Parameters:
 	simulation2->run_simulation();
 	system("pause");
 
-	plotter(argc, argv);
+
+
+	plotter(argc, argv,simulation2->get_list_of_atoms());
 
 
 	return 0;

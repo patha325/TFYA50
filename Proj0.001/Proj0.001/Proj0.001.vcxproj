@@ -67,7 +67,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\GraphicsTestProject\GraphicsTestProject\GraphicsTestProject.h" />
+    <ClInclude Include="GraphicsTestProject.h" />
     <ClInclude Include="vec.h" />
     <ClInclude Include="atom.h" />
     <ClInclude Include="cell.h" />
@@ -75,7 +75,7 @@
     <ClInclude Include="simulation.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\GraphicsTestProject\GraphicsTestProject\GraphicsTestProject.cpp" />
+    <ClCompile Include="GraphicsTestProject.cpp" />
     <ClCompile Include="vec.cpp" />
     <ClCompile Include="atom.cpp" />
     <ClCompile Include="cell.cpp" />
