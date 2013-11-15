@@ -23,6 +23,8 @@ void drawAtom();
 
 void computePos(float deltaMove);
 
+void computeHei(float deltaMoveY);
+
 void computeDir(float deltaAngle);
 
 void renderScene(void);
@@ -30,6 +32,8 @@ void renderScene(void);
 void pressKey(int key, int xx, int yy);
 
 void releaseKey(int key, int x, int y); 
+
+void processNormalKeys(unsigned char key, int x, int y);
 
 void plotter(int argc, char** argv,std::vector<Atom*>);
 

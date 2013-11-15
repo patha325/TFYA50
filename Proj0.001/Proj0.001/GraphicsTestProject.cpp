@@ -17,10 +17,13 @@ float angle = 0.0f;
 float lx=0.0f,lz=-1.0f;
 // XZ position of the camera
 float x=0.0f, z=30.0f;
+// Y position of the camera
+float y=1.0f;
 // the key states. These variables will be zero
 //when no key is being presses
 float deltaAngle = 0.0f;
 float deltaMove = 0;
+float deltaMoveY = 0;
 
 std::vector<Atom*> list_of_atoms;
 
@@ -61,6 +64,11 @@ void computePos(float deltaMove) {
 	z += deltaMove * lz * 0.1f;
 }
 
+void computeHei(float deltaMoveY) {
+
+	y += deltaMoveY * 0.1f;
+}
+
 void computeDir(float deltaAngle) {
 
 	angle += deltaAngle;
@@ -72,6 +80,8 @@ void renderScene(void) {
 
 	if (deltaMove)
 		computePos(deltaMove);
+	if(deltaMoveY)
+		computeHei(deltaMoveY);
 	if (deltaAngle)
 		computeDir(deltaAngle);
 
@@ -81,8 +91,8 @@ void renderScene(void) {
 	// Reset transformations
 	glLoadIdentity();
 	// Set the camera
-	gluLookAt(	x, 1.0f, z,
-				x+lx, 1.0f,  z+lz,
+	gluLookAt(	x, y, z,
+				x+lx, y,  z+lz,
 				0.0f, 1.0f,  0.0f);
 
 	// Draw atoms
@@ -105,18 +115,24 @@ void pressKey(int key, int xx, int yy) { // HUR RÖRA SIG I Y???
 		case GLUT_KEY_RIGHT : deltaAngle = 0.01f; break;
 		case GLUT_KEY_UP : deltaMove = 0.5f; break;
 		case GLUT_KEY_DOWN : deltaMove = -0.5f; break;
+		case GLUT_KEY_PAGE_UP : deltaMoveY = 0.5f; break;
+		case GLUT_KEY_PAGE_DOWN : deltaMoveY = -0.5f; break;
 	}
 }
 
-void releaseKey(int key, int x, int y) {
 
+void releaseKey(int key, int xxx, int yyy) {
 	switch (key) {
 		case GLUT_KEY_LEFT :
 		case GLUT_KEY_RIGHT : deltaAngle = 0.0f;break;
 		case GLUT_KEY_UP :
 		case GLUT_KEY_DOWN : deltaMove = 0;break;
+		case GLUT_KEY_PAGE_UP :
+		case GLUT_KEY_PAGE_DOWN : deltaMoveY = 0; break;
 	}
 }
+
+
 
 void plotter(int argc, char** argv,std::vector<Atom*> incoming_list_of_atoms) {
 
