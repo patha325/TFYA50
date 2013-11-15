@@ -405,4 +405,8 @@ std::vector<Atom*> Simulation::get_list_of_atoms(){
 	return list_of_atoms;
 }
 
+int Simulation::get_number_of_atoms(){
+	
+	return number_of_atoms;
+}
 
