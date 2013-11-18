@@ -49,6 +49,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	
 	k_b = 8.617342e-5f; //[eV][K]^{-1}
 	initial_velocity_modulus = sqrt((3*k_b*temperature)/(mass));
+	cout << "wanted temperature " << temperature << endl;
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
     //Initial setup
@@ -306,7 +307,7 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 				float new_velocity_modulus = new_velocity.length();
 				float right_modulus = 0;
 				if (new_velocity_modulus != 0){
-					float right_modulus = initial_velocity_modulus/new_velocity_modulus;
+					right_modulus = initial_velocity_modulus/new_velocity_modulus;
 				}
 				else{
 					right_modulus = initial_velocity_modulus;
