@@ -256,6 +256,12 @@ void Simulation::next_time_step(int current_time_step){
 		//cout << "Before timestep - atom " << i << endl;
 		Atom* atom = list_of_atoms[i];
 		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
+
+		//Before doing anything else: Update atom_positions with current position for each atom for this time step
+		if (fmod(current_time_step, 5.0) == 0){
+			atom_positions[current_time_step].push_back(atom->get_position());
+		}
+
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
 
@@ -301,7 +307,7 @@ void Simulation::next_time_step(int current_time_step){
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
 	}
-	
+
 	//if (!thermostat){
 	//cout << "not thermostat" << endl;
 	temperature = temperature/number_of_atoms;

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <list>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -27,6 +28,7 @@ private:
 	int unit_cells_y;
 	int unit_cells_z;
 	float total_energy;
+	map<float, vector<Vec> > atom_positions;
 
 	//Boltzmann constant
 	float k_b;
