@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <list>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -27,6 +28,8 @@ private:
 	int unit_cells_y;
 	int unit_cells_z;
 	float total_energy;
+	map<int, vector<Vec>> atom_positions;
+	map<string, vector<Vec>> last_state;
 
 	//Boltzmann constant
 	float k_b;
@@ -52,9 +55,10 @@ private:
 public:
 	void create_list_of_atoms(); //Create all atoms in this class? Convert from fcc to atom positions.
 	bool check_input();
-	void next_time_step(int current_time_step); //Alter everything in the simulation to get to the next time step.
+	void next_time_step(int current_time_step, bool second_to_last_time_step, bool next_to_last_time_step, bool last_time_step); //Alter everything in the simulation to get to the next time step.
 	void regulate_thermostat(); //Regulate the kinetic energy so that the temperature remains "constant"
-	void run_simulation(); //Loop through next_time_step
+	void update_atoms_btb(); //If back to back simulation, update atoms to be in correct state
+	map<string, vector<Vec>> run_simulation(); //Loop through next_time_step and return last state
 	void save(); //Save ??? to a .txt file with some structure.
 	Simulation (int unit_cells_x,
 		int unit_cells_y, // unit_cells is a material parameter.
@@ -68,7 +72,8 @@ public:
 		float epsilon,
 		float lattice_constant,
 		std::string crystal_structure,
-		bool thermostat);
+		bool thermostat,
+		map<string, vector<Vec>> new_last_state);
 	~Simulation ();
 	void update_atoms(); // Run through list_of_atoms and .update_atom
 	void scc_structure();
