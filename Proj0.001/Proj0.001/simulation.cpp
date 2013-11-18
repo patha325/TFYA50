@@ -46,6 +46,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
 	k_b = 8.617342e-5f; //[eV][K]^{-1}
+	hbar = 0.65821189f; // [eV][fs]
 	initial_velocity_modulus = sqrt((3*k_b*temperature)/(mass));
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
@@ -300,6 +301,26 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_prev_acceleration(atom->get_acceleration());
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
+
+
+		// Things that only should be carried out when equilibrium is reached
+	
+		float MSD = 0;
+		float Debye_temp = 0;
+		float C_v = 0;
+
+		// Mean square dispalcement
+		for(int i = 1; i <= number_of_atoms; i++) {
+			Vec temp_pos = atom->get_position();
+			Vec equi_pos (0,0,0); // Här ska positionen då jämvikt uppnåddes hämtas
+			float temp_diff = temp_pos.length() - equi_pos.length();
+			MSD += 1/number_of_atoms*pow(temp_diff,2); 
+		}
+
+		// Debye Temperature
+		Debye_temp = 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
+
+		// Diffusion coefficient
 	}
 	
 	//if (!thermostat){
@@ -307,6 +328,19 @@ void Simulation::next_time_step(int current_time_step){
 	temperature = temperature/number_of_atoms;
 	//}
 	total_energy = E_pot + E_kin;
+
+	// Pressure
+
+
+	// Things that only should be carried out when equilibrium is reached
+	
+	float Diff_coef = 0;
+	float coh_e = 0;
+	
+
+	// Cohesive Energy
+
+	// Specific heat coefficient
 
 	
 	for(int i = 0; i < number_of_atoms; i++){

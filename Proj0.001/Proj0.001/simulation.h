@@ -30,6 +30,8 @@ private:
 
 	//Boltzmann constant
 	float k_b;
+	//Planck's constant
+	float hbar;
 
 
 

@@ -403,6 +403,11 @@ Vec Atom::get_prev_position(){
 	return prev_position;
 }
 
+float Atom::get_mass(){
+
+	return mass;
+}
+
 
 // -------- SETTERS --------
 void Atom::set_velocity(Vec new_velocity){

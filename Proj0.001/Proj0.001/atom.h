@@ -45,6 +45,7 @@ public:
 	Vec get_acceleration();
 	int get_cell_number();
 	Vec get_prev_position();
+	float get_mass();
 
 	//Setters
 	void set_velocity(Vec);
