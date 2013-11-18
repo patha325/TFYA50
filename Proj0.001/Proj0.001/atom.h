@@ -2,6 +2,7 @@
 #define ATOM_H
 
 #include<vector>
+#include <map>
 
 #include "Vec.h"
 

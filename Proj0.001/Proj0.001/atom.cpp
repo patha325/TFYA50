@@ -1,6 +1,8 @@
 #include "atom.h"
 #include "vec.h"
 #include <math.h>
+#include <map>
+#include <string>
 
 using namespace std;
 
@@ -12,12 +14,16 @@ Sets starting position
 
 
 Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
-
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus){
-
-
+	
 	position = starting_position;
 	prev_acceleration = new_prev_acceleration;
+	velocity = initial_velocity_modulus * generate_random_vector();
+	prev_position = position;
+	next_position = position;
+	acceleration = Vec (0, 0, 0);
+	next_acceleration = Vec (0, 0, 0);
+
 	cutoff = start_cutoff;
 	lattice_constant = new_lattice_constant;
 	sigma = new_sigma;
@@ -27,13 +33,6 @@ Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff,
 	bulk_length_z = unit_cells_z*lattice_constant;
 	mass = new_mass;
 	time_step = new_time_step;
-	velocity = initial_velocity_modulus * generate_random_vector();
-//	cout << "velocity " << velocity << endl;
-	prev_position = position;
-	next_position = position;
-	//next_position = Vec (0, 0, 0);
-	acceleration = Vec (0, 0, 0);
-	next_acceleration = Vec (0, 0, 0);
 }
 
 /*--------------------

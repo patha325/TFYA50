@@ -78,6 +78,9 @@ Parameters:
 	string input_crystal_structure = "fcc";
 	string input_material;
 	bool input_thermostat = false;
+	map<string, vector<Vec>> last_state;	//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
+											//				"prev_position":[...], "prev_acceleration":[...], "next_acceleration":[...]}
+											//take over next to last state. Otherwise we will not have a proper next_position
 	
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
 	cin >> input_x;
@@ -87,7 +90,7 @@ Parameters:
 	cin >> input_time_step;
 	cout << "Input the wanted number of steps:" << endl;
 	cin >> input_steps;
-	cout << "Input wanted material (must choose Ar atm):" << endl;
+	cout << "Input wanted material:" << endl;
 	cin >> input_material;
 	get_input_file(input_material,file);
 	cout << "Start temperature (K):" << endl;
@@ -113,22 +116,36 @@ Parameters:
 	cout << "Structure: "<<structure<<endl;
 	cout << "Mass: "<<mass<<endl;
 	cout << "Lattice: "<<lattice<<endl;
-
-
-		//input_time_step = 1;
 	
+	//Create first simulation world
 	Simulation* simulation2 = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
-		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat);
-
+		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat, last_state);
 	cout << "Running simulation..." << endl << endl;
+	//Save last state
+	last_state = simulation2->run_simulation();
 
-	simulation2->run_simulation();
+	//Run back to back simulation
+	//Always with most recent simulation as it is now
+	//btb = back to back
+	bool back_to_back = true;
+	cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;
+	cin >> back_to_back;
+	while (back_to_back){
+		cout << "Starting new simulation back to back with previous!" << endl;
+		//Create new simulation
+		Simulation* btb_simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
+			input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat, last_state);
+		cout << "Running simulation..." << endl << endl;
+		last_state = btb_simulation->run_simulation();
+
+		//Ask again to runt new btb simulation
+		cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;
+		cin >> back_to_back;
+	}
+
 	system("pause");
 
-
-
 	plotter(argc, argv,simulation2->get_list_of_atoms(),simulation2->get_number_of_atoms());
-
 
 	return 0;
 }
