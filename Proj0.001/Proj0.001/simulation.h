@@ -21,8 +21,10 @@ private:
 	float time_step; //Given in femtoseconds
 	int steps;
 	float temperature;
+	float pressure;
 	float cutoff;
 	bool thermostat;
+	bool equilibrium;
 	bool pbc_z;
 	float initial_velocity_modulus;
 	int unit_cells_x;
@@ -34,6 +36,8 @@ private:
 
 	//Boltzmann constant
 	float k_b;
+	//Planck's constant
+	float hbar;
 
 
 
@@ -74,6 +78,7 @@ public:
 		float lattice_constant,
 		std::string crystal_structure,
 		bool thermostat,
+		bool equilibrium,
 		map<string, vector<Vec>> new_last_state,
 		bool pbc_z);//,
 		//std::ofstream);

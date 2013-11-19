@@ -1,5 +1,8 @@
 #include "simulation.h"
 #include <math.h>
+#include <sstream>
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -27,8 +30,8 @@ Calls constructors for all atoms and the cell list.
 
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
-                        float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat, 
-						map<string, vector<Vec>> new_last_state, bool new_pbc_z){// ,std::ofstream fs2){
+                        float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat,
+						bool new_equilibrium, map<string, vector<Vec>> new_last_state, bool new_pbc_z){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -37,6 +40,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     time_step = new_time_step;
     steps = new_steps;
     temperature = new_temperature;
+	pressure = 0;
     cutoff = new_cutoff;
     mass = new_mass;
     sigma = new_sigma;
@@ -44,12 +48,14 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     lattice_constant = new_lattice_constant;
     crystal_structure = new_crystal_structure;
     thermostat = new_thermostat;
+	equilibrium = new_equilibrium;
 	last_state = new_last_state;
 	pbc_z = new_pbc_z;
 	
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
 	k_b = 8.617342e-5f; //[eV][K]^{-1}
+	hbar = 0.65821189f; // [eV][fs]
 	initial_velocity_modulus = sqrt((3*k_b*temperature)/(mass));
 	cout << "wanted temperature " << temperature << endl;
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
@@ -161,6 +167,40 @@ map<string, vector<Vec>> Simulation::run_simulation(){
 		next_time_step(i, second_to_last_time_step, next_to_last_time_step, last_time_step);
 		i++;
 	}
+
+	// Calculate specific heat coeff
+	
+
+	if(equilibrium) {
+		std::istringstream iss;
+		string line;
+		ifstream in("energytemp.txt");
+		float temp=0;
+		float temp_2=0;
+		float tmp_temp;
+		float dump;
+		int number_of_time_steps = 0;
+			while(getline(in,line)){
+		istringstream iss(line);
+		iss>>dump>>dump>>dump>>tmp_temp;
+		temp+=tmp_temp;
+		temp_2+=pow(tmp_temp,2);
+		number_of_time_steps++;
+		}
+		in.close();
+
+		float temp_av = temp/number_of_time_steps;
+		float temp_2_av = temp_2/number_of_time_steps;
+
+		float C_v;
+
+		C_v = (3*number_of_atoms*k_b)/2*(1/(1-(temp_2_av - pow(temp_av,2))/pow(temp_av,2)*2*number_of_atoms/3));
+
+		cout << C_v << endl;
+	}
+
+
+
 
 	return last_state;
 }
@@ -384,12 +424,36 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 			temperature += atom->calculate_temperature(tmp_E_kin);
 		}
 
+		//Calculate_pressure
+		pressure += atom->calculate_pressure(neighbouring_atoms);
+
 		//Previous position
 		atom->set_prev_position(atom->get_position());		
 		//Previous acceleration
 		atom->set_prev_acceleration(atom->get_acceleration());
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
+		
+
+		if(equilibrium){
+			float MSD = 0;
+			float Debye_temp = 0;
+			float C_v = 0;
+
+			// Mean square dispalcement
+			for(int i = 1; i <= number_of_atoms; i++) {
+				Vec temp_pos = atom->get_position();
+				Vec equi_pos (0,0,0); // Här ska positionen då jämvikt uppnåddes hämtas
+				float temp_diff = (temp_pos - equi_pos).length();
+				MSD += 1/number_of_atoms*pow(temp_diff,2); 
+			}
+
+			// Debye Temperature
+			Debye_temp = 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
+
+			// Diffusion coefficient
+		}
+
 
 		// Check if last state should be saved to last_state
 		//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
@@ -409,8 +473,22 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 		}
 	}
 
+	float volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3);
 	temperature = temperature/number_of_atoms;
+	pressure = number_of_atoms*k_b*temperature/volume + 1/(6*volume)*pressure;
 	total_energy = E_pot + E_kin;
+
+	cout << "pressure " << pressure << endl;
+	
+	if(equilibrium){
+		float Diff_coef = 0;
+		float coh_e = 0;
+	
+
+		// Cohesive Energy
+		coh_e = E_pot; // cohesive energy is the same as potential when equilibrium is reached.
+	}
+
 	
 	for(int i = 0; i < number_of_atoms; i++){
 		Atom* atom = list_of_atoms[i];

@@ -54,8 +54,8 @@ Calculates force on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){ 
-    
+Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
+
 	Vec tmp_force (0,0,0);
 	for(string::size_type i=0; i < neighbouring_atoms.size(); i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
@@ -68,6 +68,38 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 		}
 	}
 	return tmp_force;
+
+}
+
+/*----------------------
+FUNCTION: calculate_pressure
+Paramteters: vector<Atom*>
+Returns: float (pressure)
+-
+Calculates pressure on the atom
+from all neighbouring atoms 
+within cutoff.
+----------------------*/
+float Atom::calculate_pressure(vector<Atom*> neighbouring_atoms){
+
+    float tmp_pressure = 0;
+	Vec tmp_force (0,0,0);
+	for(string::size_type i=0; i < neighbouring_atoms.size(); i++){
+		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
+
+		float r = distance_vector(neighbouring_atoms[i]).length();
+		float r2 = pow(r,-12);
+		float r3 = pow(r,-7);
+		Vec tmp_force;
+		if (r <= cutoff){
+			tmp_force = (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
+			tmp_pressure += tmp_force.length()*r;
+		}
+	}
+
+
+
+	return tmp_pressure;
 
 }
 
@@ -472,6 +504,11 @@ int Atom::get_cell_number(){
 Vec Atom::get_prev_position(){
 
 	return prev_position;
+}
+
+float Atom::get_mass(){
+
+	return mass;
 }
 
 

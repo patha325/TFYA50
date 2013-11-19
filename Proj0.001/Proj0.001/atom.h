@@ -50,6 +50,7 @@ public:
 	Vec get_acceleration();
 	int get_cell_number();
 	Vec get_prev_position();
+	float get_mass();
 
 	//Setters
 	void set_velocity(Vec);
@@ -63,6 +64,7 @@ public:
 
 	//Other functions
 	Vec calculate_force(std::vector<Atom*>);
+	float calculate_pressure(std::vector<Atom*>);
 	Vec calculate_acceleration(std::vector<Atom*>);
 	float calculate_potential(std::vector<Atom*>);
 	Vec calculate_velocity();

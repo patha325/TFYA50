@@ -55,7 +55,7 @@ void changeSize(int w, int h) {
 
 void drawAtom() {
 	glColor3f(0.0f, 1.0f, 0.0f); // Make the atoms green
-	glutSolidSphere(0.75f,20,20); // Make the atoms spheres.
+	glutSolidSphere(0.75f,20,20); // Make the atoms spheres
 	
 }
 

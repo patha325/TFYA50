@@ -79,6 +79,7 @@ Parameters:
 	string input_crystal_structure = "fcc";
 	string input_material;
 	bool input_thermostat = false;
+	bool input_equilibrium = false;
 	bool pbc_z = false;
 	map<string, vector<Vec>> last_state;	//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
 											//				"prev_position":[...], "prev_acceleration":[...], "next_acceleration":[...]}
@@ -104,6 +105,8 @@ Parameters:
 	input_cutoff = input_cutoff*lattice;
 	cout << "Simulate with thermostat? (Yes = 1/No = 0)" << endl;
 	cin >> input_thermostat;
+	cout << "System in equilibrium? (Yes = 1/No = 0)" << endl;
+	cin >> input_equilibrium;
 
 	cout << endl << "------------" << endl;
 	cout << "- RUNNING -" << endl;
@@ -123,7 +126,7 @@ Parameters:
 	
 	//Create first simulation world
 	Simulation* simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
-		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat, last_state, pbc_z);//,fs2);
+		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat, input_equilibrium, last_state, pbc_z);
 	cout << "Running simulation..." << endl << endl;
 	//Save last state
 	last_state = simulation->run_simulation();
@@ -137,8 +140,8 @@ Parameters:
 	while (back_to_back){
 		cout << "Starting new simulation back to back with previous!" << endl;
 		//Create new simulation
-		Simulation* btb_simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
-			input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat, last_state,pbc_z);//,fs2);
+		Simulation* btb_simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff,
+			input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat,input_equilibrium, last_state,pbc_z);
 		cout << "Running simulation..." << endl << endl;
 		last_state = btb_simulation->run_simulation();
 
