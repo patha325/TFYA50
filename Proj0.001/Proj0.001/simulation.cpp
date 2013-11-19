@@ -501,7 +501,7 @@ constructor. Adds all atoms to the
 cell list.
 ------------------------------*/
 void Simulation::create_cell_list(){
-	cell_list = new Cell_list(cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant);
+	cell_list = new Cell_list(cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,pbc_z);
 	cell_list->add_atoms_to_cells(list_of_atoms);
 }
 

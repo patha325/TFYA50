@@ -13,14 +13,17 @@ Creates the list_of_cells vector
 and the cells in the vector.
 Create cells! through cell.cpp.
 ------------------------------ */
-Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant){
+Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant, bool new_pbc_z){
 
     cutoff = new_cutoff; 
     lattice_constant = new_lattice_constant;
+	pbc_z = new_pbc_z;
     
 /*
     cout << "Cutoff: " << cutoff << endl;
-    cout << "Lattice constant: " << lattice_constant << endl << endl;
+    cout << "Lattice constant: " << lattice_constant << endl;
+	if(pbc_z) cout << "Periodic boundary condition IS used." << endl << endl;
+	else cout << "Periodic boundary condition is NOT used." << endl << endl;
       
     cout << "Unit cells in X: " << unit_cells_x << endl;
     cout << "Unit cells in Y: " << unit_cells_y << endl;
@@ -237,6 +240,7 @@ void Cell_list::create_cells(){
         max_orgin_z = current_origin.getZ();
     }
 
+
 	cout << "Cells created!" << endl;
 	cout << "Created in total " << i << " cells." << endl << endl;
 
@@ -293,15 +297,17 @@ void Cell_list::create_cells(){
                 cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(x         ,plus_y     ,z)]]);
                 cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(plus_x    ,plus_y     ,z)]]);
                 
-                cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(minus_x   ,minus_y    ,plus_z)]]);
-                cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(x         ,minus_y    ,plus_z)]]);
-                cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(plus_x    ,minus_y    ,plus_z)]]);
-                cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(minus_x   ,y          ,plus_z)]]);
-                cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(x         ,y          ,plus_z)]]);
-                cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(plus_x    ,y          ,plus_z)]]);
-                cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(minus_x   ,plus_y     ,plus_z)]]);
-                cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(x         ,plus_y     ,plus_z)]]);
-                cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(plus_x    ,plus_y     ,plus_z)]]);
+				if(!(!pbc_z && plus_z==0)){
+					cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(minus_x   ,minus_y    ,plus_z)]]);
+					cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(x         ,minus_y    ,plus_z)]]);
+					cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(plus_x    ,minus_y    ,plus_z)]]);
+					cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(minus_x   ,y          ,plus_z)]]);
+					cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(x         ,y          ,plus_z)]]);
+					cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(plus_x    ,y          ,plus_z)]]);
+					cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(minus_x   ,plus_y     ,plus_z)]]);
+					cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(x         ,plus_y     ,plus_z)]]);
+					cell_vector.push_back(list_of_cells[vec_to_number_map[Vec(plus_x    ,plus_y     ,plus_z)]]);
+				}
                 
                number_to_cell_vector_map.insert(pair<int,vector<Cell*>>(cell_number,cell_vector));
             }
@@ -309,17 +315,19 @@ void Cell_list::create_cells(){
     }
  
 /*
-    int cell_number = 1;
-    cout << cell_number << ": " << endl;
-    vector<Cell*> cells =  number_to_cell_vector_map[cell_number];
-    for (int i = 0; i<cells.size(); i++) {
-        if (i%9 ==0 and i!=0) cout << endl;
-        cout << cells[i]->get_cell_number() << ", ";
-
-    }
+	for (int cell_number = 1; cell_number < cells_x*cells_y*cells_z; cell_number++){
+		cout << "Cell number: " << cell_number << ": " << endl;
+		vector<Cell*> cells =  number_to_cell_vector_map[cell_number];
+		for (int i = 0; i<cells.size(); i++) {
+			if (i%9 ==0 && i!=0) cout << endl;
+			cout << cells[i]->get_cell_number() << ", ";
+		}
+		cout << endl << endl;
+	}
 */
-}
 
+}
+	
 /*
 void Cell_list::add_to_map(int key, vector<Cell*> entry){
     
