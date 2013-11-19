@@ -64,7 +64,7 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 		float r2 = pow(r,-12);
 		float r3 = pow(r,-7);
 		if (r <= cutoff){
-			tmp_force += (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
+			tmp_force = tmp_force +(48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
 		}
 	}
 	return tmp_force;
