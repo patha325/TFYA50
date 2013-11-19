@@ -40,10 +40,6 @@ in.close();
 
 
 int main(int argc, char** argv){
-
-
-	
-
     
 /*
 Parameters:
@@ -105,8 +101,7 @@ Parameters:
 	input_cutoff = input_cutoff*lattice;
 	cout << "Simulate with thermostat? (Yes = 1/No = 0)" << endl;
 	cin >> input_thermostat;
-	cout << "System in equilibrium? (Yes = 1/No = 0)" << endl;
-	cin >> input_equilibrium;
+
 
 	cout << endl << "------------" << endl;
 	cout << "- RUNNING -" << endl;
@@ -124,24 +119,30 @@ Parameters:
 	cout << "Mass: "<<mass<<endl;
 	cout << "Lattice: "<<lattice<<endl;
 	
-	//Create first simulation world
+		//Create first simulation world
 	Simulation* simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
-		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat, input_equilibrium, last_state, pbc_z);
+											input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,
+											input_thermostat, input_equilibrium, last_state, pbc_z);
 	cout << "Running simulation..." << endl << endl;
-	//Save last state
+		//Save last state
 	last_state = simulation->run_simulation();
 
-	//Run back to back simulation
-	//Always with most recent simulation as it is now
-	//btb = back to back
+		//Run back to back simulation
+		//Always with most recent simulation as it is now
+		//btb = back to back
 	bool back_to_back = true;
 	cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;
 	cin >> back_to_back;
 	while (back_to_back){
+		cout << "System in equilibrium? (Yes = 1/No = 0)" << endl;
+		cin >> input_equilibrium;
+		cout << "Input the wanted number of steps:" << endl;
+		cin >> input_steps;
 		cout << "Starting new simulation back to back with previous!" << endl;
 		//Create new simulation
 		Simulation* btb_simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff,
-			input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat,input_equilibrium, last_state,pbc_z);
+													input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,
+													input_thermostat,input_equilibrium, last_state,pbc_z);
 		cout << "Running simulation..." << endl << endl;
 		last_state = btb_simulation->run_simulation();
 
@@ -157,10 +158,5 @@ Parameters:
 	return 0;
 }
 
-/*
-Origo in the bottom left corner, we are in the first octant! all atoms have positive coordinates. (when not moving)
-
-
-*/
 
 

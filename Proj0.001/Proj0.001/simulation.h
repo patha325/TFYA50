@@ -30,6 +30,7 @@ private:
 	int unit_cells_x;
 	int unit_cells_y;
 	int unit_cells_z;
+	float volume;
 	float total_energy;
 	map<int, vector<Vec>> atom_positions;
 	map<string, vector<Vec>> last_state;
@@ -60,8 +61,11 @@ public:
 	void create_list_of_atoms(); //Create all atoms in this class? Convert from fcc to atom positions.
 	bool check_input();
 	void next_time_step(int current_time_step, bool second_to_last_time_step, bool next_to_last_time_step, bool last_time_step); //Alter everything in the simulation to get to the next time step.
+	float calculate_specific_heat();
+	float calculate_MSD(Atom*);
 	void regulate_thermostat(); //Regulate the kinetic energy so that the temperature remains "constant"
 	void update_atoms_btb(); //If back to back simulation, update atoms to be in correct state
+	void update_last_state(Atom*, bool, bool, bool); //Save data for btb simulation
 	map<string, vector<Vec>> run_simulation(); //Loop through next_time_step and return last state
 	void save(); //Save ??? to a .txt file with some structure.
 	//std::ofstream fs2;

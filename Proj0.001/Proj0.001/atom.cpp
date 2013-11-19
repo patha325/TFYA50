@@ -118,10 +118,6 @@ Vec Atom::calculate_acceleration(vector<Atom*> neighbouring_atoms){
 	Vec tmp_force = calculate_force(neighbouring_atoms);
 	tmp_acc.setCoords(-tmp_force.getX()/mass,-tmp_force.getY()/mass,-tmp_force.getZ()/mass);
 	
-	/*prev_acceleration = acceleration;
-	acceleration = tmp_acc; Kanske int här...*/
-	
-	//cout << "acc " << tmp_acc << endl; 
 	return tmp_acc;
 }
 
