@@ -68,7 +68,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	number_of_atoms = list_of_atoms.size();	
 
 	//Clear files that will be written to for every simulation.
-	std::ofstream fs("atoms.txt", ios::trunc);	
+	//std::ofstream fs("atoms.txt", ios::trunc);	
 	std::ofstream fs2("energytemp.txt", ios::trunc);
 
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
@@ -79,9 +79,11 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 		//cout << list_of_atoms[i]->get_position()<<endl;
 		//	ofstream myfile;
 		//myfile.open ("example.txt");
+		/*
 		std::ofstream fs("atoms.txt", ios::app); 
 		fs << list_of_atoms[i]->get_position()<<endl;
 		fs.close();
+	*/
 	}
 
 	// Write out steps, time_step and dummy index to energytemp.
@@ -247,8 +249,7 @@ void Simulation::fcc_corrector(){// Corrects for the missing atoms if there is n
 			extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0);
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon, mass,time_step,initial_velocity_modulus));
-
-		}
+			}
 	}
 }
 void Simulation::bcc_structure(){
@@ -423,9 +424,11 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 		//cout << list_of_atoms[i]->get_position()<<endl;
 		//	ofstream myfile;
 		//myfile.open ("example.txt");
+		/*
 		std::ofstream fs("atoms.txt", ios::app); 
 		fs << list_of_atoms[i]->get_position()<<endl;
 		fs.close();
+	*/
 	}
 	
 	cout << "total_energy " << total_energy << endl;
