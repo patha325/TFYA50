@@ -27,7 +27,8 @@ Calls constructors for all atoms and the cell list.
 
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
-                        float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat){
+                        float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat, 
+						map<string, vector<Vec>> new_last_state, bool new_pbc_z){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -43,15 +44,24 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     lattice_constant = new_lattice_constant;
     crystal_structure = new_crystal_structure;
     thermostat = new_thermostat;
+	last_state = new_last_state;
+	pbc_z = new_pbc_z;
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
 	k_b = 8.617342e-5f; //[eV][K]^{-1}
 	initial_velocity_modulus = sqrt((3*k_b*temperature)/(mass));
+	cout << "wanted temperature " << temperature << endl;
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
     //Initial setup
     create_list_of_atoms();
 	cout << "Total number of atoms: " << list_of_atoms.size() << endl;
+	if (pbc_z){
+		cout << "PBC is on in Z-direction." << endl;
+	}
+	else{
+		cout << "PBC is off in Z-direction." << endl;
+	} 
 
 	create_cell_list();
 
@@ -101,7 +111,7 @@ simulation. Handles time steps,
 and everything that happes during
 the simulation.
 ----------------------------*/
-void Simulation::run_simulation(){
+map<string, vector<Vec>> Simulation::run_simulation(){
 	//World is already created
 
 	cout << "--------------------------------- Init -----" << endl;
@@ -119,13 +129,33 @@ void Simulation::run_simulation(){
 		*/
 	cout << "-------------------------------------------" << endl << endl;
 
+	//If this is a back to back simulation, we must update the system to the last state of previous simulation
+	if (last_state.size() != 0){
+		cout << "Updating atoms to last state of previous simulation" << endl;
+		update_atoms_btb();
+	}
+
+	//Start next_time_step while loop
+	//The checks in the while loop are to make sure that we save the last state
 	int i = 0;
 	while(i < steps){
-		next_time_step(i);
+		bool second_to_last_time_step = false;
+		bool next_to_last_time_step = false;
+		bool last_time_step = false;
+		if(i == steps - 3){
+			second_to_last_time_step = true;
+		}
+		else if(i == steps - 2){
+			next_to_last_time_step = true;
+		}
+		else if(i == steps - 1){
+			last_time_step = true;
+		}
+		next_time_step(i, second_to_last_time_step, next_to_last_time_step, last_time_step);
 		i++;
 	}
 
-	// Todo: How often shall we update cell list?
+	return last_state;
 }
 
 /*-----------------------------
@@ -241,7 +271,7 @@ Alter everything in the simulation to get to the next time step.
 
 	Save energies and temperature to txt.
 ------------------------------*/
-void Simulation::next_time_step(int current_time_step){
+void Simulation::next_time_step(int current_time_step, bool second_to_last_time_step, bool next_to_last_time_step, bool last_time_step){
 	
 	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
 
@@ -256,6 +286,12 @@ void Simulation::next_time_step(int current_time_step){
 		//cout << "Before timestep - atom " << i << endl;
 		Atom* atom = list_of_atoms[i];
 		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
+
+		//Before doing anything else: Update atom_positions with current position for each atom for this time step
+		if (fmod(current_time_step, 5.0) == 0){
+			atom_positions[current_time_step].push_back(atom->get_position());
+		}
+
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
 
@@ -271,14 +307,14 @@ void Simulation::next_time_step(int current_time_step){
 		Vec new_acceleration = atom->calculate_acceleration(neighbouring_atoms);
 		
 		//Calculate temperature if not first time step
-		if(current_time_step != 0){
+		if(current_time_step != 0 || last_state.size() != 0){
 			Vec new_velocity = atom->calculate_velocity();
 			if (thermostat){
 				//Update velocity so temperature is constant
 				float new_velocity_modulus = new_velocity.length();
 				float right_modulus = 0;
 				if (new_velocity_modulus != 0){
-					float right_modulus = initial_velocity_modulus/new_velocity_modulus;
+					right_modulus = initial_velocity_modulus/new_velocity_modulus;
 				}
 				else{
 					right_modulus = initial_velocity_modulus;
@@ -300,14 +336,27 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_prev_acceleration(atom->get_acceleration());
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
-	}
-	
-	//if (!thermostat){
-	//cout << "not thermostat" << endl;
-	temperature = temperature/number_of_atoms;
-	//}
-	total_energy = E_pot + E_kin;
 
+		// Check if last state should be saved to last_state
+		//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
+		//				"prev_position":[...], "prev_acceleration":[...], "next_acceleration":[...]}
+		if (second_to_last_time_step){
+			last_state["prev_position"].push_back(atom->get_position());
+			last_state["prev_acceleration"].push_back(atom->get_acceleration());
+		}
+		else if (next_to_last_time_step){
+			last_state["position"].push_back(atom->get_position());
+			last_state["velocity"].push_back(atom->get_velocity());
+			last_state["acceleration"].push_back(atom->get_acceleration());
+		}
+		else if (last_time_step){
+			last_state["next_position"].push_back(atom->get_position());
+			last_state["next_acceleration"].push_back(atom->get_acceleration());
+		}
+	}
+
+	temperature = temperature/number_of_atoms;
+	total_energy = E_pot + E_kin;
 	
 	for(int i = 0; i < number_of_atoms; i++){
 		Atom* atom = list_of_atoms[i];
@@ -347,8 +396,6 @@ void Simulation::next_time_step(int current_time_step){
 		fs.close();
 	}
 	
-	
-	
 	cout << "total_energy " << total_energy << endl;
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;
@@ -361,8 +408,32 @@ void Simulation::next_time_step(int current_time_step){
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
 
-
 	return;
+}
+
+/*------------------------------
+FUNCTION update_atoms_btb
+Paramteters: None
+Returns: Nothing
+- 
+Changes starting state of system
+to be same as last state of previous
+simulation
+------------------------------*/
+void Simulation::update_atoms_btb(){
+	for(int i = 0; i < number_of_atoms; i++){
+		Atom* atom = list_of_atoms[i];
+
+		//Previous
+		atom->set_prev_position(last_state["prev_position"][i]);
+		atom->set_prev_acceleration(last_state["prev_acceleration"][i]);
+		//Current
+		atom->set_position(last_state["position"][i]);
+		atom->set_velocity(last_state["velocity"][i]);
+		atom->set_acceleration(last_state["acceleration"][i]);
+		//Next
+		atom->set_next_position(last_state["next_position"][i]);
+	}
 }
 
 /*------------------------------
