@@ -78,7 +78,7 @@ Parameters:
 	string input_crystal_structure = "fcc";
 	string input_material;
 	bool input_thermostat = false;
-	bool pbc_z = false;
+	bool pbc_z = true;
 	map<string, vector<Vec>> last_state;	//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
 											//				"prev_position":[...], "prev_acceleration":[...], "next_acceleration":[...]}
 											//take over next to last state. Otherwise we will not have a proper next_position
