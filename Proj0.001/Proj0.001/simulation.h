@@ -50,6 +50,7 @@ private:
 	void create_cell_list();
 	int calculate_number_of_atoms();
 	
+	
 
 public:
 	void create_list_of_atoms(); //Create all atoms in this class? Convert from fcc to atom positions.
@@ -59,6 +60,7 @@ public:
 	void update_atoms_btb(); //If back to back simulation, update atoms to be in correct state
 	map<string, vector<Vec>> run_simulation(); //Loop through next_time_step and return last state
 	void save(); //Save ??? to a .txt file with some structure.
+	//std::ofstream fs2;
 	Simulation (int unit_cells_x,
 		int unit_cells_y, // unit_cells is a material parameter.
 		int unit_cells_z,
@@ -73,7 +75,8 @@ public:
 		std::string crystal_structure,
 		bool thermostat,
 		map<string, vector<Vec>> new_last_state,
-		bool pbc_z);
+		bool pbc_z);//,
+		//std::ofstream);
 	~Simulation ();
 	void update_atoms(); // Run through list_of_atoms and .update_atom
 	void scc_structure();

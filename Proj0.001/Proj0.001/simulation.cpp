@@ -28,7 +28,7 @@ Calls constructors for all atoms and the cell list.
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
                         float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat, 
-						map<string, vector<Vec>> new_last_state, bool new_pbc_z){
+						map<string, vector<Vec>> new_last_state, bool new_pbc_z){// ,std::ofstream fs2){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -46,6 +46,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     thermostat = new_thermostat;
 	last_state = new_last_state;
 	pbc_z = new_pbc_z;
+	
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
 	k_b = 8.617342e-5f; //[eV][K]^{-1}
@@ -68,9 +69,16 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	number_of_atoms = list_of_atoms.size();	
 
 	//Clear files that will be written to for every simulation.
-	//std::ofstream fs("atoms.txt", ios::trunc);	
+	//std::ofstream fs("atoms.txt", ios::trunc);
+	if(last_state.empty()){
 	std::ofstream fs2("energytemp.txt", ios::trunc);
+	// Write out steps, time_step and dummy index to energytemp.
+	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
+	fs2.close();
+	}
 
+
+	
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
 	for(string::size_type i = 0; i < list_of_atoms.size();i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
@@ -86,10 +94,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	*/
 	}
 
-	// Write out steps, time_step and dummy index to energytemp.
-	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
-
-	fs2.close();
+	
 		   	
 	// Todo: Save all the input!	
 }
@@ -420,7 +425,7 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
 	// Write to file every time step
 	// Seperate the positions for different timesteps
-	for(string::size_type i = 0; i < list_of_atoms.size();i++){
+	//for(string::size_type i = 0; i < list_of_atoms.size();i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
 		//cout << i<<endl;
@@ -432,8 +437,10 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 		fs << list_of_atoms[i]->get_position()<<endl;
 		fs.close();
 	*/
-	}
+	//}
 	
+
+
 	cout << "total_energy " << total_energy << endl;
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;
@@ -443,6 +450,8 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	std::ofstream fs2("energytemp.txt", ios::app);
+
+
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
 
