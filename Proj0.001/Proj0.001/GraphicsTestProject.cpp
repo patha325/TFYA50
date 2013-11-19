@@ -24,6 +24,7 @@ float y=1.0f;
 float deltaAngle = 0.0f;
 float deltaMove = 0;
 float deltaMoveY = 0;
+float deltaMoveZ = 0;
 
 std::vector<Atom*> list_of_atoms;
 int number_of_atoms;
@@ -70,6 +71,10 @@ void computeHei(float deltaMoveY) {
 	y += deltaMoveY * 0.1f;
 }
 
+void computeSid(float deltaMoveZ) {
+	z += deltaMoveZ*0.1f;
+}
+
 void computeDir(float deltaAngle) {
 
 	angle += deltaAngle;
@@ -83,6 +88,8 @@ void renderScene(void) {
 		computePos(deltaMove);
 	if(deltaMoveY)
 		computeHei(deltaMoveY);
+	if(deltaMoveZ)
+		computeSid(deltaMoveZ);
 	if (deltaAngle)
 		computeDir(deltaAngle);
 
@@ -121,6 +128,8 @@ void pressKey(int key, int xx, int yy) { // HUR RÖRA SIG I Y???
 		case GLUT_KEY_DOWN : deltaMove = -0.5f; break;
 		case GLUT_KEY_PAGE_UP : deltaMoveY = 0.5f; break;
 		case GLUT_KEY_PAGE_DOWN : deltaMoveY = -0.5f; break;
+		case GLUT_KEY_INSERT : deltaMoveZ = -0.5f; break;
+		case GLUT_KEY_HOME : deltaMoveZ = 0.5f; break;
 	}
 }
 
@@ -133,6 +142,8 @@ void releaseKey(int key, int xxx, int yyy) {
 		case GLUT_KEY_DOWN : deltaMove = 0;break;
 		case GLUT_KEY_PAGE_UP :
 		case GLUT_KEY_PAGE_DOWN : deltaMoveY = 0; break;
+		case GLUT_KEY_INSERT :
+		case GLUT_KEY_HOME : deltaMoveZ = 0; break;
 	}
 }
 
