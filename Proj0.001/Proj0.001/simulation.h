@@ -21,8 +21,10 @@ private:
 	float time_step; //Given in femtoseconds
 	int steps;
 	float temperature;
+	float pressure;
 	float cutoff;
 	bool thermostat;
+	bool equilibrium;
 	float initial_velocity_modulus;
 	int unit_cells_x;
 	int unit_cells_y;
@@ -73,6 +75,7 @@ public:
 		float lattice_constant,
 		std::string crystal_structure,
 		bool thermostat,
+		bool equilibrium,
 		map<string, vector<Vec>> new_last_state);
 	~Simulation ();
 	void update_atoms(); // Run through list_of_atoms and .update_atom

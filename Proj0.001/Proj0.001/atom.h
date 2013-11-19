@@ -60,6 +60,7 @@ public:
 
 	//Other functions
 	Vec calculate_force(std::vector<Atom*>);
+	float calculate_pressure(std::vector<Atom*>);
 	Vec calculate_acceleration(std::vector<Atom*>);
 	float calculate_potential(std::vector<Atom*>);
 	Vec calculate_velocity();
