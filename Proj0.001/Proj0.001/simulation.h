@@ -78,10 +78,13 @@ public:
 	void update_atoms(); // Run through list_of_atoms and .update_atom
 	void scc_structure();
 	void scc_structure_x(int,int);
+	void scc_corrector();
 	void fcc_structure();
 	void fcc_structure_x(int,int);
+	void fcc_corrector();
 	void bcc_structure();
 	void bcc_structure_x(int,int);
+	void bcc_corrector();
 	std::vector<Atom*> get_list_of_atoms();
 	int get_number_of_atoms();
 	

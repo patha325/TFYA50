@@ -169,18 +169,25 @@ vector list_of_atoms. Uses help functions xcc_structure() and xcc_structure_x()
 void Simulation::create_list_of_atoms(){
 	if(crystal_structure == "scc"){
 		scc_structure();
+		if(!pbc_z)
+			scc_corrector();
 	}
 	else if(crystal_structure == "fcc"){
 		fcc_structure();
+		if(!pbc_z)
+			fcc_corrector();
 	}
 	else if(crystal_structure == "bcc"){
 		bcc_structure();
+		if(!pbc_z)
+			bcc_corrector();
 	}
 }
 void Simulation::scc_structure(){
 		for(int k=0;k<unit_cells_z;k++){//Create the cells in z
 		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
 			scc_structure_x(j,k);// Create the cells in x
+
 		}
 	}
 }
@@ -190,12 +197,18 @@ void Simulation::scc_structure_x(int j, int k)
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
-
-
-			float cutoff = 0.5f; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
+		}
+}
 
-
+void Simulation::scc_corrector(){ // Corrects for the missing atoms if there is no periodic condition in the z-axis
+	for(int i=0;i<unit_cells_x;i++){
+		for(int j=0;j<unit_cells_y;j++){
+	Vec origin (i*lattice_constant,j*lattice_constant,unit_cells_z*lattice_constant);
+			Vec extra (0,0,0);
+			Vec acceleration (0,0,0);
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
+		}
 	}
 }
 void Simulation::fcc_structure(){
@@ -219,10 +232,23 @@ void Simulation::fcc_structure_x(int j, int k)
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon, mass,time_step,initial_velocity_modulus));
 			extra = Vec(0.5f*lattice_constant,0,0.5f*lattice_constant);
-
-
+			
 			extra +=origin;
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
+	}
+}
+void Simulation::fcc_corrector(){// Corrects for the missing atoms if there is no periodic condition in the z-axis
+	for(int i=0;i<unit_cells_x;i++){
+		for(int j=0;j<unit_cells_y;j++){
+	Vec origin (i*lattice_constant,j*lattice_constant,unit_cells_z*lattice_constant);
+			Vec extra (0,0,0);
+			Vec acceleration (0,0,0);
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
+			extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon, mass,time_step,initial_velocity_modulus));
+
+		}
 	}
 }
 void Simulation::bcc_structure(){
@@ -239,17 +265,23 @@ void Simulation::bcc_structure_x(int j, int k)
 		Vec extra (0,0,0);
 		Vec acceleration (0,0,0);
 		
-		float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
-
 		list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));	
 		extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0.5f*lattice_constant);
-
-
+		
 		extra +=origin;
 		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
 	}
+}
+void Simulation::bcc_corrector(){// Corrects for the missing atoms if there is no periodic condition in the z-axis
+	for(int i=0;i<unit_cells_x;i++){
+		for(int j=0;j<unit_cells_y;j++){
+	Vec origin (i*lattice_constant,j*lattice_constant,unit_cells_z*lattice_constant);
+			Vec extra (0,0,0);
+			Vec acceleration (0,0,0);
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
 
-
+		}
+	}
 }
 
 /*----------------------------
