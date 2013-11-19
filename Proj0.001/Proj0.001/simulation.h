@@ -23,6 +23,7 @@ private:
 	float temperature;
 	float cutoff;
 	bool thermostat;
+	bool pbc_z;
 	float initial_velocity_modulus;
 	int unit_cells_x;
 	int unit_cells_y;
@@ -71,7 +72,8 @@ public:
 		float lattice_constant,
 		std::string crystal_structure,
 		bool thermostat,
-		map<string, vector<Vec>> new_last_state);
+		map<string, vector<Vec>> new_last_state,
+		bool pbc_z);
 	~Simulation ();
 	void update_atoms(); // Run through list_of_atoms and .update_atom
 	void scc_structure();

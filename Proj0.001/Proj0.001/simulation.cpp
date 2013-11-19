@@ -28,7 +28,7 @@ Calls constructors for all atoms and the cell list.
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
                         float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat, 
-						map<string, vector<Vec>> new_last_state){
+						map<string, vector<Vec>> new_last_state, bool new_pbc_z){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -45,6 +45,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     crystal_structure = new_crystal_structure;
     thermostat = new_thermostat;
 	last_state = new_last_state;
+	pbc_z = new_pbc_z;
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
 	k_b = 8.617342e-5f; //[eV][K]^{-1}
@@ -55,6 +56,12 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     //Initial setup
     create_list_of_atoms();
 	cout << "Total number of atoms: " << list_of_atoms.size() << endl;
+	if (pbc_z){
+		cout << "PBC is on in Z-direction." << endl;
+	}
+	else{
+		cout << "PBC is off in Z-direction." << endl;
+	} 
 
 	create_cell_list();
 

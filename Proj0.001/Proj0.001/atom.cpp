@@ -172,6 +172,12 @@ Returns a Vec (vector) which is the
 cartesian vector between the atom
 and the parameter atom. Jobbar förmodligen i nm när den används i potential mm...
 ----------------------*/
+/*
+Vec Atom::distance_vector(Atom* other_atom){
+	//if(pbc_z)return distance_vector_pbc;
+	//else return distance_vector_nopbc;
+}
+*/
 Vec Atom::distance_vector(Atom* other_atom){
 	Vec tmp =other_atom->position;
 
