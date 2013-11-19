@@ -146,7 +146,7 @@ Parameters:
 
 	system("pause");
 
-	plotter(argc, argv,simulation2->get_list_of_atoms(),simulation2->get_number_of_atoms());
+//	plotter(argc, argv,simulation2->get_list_of_atoms(),simulation2->get_number_of_atoms());
 
 	return 0;
 }
