@@ -14,7 +14,7 @@ Sets starting position
 
 
 Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
-	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus){
+	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus,bool new_pbc_z){
 	
 	position = starting_position;
 	prev_acceleration = new_prev_acceleration;
@@ -23,6 +23,7 @@ Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff,
 	next_position = position;
 	acceleration = Vec (0, 0, 0);
 	next_acceleration = Vec (0, 0, 0);
+	pbc_z = new_pbc_z;
 
 	cutoff = start_cutoff;
 	lattice_constant = new_lattice_constant;
@@ -63,7 +64,7 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 		float r2 = pow(r,-12);
 		float r3 = pow(r,-7);
 		if (r <= cutoff){
-			tmp_force += (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
+			tmp_force = tmp_force +(48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
 		}
 	}
 	return tmp_force;
@@ -172,13 +173,16 @@ Returns a Vec (vector) which is the
 cartesian vector between the atom
 and the parameter atom. Jobbar förmodligen i nm när den används i potential mm...
 ----------------------*/
-/*
 Vec Atom::distance_vector(Atom* other_atom){
-	//if(pbc_z)return distance_vector_pbc;
-	//else return distance_vector_nopbc;
+	if(pbc_z) return distance_vector_pbc(other_atom);
+	else return distance_vector_no_pbc(other_atom);
 }
-*/
-Vec Atom::distance_vector(Atom* other_atom){
+
+/*--------------------------------------------
+Function for distance vector when using PBC in
+all directions.
+--------------------------------------------*/
+Vec Atom::distance_vector_pbc(Atom* other_atom){
 	Vec tmp =other_atom->position;
 
 	/* Check the x, y and z coordinate for both atoms */
@@ -320,6 +324,49 @@ Vec Atom::distance_vector(Atom* other_atom){
 
 	// Returns the vector to the closest atom from list
 	return shortest_vec;
+}
+
+/*----------------------------------------
+Function for distance vector when NOT using 
+PBC in all directions.
+-----------------------------------------*/
+Vec Atom::distance_vector_no_pbc(Atom* other_atom){
+
+//	cout << "----------------------" << endl;
+
+	Vec other_atom_vector = other_atom->get_position();
+	Vec saved_distance = other_atom_vector - position;
+	Vec new_atom_vector;
+
+//	cout << "Reference atom position: " << position << endl;
+
+
+	for(int x = -1; x <= 1; x++){
+		for(int y = -1; y <= 1; y++){
+			for(int z = -1; z <= 0; z++){
+				new_atom_vector = other_atom_vector+Vec(bulk_length_x*x, bulk_length_y*y, bulk_length_z*z);
+				Vec tmp_distance = new_atom_vector - position;
+
+/*				
+				cout << "Other atom position: " << new_atom_vector << endl;
+				cout << "Distance vector: " << tmp_distance << endl;
+				cout << "Distance: " << tmp_distance.length() << endl;
+*/
+				if(tmp_distance.length()<saved_distance.length()){
+//					cout << "- Saved -" << endl;
+					saved_distance = tmp_distance;
+				}
+			}
+		}
+	}
+
+/*
+	cout << "FINAL DISTANCE: " << saved_distance << endl;
+	cout << "---------------------------" << endl << endl;
+	system("pause");
+*/
+
+	return saved_distance;
 }
 
 /*-------------------------
