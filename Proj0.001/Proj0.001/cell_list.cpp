@@ -135,10 +135,11 @@ vector<Atom*> Cell_list::get_neighbours(Atom* atom){
     vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
     vector<Atom*> neighbouring_atoms;
 		
-    for (string::size_type i = 0; i < neighbouring_cells.size(); i++) {
+    for (int i = 0; i < neighbouring_cells.size(); i++) {
 		vector<Atom*> atoms_to_add = neighbouring_cells[i]->get_atoms_in_cell();
-		for (string::size_type j = 0; j < atoms_to_add.size(); j++){
-			 if (atom->distance_vector(atoms_to_add[j]).length() != 0){
+		for (int j = 0; j < atoms_to_add.size(); j++){
+			float distance = atom->distance_vector(atoms_to_add[j]).length();
+			 if (distance != 0 && distance <= cutoff){
 				 neighbouring_atoms.push_back(atoms_to_add[j]);
 			 }
 		}
@@ -242,7 +243,8 @@ void Cell_list::create_cells(){
 
 
 	cout << "Cells created!" << endl;
-	cout << "Created in total " << i << " cells." << endl << endl;
+	cout << "Created in total " << i << " cells." << endl;
+	cout << "Cell dimensions are: " << cell_length_x << " x " << cell_length_y << " x "  << cell_length_z << endl << endl;
 
     
     //Number of cells in each direction

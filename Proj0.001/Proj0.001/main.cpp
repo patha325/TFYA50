@@ -78,7 +78,7 @@ Parameters:
 	string input_crystal_structure = "fcc";
 	string input_material;
 	bool input_thermostat = false;
-	bool pbc_z = false;
+	bool pbc_z = true;
 	map<string, vector<Vec>> last_state;	//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
 											//				"prev_position":[...], "prev_acceleration":[...], "next_acceleration":[...]}
 											//take over next to last state. Otherwise we will not have a proper next_position
@@ -124,6 +124,12 @@ Parameters:
 	cout << "Running simulation..." << endl << endl;
 	//Save last state
 	last_state = simulation2->run_simulation();
+
+/*
+	Simulation* simulation = new Simulation(simulation2);
+	cout << "Number of atoms: " << simulation->get_list_of_atoms().size() << endl;
+	cout << "Energy: " << simulation->get_total_energy() << endl;
+*/
 
 	//Run back to back simulation
 	//Always with most recent simulation as it is now

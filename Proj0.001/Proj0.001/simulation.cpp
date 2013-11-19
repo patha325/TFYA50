@@ -62,6 +62,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	else{
 		cout << "PBC is off in Z-direction." << endl;
 	} 
+	cout << "Cutoff distance: " << cutoff << endl;
 
 	create_cell_list();
 
@@ -92,6 +93,34 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	fs2.close();
 		   	
 	// Todo: Save all the input!	
+}
+
+Simulation::Simulation(Simulation* old_simulation){
+
+	list_of_atoms = old_simulation->get_list_of_atoms();
+	number_of_atoms = old_simulation->get_number_of_atoms();
+	time_step = old_simulation->get_time_step();
+	steps = old_simulation->get_steps();
+	temperature = old_simulation->get_temperature();
+	cutoff = old_simulation->get_cutoff();
+	thermostat = old_simulation->get_thermostat();
+	pbc_z = old_simulation->get_pbc_z();
+	initial_velocity_modulus = old_simulation->get_initial_velocity_modulus();
+	unit_cells_x = old_simulation->get_unit_cells_x();
+	unit_cells_y = old_simulation->get_unit_cells_y();
+	unit_cells_z = old_simulation->get_unit_cells_z();
+	total_energy = old_simulation->get_total_energy();
+	cell_list = old_simulation->get_cell_list();
+
+	//Boltzmann constant
+	k_b = 8.617342e-5f;
+
+	//Material
+	mass = old_simulation->get_mass();
+	sigma = old_simulation->get_sigma();
+	epsilon = old_simulation->get_epsilon();
+	lattice_constant = old_simulation->get_lattice_constant();
+	crystal_structure = old_simulation->get_crystal_structure();
 }
 
 /*-------------------------
@@ -322,7 +351,7 @@ Alter everything in the simulation to get to the next time step.
 ------------------------------*/
 void Simulation::next_time_step(int current_time_step, bool second_to_last_time_step, bool next_to_last_time_step, bool last_time_step){
 	
-	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
+//	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
 
 	float E_pot = 0;
 	float E_kin = 0;
@@ -332,14 +361,21 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 	float tmp_E_kin = 0;
 		
 	for(int i = 0; i < number_of_atoms; i++){
+
 		//cout << "Before timestep - atom " << i << endl;
 		Atom* atom = list_of_atoms[i];
 		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
+		neighbouring_atoms = atom->reduce_neighbours_list(neighbouring_atoms);
+
+
+//		cout << "Neighbours: " << neighbouring_atoms.size() << endl;
 
 		//Before doing anything else: Update atom_positions with current position for each atom for this time step
+		/*
 		if (fmod(current_time_step, 5.0) == 0){
 			atom_positions[current_time_step].push_back(atom->get_position());
 		}
+		*/
 
 		//Calculate potential energy
 		E_pot += atom->calculate_potential(neighbouring_atoms);
@@ -447,13 +483,14 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 	*/
 	}
 	
+/*
 	cout << "total_energy " << total_energy << endl;
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;
 	cout << "temperature " << temperature << endl;
 	//cout << "number of atoms " << number_of_atoms << endl << endl;
 	cout << "-------------------------------------------" << endl << endl;
-
+*/
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	std::ofstream fs2("energytemp.txt", ios::app);
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
@@ -521,14 +558,25 @@ void Simulation::create_cell_list(){
 	cell_list->add_atoms_to_cells(list_of_atoms);
 }
 
-
-std::vector<Atom*> Simulation::get_list_of_atoms(){
-	
-	return list_of_atoms;
-}
-
-int Simulation::get_number_of_atoms(){
-	
-	return number_of_atoms;
-}
-
+/*-----
+GETTERS
+-----*/
+vector<Atom*> Simulation::get_list_of_atoms(){return list_of_atoms;}
+int Simulation::get_number_of_atoms(){return number_of_atoms;}
+float Simulation::get_time_step(){return time_step;}
+int Simulation::get_steps(){return steps;}
+float Simulation::get_temperature(){return temperature;}
+float Simulation::get_cutoff(){return cutoff;}
+bool Simulation::get_thermostat(){return thermostat;}
+bool Simulation::get_pbc_z(){return pbc_z;}
+float Simulation::get_initial_velocity_modulus(){return initial_velocity_modulus;}
+int Simulation::get_unit_cells_x(){return unit_cells_x;}
+int Simulation::get_unit_cells_y(){return unit_cells_y;}
+int Simulation::get_unit_cells_z(){return unit_cells_z;}
+float Simulation::get_total_energy(){return total_energy;}
+float Simulation::get_mass(){return mass;}
+float Simulation::get_sigma(){return sigma;}
+float Simulation::get_epsilon(){return epsilon;}
+float Simulation::get_lattice_constant(){return lattice_constant;}
+string Simulation::get_crystal_structure(){return crystal_structure;}
+Cell_list* Simulation::get_cell_list(){return cell_list;}

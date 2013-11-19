@@ -443,6 +443,17 @@ void Atom::update_atom(){ // Needed??
 
 }
 
+vector<Atom*> Atom::reduce_neighbours_list(vector<Atom*> original_list){
+
+//	cout << original_list.size();
+	for (int i = 0; i < original_list.size(); i++){
+		if(distance_vector(original_list[i]).length()>cutoff) original_list.erase(original_list.begin()+i);
+	}
+//	cout << " - " << original_list.size() << endl;
+//	system("pause");
+	return original_list;
+}
+
 
 // ------- GETTERS --------
 Vec Atom::get_velocity(){

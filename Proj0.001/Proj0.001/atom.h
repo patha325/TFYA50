@@ -72,6 +72,7 @@ public:
 	Vec calculate_next_position();
 	Vec generate_random_vector();
 	void update_atom();	
+	vector<Atom*> reduce_neighbours_list(vector<Atom*> original_list);
 };
 
 #endif
