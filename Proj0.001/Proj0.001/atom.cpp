@@ -174,8 +174,27 @@ cartesian vector between the atom
 and the parameter atom. Jobbar förmodligen i nm när den används i potential mm...
 ----------------------*/
 Vec Atom::distance_vector(Atom* other_atom){
+	
 	if(pbc_z) return distance_vector_pbc(other_atom);
 	else return distance_vector_no_pbc(other_atom);
+	
+/*
+	Vec v1 = distance_vector_pbc(other_atom);
+	Vec v2 = distance_vector_no_pbc(other_atom);
+
+	if(position.getZ()>22.0){
+		cout << "----------------------" << endl;
+		cout << "Reference atom position: " << position << endl;
+		cout << "Other atom position: " << other_atom->get_position() << endl;
+		cout << "Same bulk:" << other_atom->get_position() - position << endl;
+		cout << "V1: " << v1 << endl;
+		cout << "V2: " << v2 << endl;
+		system("pause");
+		cout << "----------------------" << endl << endl;
+	}
+	if (v1!=v2) cout << "ERROR: Does not give the same distance vector" << endl;
+*/
+
 }
 
 /*--------------------------------------------

@@ -171,18 +171,22 @@ vector list_of_atoms. Uses help functions xcc_structure() and xcc_structure_x()
 void Simulation::create_list_of_atoms(){
 	if(crystal_structure == "scc"){
 		scc_structure();
+		/*
 		if(!pbc_z)
-			scc_corrector();
+			scc_corrector();*/
 	}
 	else if(crystal_structure == "fcc"){
 		fcc_structure();
+		/*
 		if(!pbc_z)
 			fcc_corrector();
+			*/
 	}
 	else if(crystal_structure == "bcc"){
 		bcc_structure();
+		/*
 		if(!pbc_z)
-			bcc_corrector();
+			bcc_corrector();*/
 	}
 }
 void Simulation::scc_structure(){
@@ -204,7 +208,7 @@ void Simulation::scc_structure_x(int j, int k)
 		}
 }
 
-
+/*
 void Simulation::scc_corrector(){ // Corrects for the missing atoms if there is no periodic condition in the z-axis
 	for(int i=0;i<unit_cells_x;i++){
 		for(int j=0;j<unit_cells_y;j++){
@@ -215,6 +219,8 @@ void Simulation::scc_corrector(){ // Corrects for the missing atoms if there is 
 		}
 	}
 }
+*/
+
 void Simulation::fcc_structure(){
 	for(int k=0;k<unit_cells_z;k++){//Create the cells in z
 		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
@@ -241,6 +247,8 @@ void Simulation::fcc_structure_x(int j, int k)
 			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
 	}
 }
+
+/*
 void Simulation::fcc_corrector(){// Corrects for the missing atoms if there is no periodic condition in the z-axis
 	for(int i=0;i<unit_cells_x;i++){
 		for(int j=0;j<unit_cells_y;j++){
@@ -254,6 +262,8 @@ void Simulation::fcc_corrector(){// Corrects for the missing atoms if there is n
 		}
 	}
 }
+*/
+
 void Simulation::bcc_structure(){
 	for(int k=0;k<unit_cells_z;k++){//Create the cells in z
 		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
@@ -276,6 +286,8 @@ void Simulation::bcc_structure_x(int j, int k)
 		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
 	}
 }
+
+/*
 void Simulation::bcc_corrector(){// Corrects for the missing atoms if there is no periodic condition in the z-axis
 	for(int i=0;i<unit_cells_x;i++){
 		for(int j=0;j<unit_cells_y;j++){
@@ -287,6 +299,7 @@ void Simulation::bcc_corrector(){// Corrects for the missing atoms if there is n
 		}
 	}
 }
+*/
 
 /*----------------------------
 FUNCTION next_time_step
