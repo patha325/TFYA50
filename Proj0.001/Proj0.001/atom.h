@@ -28,13 +28,17 @@ private:
 	float time_step;
 	float total_energy;
 	float initial_velocity_modulus;
-		
+	bool pbc_z;
 
+	Vec distance_vector_pbc(Atom*);
+	Vec distance_vector_no_pbc(Atom*);
+		
 public:
 	//Constructor
 
 
-	Atom (Vec,Vec,float,int,int,int,float,float,float,float,float,float);
+	Atom (Vec starting_position, Vec new_prev_acceleration, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
+	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus, bool new_pbc_z);
 
 
 	~Atom ();

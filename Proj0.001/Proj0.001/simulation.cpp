@@ -31,7 +31,7 @@ Calls constructors for all atoms and the cell list.
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
                         float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat,
-						bool new_equilibrium, map<string, vector<Vec>> new_last_state){
+						bool new_equilibrium, map<string, vector<Vec>> new_last_state, bool new_pbc_z){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -50,25 +50,41 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     thermostat = new_thermostat;
 	equilibrium = new_equilibrium;
 	last_state = new_last_state;
+	pbc_z = new_pbc_z;
+	
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
 	k_b = 8.617342e-5f; //[eV][K]^{-1}
 	hbar = 0.65821189f; // [eV][fs]
 	initial_velocity_modulus = sqrt((3*k_b*temperature)/(mass));
+	cout << "wanted temperature " << temperature << endl;
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
     //Initial setup
     create_list_of_atoms();
 	cout << "Total number of atoms: " << list_of_atoms.size() << endl;
+	if (pbc_z){
+		cout << "PBC is on in Z-direction." << endl;
+	}
+	else{
+		cout << "PBC is off in Z-direction." << endl;
+	} 
 
 	create_cell_list();
 
 	number_of_atoms = list_of_atoms.size();	
 
 	//Clear files that will be written to for every simulation.
-	std::ofstream fs("atoms.txt", ios::trunc);	
+	//std::ofstream fs("atoms.txt", ios::trunc);
+	if(last_state.empty()){
 	std::ofstream fs2("energytemp.txt", ios::trunc);
+	// Write out steps, time_step and dummy index to energytemp.
+	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
+	fs2.close();
+	}
 
+
+	
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
 	for(string::size_type i = 0; i < list_of_atoms.size();i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
@@ -77,15 +93,14 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 		//cout << list_of_atoms[i]->get_position()<<endl;
 		//	ofstream myfile;
 		//myfile.open ("example.txt");
+		/*
 		std::ofstream fs("atoms.txt", ios::app); 
 		fs << list_of_atoms[i]->get_position()<<endl;
 		fs.close();
+	*/
 	}
 
-	// Write out steps, time_step and dummy index to energytemp.
-	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
-
-	fs2.close();
+	
 		   	
 	// Todo: Save all the input!	
 }
@@ -201,18 +216,29 @@ vector list_of_atoms. Uses help functions xcc_structure() and xcc_structure_x()
 void Simulation::create_list_of_atoms(){
 	if(crystal_structure == "scc"){
 		scc_structure();
+		/*
+		if(!pbc_z)
+			scc_corrector();*/
 	}
 	else if(crystal_structure == "fcc"){
 		fcc_structure();
+		/*
+		if(!pbc_z)
+			fcc_corrector();
+			*/
 	}
 	else if(crystal_structure == "bcc"){
 		bcc_structure();
+		/*
+		if(!pbc_z)
+			bcc_corrector();*/
 	}
 }
 void Simulation::scc_structure(){
 		for(int k=0;k<unit_cells_z;k++){//Create the cells in z
 		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
 			scc_structure_x(j,k);// Create the cells in x
+
 		}
 	}
 }
@@ -223,13 +249,23 @@ void Simulation::scc_structure_x(int j, int k)
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
 
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
+		}
+}
 
-			float cutoff = 0.5f; // The cutoff given to all of the atoms SHOULD BE CHANGED!
-			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
-
-
+/*
+void Simulation::scc_corrector(){ // Corrects for the missing atoms if there is no periodic condition in the z-axis
+	for(int i=0;i<unit_cells_x;i++){
+		for(int j=0;j<unit_cells_y;j++){
+	Vec origin (i*lattice_constant,j*lattice_constant,unit_cells_z*lattice_constant);
+			Vec extra (0,0,0);
+			Vec acceleration (0,0,0);
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
+		}
 	}
 }
+*/
+
 void Simulation::fcc_structure(){
 	for(int k=0;k<unit_cells_z;k++){//Create the cells in z
 		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
@@ -243,20 +279,36 @@ void Simulation::fcc_structure_x(int j, int k)
 			Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 			Vec extra (0,0,0);
 			Vec acceleration (0,0,0);
-			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma, epsilon, mass,time_step,initial_velocity_modulus));
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma, epsilon, mass,time_step,initial_velocity_modulus,pbc_z));
 			extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon, mass,time_step,initial_velocity_modulus));
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon, mass,time_step,initial_velocity_modulus,pbc_z));
 			extra = Vec(0,0.5f*lattice_constant,0.5f*lattice_constant);
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon, mass,time_step,initial_velocity_modulus));
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon, mass,time_step,initial_velocity_modulus,pbc_z));
 			extra = Vec(0.5f*lattice_constant,0,0.5f*lattice_constant);
-
-
+			
 			extra +=origin;
-			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
 	}
 }
+
+/*
+void Simulation::fcc_corrector(){// Corrects for the missing atoms if there is no periodic condition in the z-axis
+	for(int i=0;i<unit_cells_x;i++){
+		for(int j=0;j<unit_cells_y;j++){
+	Vec origin (i*lattice_constant,j*lattice_constant,unit_cells_z*lattice_constant);
+			Vec extra (0,0,0);
+			Vec acceleration (0,0,0);
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
+			extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0);
+			extra +=origin;
+			list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon, mass,time_step,initial_velocity_modulus,pbc_z));
+		}
+	}
+}
+*/
+
 void Simulation::bcc_structure(){
 	for(int k=0;k<unit_cells_z;k++){//Create the cells in z
 		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
@@ -270,19 +322,29 @@ void Simulation::bcc_structure_x(int j, int k)
 		Vec origin (i*lattice_constant,j*lattice_constant,k*lattice_constant);
 		Vec extra (0,0,0);
 		Vec acceleration (0,0,0);
-		
-		float cutoff = 0.5; // The cutoff given to all of the atoms SHOULD BE CHANGED!
 
-		list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));	
+		list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));	
+
 		extra = Vec(0.5f*lattice_constant,0.5f*lattice_constant,0.5f*lattice_constant);
-
-
+		
 		extra +=origin;
-		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus));
+		list_of_atoms.push_back(new Atom(extra,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
 	}
-
-
 }
+
+/*
+void Simulation::bcc_corrector(){// Corrects for the missing atoms if there is no periodic condition in the z-axis
+	for(int i=0;i<unit_cells_x;i++){
+		for(int j=0;j<unit_cells_y;j++){
+	Vec origin (i*lattice_constant,j*lattice_constant,unit_cells_z*lattice_constant);
+			Vec extra (0,0,0);
+			Vec acceleration (0,0,0);
+			list_of_atoms.push_back(new Atom(origin,acceleration,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
+
+		}
+	}
+}
+*/
 
 /*----------------------------
 FUNCTION next_time_step
@@ -346,7 +408,7 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 				float new_velocity_modulus = new_velocity.length();
 				float right_modulus = 0;
 				if (new_velocity_modulus != 0){
-					float right_modulus = initial_velocity_modulus/new_velocity_modulus;
+					right_modulus = initial_velocity_modulus/new_velocity_modulus;
 				}
 				else{
 					right_modulus = initial_velocity_modulus;
@@ -454,18 +516,22 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
 	// Write to file every time step
 	// Seperate the positions for different timesteps
-	for(string::size_type i = 0; i < list_of_atoms.size();i++){
+	//for(string::size_type i = 0; i < list_of_atoms.size();i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
 		//cout << i<<endl;
 		//cout << list_of_atoms[i]->get_position()<<endl;
 		//	ofstream myfile;
 		//myfile.open ("example.txt");
+		/*
 		std::ofstream fs("atoms.txt", ios::app); 
 		fs << list_of_atoms[i]->get_position()<<endl;
 		fs.close();
-	}
+	*/
+	//}
 	
+
+
 	cout << "total_energy " << total_energy << endl;
 	cout << "E_pot " << E_pot << endl;
 	cout << "E_kin " << E_kin << endl;
@@ -475,6 +541,8 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	std::ofstream fs2("energytemp.txt", ios::app);
+
+
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
 
@@ -536,7 +604,7 @@ constructor. Adds all atoms to the
 cell list.
 ------------------------------*/
 void Simulation::create_cell_list(){
-	cell_list = new Cell_list(cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant);
+	cell_list = new Cell_list(cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,pbc_z);
 	cell_list->add_atoms_to_cells(list_of_atoms);
 }
 

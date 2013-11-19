@@ -1,4 +1,5 @@
 #include "simulation.h"
+//#include "simulation2.h"
 #include <iostream>
 #include "vec.h"
 #include <string>
@@ -63,7 +64,7 @@ Parameters:
 
 	//initializegraphics
 	float a = 0.2f; // Watch out for double warning!
-
+	
 	int input_x;
 	int input_y;
 	int input_z;
@@ -79,6 +80,7 @@ Parameters:
 	string input_material;
 	bool input_thermostat = false;
 	bool input_equilibrium = false;
+	bool pbc_z = false;
 	map<string, vector<Vec>> last_state;	//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
 											//				"prev_position":[...], "prev_acceleration":[...], "next_acceleration":[...]}
 											//take over next to last state. Otherwise we will not have a proper next_position
@@ -87,6 +89,8 @@ Parameters:
 	cin >> input_x;
 	cin >> input_y;
 	cin >> input_z;
+	cout << "Choose (Yes = 1/No = 0) for periodic boundry condition in z"<<endl;
+	cin >> pbc_z;
 	cout << "Input the wanted time step size:" << endl; 
 	cin >> input_time_step;
 	cout << "Input the wanted number of steps:" << endl;
@@ -121,11 +125,11 @@ Parameters:
 	cout << "Lattice: "<<lattice<<endl;
 	
 	//Create first simulation world
-	Simulation* simulation2 = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
-		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat, input_equilibrium, last_state);
+	Simulation* simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
+		input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat, input_equilibrium, last_state, pbc_z);
 	cout << "Running simulation..." << endl << endl;
 	//Save last state
-	last_state = simulation2->run_simulation();
+	last_state = simulation->run_simulation();
 
 	//Run back to back simulation
 	//Always with most recent simulation as it is now
@@ -136,8 +140,8 @@ Parameters:
 	while (back_to_back){
 		cout << "Starting new simulation back to back with previous!" << endl;
 		//Create new simulation
-		Simulation* btb_simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
-			input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat,input_equilibrium, last_state);
+		Simulation* btb_simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff,
+			input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,input_thermostat,input_equilibrium, last_state,pbc_z);
 		cout << "Running simulation..." << endl << endl;
 		last_state = btb_simulation->run_simulation();
 
@@ -148,7 +152,7 @@ Parameters:
 
 	system("pause");
 
-	plotter(argc, argv,simulation2->get_list_of_atoms(),simulation2->get_number_of_atoms());
+//	plotter(argc, argv,simulation2->get_list_of_atoms(),simulation2->get_number_of_atoms());
 
 	return 0;
 }

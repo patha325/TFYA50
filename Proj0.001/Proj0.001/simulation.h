@@ -25,6 +25,7 @@ private:
 	float cutoff;
 	bool thermostat;
 	bool equilibrium;
+	bool pbc_z;
 	float initial_velocity_modulus;
 	int unit_cells_x;
 	int unit_cells_y;
@@ -53,6 +54,7 @@ private:
 	void create_cell_list();
 	int calculate_number_of_atoms();
 	
+	
 
 public:
 	void create_list_of_atoms(); //Create all atoms in this class? Convert from fcc to atom positions.
@@ -62,6 +64,7 @@ public:
 	void update_atoms_btb(); //If back to back simulation, update atoms to be in correct state
 	map<string, vector<Vec>> run_simulation(); //Loop through next_time_step and return last state
 	void save(); //Save ??? to a .txt file with some structure.
+	//std::ofstream fs2;
 	Simulation (int unit_cells_x,
 		int unit_cells_y, // unit_cells is a material parameter.
 		int unit_cells_z,
@@ -76,15 +79,20 @@ public:
 		std::string crystal_structure,
 		bool thermostat,
 		bool equilibrium,
-		map<string, vector<Vec>> new_last_state);
+		map<string, vector<Vec>> new_last_state,
+		bool pbc_z);//,
+		//std::ofstream);
 	~Simulation ();
 	void update_atoms(); // Run through list_of_atoms and .update_atom
 	void scc_structure();
 	void scc_structure_x(int,int);
+	void scc_corrector();
 	void fcc_structure();
 	void fcc_structure_x(int,int);
+	void fcc_corrector();
 	void bcc_structure();
 	void bcc_structure_x(int,int);
+	void bcc_corrector();
 	std::vector<Atom*> get_list_of_atoms();
 	int get_number_of_atoms();
 	
