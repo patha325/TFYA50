@@ -1,6 +1,8 @@
 #include "atom.h"
 #include "vec.h"
 #include <math.h>
+#include <map>
+#include <string>
 
 using namespace std;
 
@@ -12,12 +14,17 @@ Sets starting position
 
 
 Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
-
-	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus){
-
-
+	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus,bool new_pbc_z){
+	
 	position = starting_position;
 	prev_acceleration = new_prev_acceleration;
+	velocity = initial_velocity_modulus * generate_random_vector();
+	prev_position = position;
+	next_position = position;
+	acceleration = Vec (0, 0, 0);
+	next_acceleration = Vec (0, 0, 0);
+	pbc_z = new_pbc_z;
+
 	cutoff = start_cutoff;
 	lattice_constant = new_lattice_constant;
 	sigma = new_sigma;
@@ -27,13 +34,6 @@ Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff,
 	bulk_length_z = unit_cells_z*lattice_constant;
 	mass = new_mass;
 	time_step = new_time_step;
-	velocity = initial_velocity_modulus * generate_random_vector();
-//	cout << "velocity " << velocity << endl;
-	prev_position = position;
-	next_position = position;
-	//next_position = Vec (0, 0, 0);
-	acceleration = Vec (0, 0, 0);
-	next_acceleration = Vec (0, 0, 0);
 }
 
 /*--------------------
@@ -60,12 +60,15 @@ Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
 	for(string::size_type i=0; i < neighbouring_atoms.size(); i++){
 		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
-		float r= distance_vector(neighbouring_atoms[i]).length();
-		float r2 = pow(r,-13);
+		float r = distance_vector(neighbouring_atoms[i]).length();
+		float r2 = pow(r,-12);
 		float r3 = pow(r,-7);
-		tmp_force += -48*(r2-r3/2)*distance_vector(neighbouring_atoms[i]).normalize();
+		if (r <= cutoff){
+			tmp_force = tmp_force +(48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
+		}
 	}
 	return tmp_force;
+
 }
 
 /*----------------------
@@ -155,7 +158,6 @@ the atom. Ganska vagt kanske...
 ----------------------*/
 
 float Atom::calculate_temperature(float E_kin){
-	
 
 	float k_b = 8.617342e-5f; //[eV][K]^{-1}
 	return (2*E_kin)/(3*k_b);
@@ -172,6 +174,34 @@ cartesian vector between the atom
 and the parameter atom. Jobbar förmodligen i nm när den används i potential mm...
 ----------------------*/
 Vec Atom::distance_vector(Atom* other_atom){
+	
+	if(pbc_z) return distance_vector_pbc(other_atom);
+	else return distance_vector_no_pbc(other_atom);
+	
+/*
+	Vec v1 = distance_vector_pbc(other_atom);
+	Vec v2 = distance_vector_no_pbc(other_atom);
+
+	if(position.getZ()>22.0){
+		cout << "----------------------" << endl;
+		cout << "Reference atom position: " << position << endl;
+		cout << "Other atom position: " << other_atom->get_position() << endl;
+		cout << "Same bulk:" << other_atom->get_position() - position << endl;
+		cout << "V1: " << v1 << endl;
+		cout << "V2: " << v2 << endl;
+		system("pause");
+		cout << "----------------------" << endl << endl;
+	}
+	if (v1!=v2) cout << "ERROR: Does not give the same distance vector" << endl;
+*/
+
+}
+
+/*--------------------------------------------
+Function for distance vector when using PBC in
+all directions.
+--------------------------------------------*/
+Vec Atom::distance_vector_pbc(Atom* other_atom){
 	Vec tmp =other_atom->position;
 
 	/* Check the x, y and z coordinate for both atoms */
@@ -313,6 +343,49 @@ Vec Atom::distance_vector(Atom* other_atom){
 
 	// Returns the vector to the closest atom from list
 	return shortest_vec;
+}
+
+/*----------------------------------------
+Function for distance vector when NOT using 
+PBC in all directions.
+-----------------------------------------*/
+Vec Atom::distance_vector_no_pbc(Atom* other_atom){
+
+//	cout << "----------------------" << endl;
+
+	Vec other_atom_vector = other_atom->get_position();
+	Vec saved_distance = other_atom_vector - position;
+	Vec new_atom_vector;
+
+//	cout << "Reference atom position: " << position << endl;
+
+
+	for(int x = -1; x <= 1; x++){
+		for(int y = -1; y <= 1; y++){
+			for(int z = -1; z <= 0; z++){
+				new_atom_vector = other_atom_vector+Vec(bulk_length_x*x, bulk_length_y*y, bulk_length_z*z);
+				Vec tmp_distance = new_atom_vector - position;
+
+/*				
+				cout << "Other atom position: " << new_atom_vector << endl;
+				cout << "Distance vector: " << tmp_distance << endl;
+				cout << "Distance: " << tmp_distance.length() << endl;
+*/
+				if(tmp_distance.length()<saved_distance.length()){
+//					cout << "- Saved -" << endl;
+					saved_distance = tmp_distance;
+				}
+			}
+		}
+	}
+
+/*
+	cout << "FINAL DISTANCE: " << saved_distance << endl;
+	cout << "---------------------------" << endl << endl;
+	system("pause");
+*/
+
+	return saved_distance;
 }
 
 /*-------------------------
