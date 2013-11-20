@@ -63,10 +63,10 @@ public:
 	void set_cutoff(float);
 
 	//Other functions
-	Vec calculate_force(std::vector<Atom*>);
-	float calculate_pressure(std::vector<Atom*>);
-	Vec calculate_acceleration(std::vector<Atom*>);
-	float calculate_potential(std::vector<Atom*>);
+	Vec calculate_force(Atom*);
+	float calculate_pressure(Atom*, Vec);
+	Vec calculate_acceleration(Vec);
+	float calculate_potential(Atom*);
 	Vec calculate_velocity();
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);

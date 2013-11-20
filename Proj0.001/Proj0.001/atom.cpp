@@ -13,16 +13,16 @@ Sets starting position
 ----------------------*/
 
 
-Atom::Atom(Vec starting_position, Vec new_prev_acceleration, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
+Atom::Atom(Vec starting_position, Vec new_acceleration, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus,bool new_pbc_z){
 	
 	position = starting_position;
-	prev_acceleration = new_prev_acceleration;
-	velocity = initial_velocity_modulus * generate_random_vector();
+	prev_acceleration = new_acceleration;
+	velocity = initial_velocity_modulus * generate_random_vector(); //generates normed vector in some random direction
 	prev_position = position;
 	next_position = position;
-	acceleration = Vec (0, 0, 0);
-	next_acceleration = Vec (0, 0, 0);
+	acceleration = new_acceleration;
+	next_acceleration = new_acceleration;
 	pbc_z = new_pbc_z;
 
 	cutoff = start_cutoff;
@@ -54,19 +54,17 @@ Calculates force on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-Vec Atom::calculate_force(vector<Atom*> neighbouring_atoms){
+Vec Atom::calculate_force(Atom* neighbouring_atom){
 
 	Vec tmp_force (0,0,0);
-	for(string::size_type i=0; i < neighbouring_atoms.size(); i++){
-		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
-		float r = distance_vector(neighbouring_atoms[i]).length();
-		float r2 = pow(r,-12);
-		float r3 = pow(r,-7);
-		if (r <= cutoff){
-			tmp_force = tmp_force +(48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
-		}
+	float r = distance_vector(neighbouring_atom).length();
+	float r2 = pow(r,-12);
+	float r3 = pow(r,-7);
+	if (r <= cutoff){
+		tmp_force = (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atom).normalize();
 	}
+
 	return tmp_force;
 
 }
@@ -80,27 +78,16 @@ Calculates pressure on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-float Atom::calculate_pressure(vector<Atom*> neighbouring_atoms){
+float Atom::calculate_pressure(Atom* neighbouring_atom, Vec tmp_force){
 
     float tmp_pressure = 0;
-	Vec tmp_force (0,0,0);
-	for(string::size_type i=0; i < neighbouring_atoms.size(); i++){
-		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
-		float r = distance_vector(neighbouring_atoms[i]).length();
-		float r2 = pow(r,-12);
-		float r3 = pow(r,-7);
-		Vec tmp_force;
-		if (r <= cutoff){
-			tmp_force = (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atoms[i]).normalize();
-			tmp_pressure += tmp_force.length()*r;
-		}
+	float r = distance_vector(neighbouring_atom).length();
+	if (r <= cutoff){
+		tmp_pressure = tmp_force.length()*r;
 	}
 
-
-
 	return tmp_pressure;
-
 }
 
 /*----------------------
@@ -112,11 +99,10 @@ Calculates acceleration on the atom
 from closest atom.
 ----------------------*/
 
-Vec Atom::calculate_acceleration(vector<Atom*> neighbouring_atoms){
+Vec Atom::calculate_acceleration(Vec force){
 
 	Vec tmp_acc (0,0,0);
-	Vec tmp_force = calculate_force(neighbouring_atoms);
-	tmp_acc.setCoords(-tmp_force.getX()/mass,-tmp_force.getY()/mass,-tmp_force.getZ()/mass);
+	tmp_acc.setCoords(-force.getX()/mass,-force.getY()/mass,-force.getZ()/mass);
 	
 	return tmp_acc;
 }
@@ -129,18 +115,17 @@ Returns: float (scalar potential)
 Calculates (LJ) potential on 
 the atom, from closest atom.
 ----------------------*/
-float Atom::calculate_potential(vector<Atom*> neighbouring_atoms){
+float Atom::calculate_potential(Atom* neighbouring_atom){
 
 	float tmp_potential = 0;
-	for(string::size_type i = 0; i < neighbouring_atoms.size(); i++){
-		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
+	// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
-		Vec closest_vector_tmp = distance_vector(neighbouring_atoms[i]);
-		float tmp_distance = closest_vector_tmp.length();
-		if(tmp_distance <= cutoff){
-			tmp_potential += 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
-		}
+	Vec closest_vector_tmp = distance_vector(neighbouring_atom);
+	float tmp_distance = closest_vector_tmp.length();
+	if(tmp_distance <= cutoff){
+		tmp_potential = 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
 	}
+	
 	return tmp_potential;
 }
 
@@ -474,7 +459,7 @@ void Atom::update_atom(){ // Needed??
 vector<Atom*> Atom::reduce_neighbours_list(vector<Atom*> original_list){
 
 //	cout << original_list.size();
-	for (int i = 0; i < original_list.size(); i++){
+	for (unsigned int i = 0; i < original_list.size(); i++){
 		if(distance_vector(original_list[i]).length()>cutoff) original_list.erase(original_list.begin()+i);
 	}
 //	cout << " - " << original_list.size() << endl;
