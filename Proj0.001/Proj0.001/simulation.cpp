@@ -6,7 +6,8 @@
 
 using namespace std;
 
-
+int kappa=1;
+int step_out=0;
 /*-----------------------
 CONSTRUCTOR
 Parameters:
@@ -82,7 +83,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	
 	std::ofstream fs2("energytemp.txt", ios::trunc);
 	// Write out steps, time_step and dummy index to energytemp.
-	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
+	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0  << " " << 0 <<endl;
 	fs2.close();
 	
 	//}
@@ -103,7 +104,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	*/
 	}
 
-	
+	step_out +=steps;
 	return;  	
 	// Todo: Save all the input!	
 }
@@ -136,14 +137,56 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	lattice_constant = old_simulation->get_lattice_constant();
 	crystal_structure = old_simulation->get_crystal_structure();
 
-	//Clear energytemp.txt and start fresh every time! Is this what we want?
-	
+
+	// Edit the first line of energytemp after that add other data to the file.
+	configure_data(steps);
+
+}
+void Simulation::configure_data(int steps){
+	std::vector<float> total_energy_vector;
+	std::vector<float> pot_energy_vector;
+	std::vector<float> kin_energy_vector;
+	std::vector<float> temperature_vector;
+	float in_t_energy;
+	float in_e_pot;
+	float in_e_kin;
+	float in_temp;
+	istringstream iss;
+	string line;
+	ifstream in("energytemp.txt");
+	int line_number = 0;
+
+	// Read in all data from energytemp
+	while(getline(in,line)){
+	istringstream iss(line);
+	if(!line_number==0){
+	iss>>in_t_energy>>in_e_pot>>in_e_kin>>in_temp;
+	total_energy_vector.push_back(in_t_energy);
+	pot_energy_vector.push_back(in_e_pot);
+	kin_energy_vector.push_back(in_e_kin);
+	temperature_vector.push_back(in_temp);
+		}
+	line_number++;
+	}	
+	in.close();
+	kappa++;
+	step_out+=steps;
+
 	std::ofstream fs2("energytemp.txt", ios::trunc);
-	// Write out steps, time_step and dummy index to energytemp.
-	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
+	fs2 << steps << " " << step_out << " " << 0  << " " << 0 <<endl;
 	fs2.close();
 	
+	for(int i=0;i<total_energy_vector.size();i++){
+	std::ofstream fs2("energytemp.txt", ios::app);
+	fs2 << total_energy_vector[i] << " " << pot_energy_vector[i] << " " << kin_energy_vector[i]<< " " << temperature_vector[i] <<endl;
+	fs2.close();
+	}
+
 }
+
+
+
+
 
 /*-------------------------
 DESTRUCTOR
@@ -474,21 +517,7 @@ void Simulation::next_time_step(int current_time_step){
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
 	// Write to file every time step
 	// Seperate the positions for different timesteps
-	/*
-	for(string::size_type i = 0; i < list_of_atoms.size();i++){
-		 string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
-
-		cout << i<<endl;
-		cout << list_of_atoms[i]->get_position()<<endl;
-			ofstream myfile;
-		myfile.open ("example.txt");
-		
-		std::ofstream fs("atoms.txt", ios::app); 
-		fs << list_of_atoms[i]->get_position()<<endl;
-		fs.close();
-	}
-	*/
-
+	
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	//TODO: MSD and Debye_temp should also be written to file
 
