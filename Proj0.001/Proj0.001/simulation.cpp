@@ -429,6 +429,8 @@ void Simulation::next_time_step(int current_time_step, bool second_to_last_time_
 			float MSD = calculate_MSD(atom);
 			float Debye_temp = 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
 			// Diffusion coefficient, later??
+
+			float Diff_coeff = 0;
 		}
 		
 		// Check if last state should be saved to last_state
