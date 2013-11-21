@@ -85,7 +85,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	
 	std::ofstream fs2("energytemp.txt", ios::trunc);
 	// Write out steps, time_step and dummy index to energytemp.
-	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
+	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0  << " " << 0 <<endl;
 	fs2.close();
 	
 	//}
@@ -176,7 +176,9 @@ void Simulation::configure_data(int steps){
 	kappa++;
 	step_out+=steps;
 
-	//Clear energytemp.txt and start fresh every time! Is this what we want?
+	std::ofstream fs2("energytemp.txt", ios::trunc);
+	fs2 << steps << " " << step_out << " " << 0  << " " << 0 <<endl;
+	fs2.close();
 	
 	for(int i=0;i<total_energy_vector.size();i++){
 	std::ofstream fs2("energytemp.txt", ios::app);
@@ -527,21 +529,7 @@ void Simulation::next_time_step(int current_time_step){
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
 	// Write to file every time step
 	// Seperate the positions for different timesteps
-	/*
-	for(string::size_type i = 0; i < list_of_atoms.size();i++){
-		 string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
-
-		cout << i<<endl;
-		cout << list_of_atoms[i]->get_position()<<endl;
-			ofstream myfile;
-		myfile.open ("example.txt");
-		
-		std::ofstream fs("atoms.txt", ios::app); 
-		fs << list_of_atoms[i]->get_position()<<endl;
-		fs.close();
-	}
-	*/
-
+	
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	//TODO: MSD and Debye_temp should also be written to file
 
