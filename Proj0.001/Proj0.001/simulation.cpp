@@ -1,5 +1,6 @@
 #include "simulation.h"
 #include <math.h>
+#include <time.h>
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -266,6 +267,11 @@ void Simulation::create_list_of_atoms(){
 		if(!pbc_z)
 			bcc_corrector();*/
 	}
+
+	//Set atom number for each atom
+	for (unsigned int i = 0; i < list_of_atoms.size(); i++){
+		list_of_atoms[i]->set_atom_number(i);
+	}
 }
 void Simulation::scc_structure(){
 		for(int k=0;k<unit_cells_z;k++){//Create the cells in z
@@ -400,6 +406,8 @@ Alter everything in the simulation to get to the next time step.
 ------------------------------*/
 void Simulation::next_time_step(int current_time_step){
 
+	clock_t t6 = clock();
+
 	if (fmod(current_time_step, 5.0) == 0){
 	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
 	}
@@ -417,19 +425,40 @@ void Simulation::next_time_step(int current_time_step){
 	Atom* atom;
 	Vec new_acceleration;
 
+	if (fmod(current_time_step, 5.0) == 0){
+		cell_list->clear_cells();
+	}
 	for(int i = 0; i < number_of_atoms; i++){
 		atom = list_of_atoms[i];
 		//Update position
-		atom->set_position(atom->get_next_position());
+		atom->update_atom();
+		atom->clear_tmp_force();
+
+		//Update cell_list every fifth time step
+		if (fmod(current_time_step, 5.0) == 0){
+			cell_list->add_atom_to_cells(atom);
+		}
 	}
 
 	vector<Atom*> neighbouring_atoms;
 	Atom* neighbouring_atom;
 
+	float at = 0;
+	float bt = 0;
+	clock_t t1 = clock();
+
 	for(int i = 0; i < number_of_atoms; i++){
 		atom = list_of_atoms[i];
 
-		neighbouring_atoms = cell_list->get_neighbours(atom); 
+		clock_t t2 = clock();
+
+		//cout << "next_time_step cell_list->get_neighbours(atom).size(): " << cell_list->get_neighbours(atom).size() << endl;
+		atom->update_neighbour_list(cell_list->get_neighbours(atom));
+		vector<Atom*> neighbouring_atoms = atom->get_atom_neighbours();
+
+		clock_t t3 = clock();
+
+		//neighbouring_atoms = cell_list->get_neighbours(atom); 
 
 		//neighbouring_atoms = atom->reduce_neighbours_list(neighbouring_atoms);
 
@@ -441,7 +470,6 @@ void Simulation::next_time_step(int current_time_step){
 		}
 		*/
 
-		Vec force = Vec (0, 0, 0);
 		//Calculate things which need to loop over neighbouring atoms
 //		cout << "Total neighbours: " << neighbouring_atoms.size() << endl;
 		int count = 0;
@@ -449,23 +477,26 @@ void Simulation::next_time_step(int current_time_step){
 			neighbouring_atom = neighbouring_atoms[j];
 			//Cacluate distance vector to this neighbouring atom
 			Vec distance = atom->distance_vector(neighbouring_atom);
-			if(distance.length() != 0 && distance.length() <= cutoff){
+			float distance_length = distance.length();
+			if(distance_length != 0 && distance_length <= cutoff){
 				count ++;
 				//Calculate potential energy
-				E_pot += atom->calculate_potential(neighbouring_atom, distance);
+				//times two because of how we loop over neighbouring atoms
+				E_pot += 2*atom->calculate_potential(neighbouring_atom, distance_length);
 				//Calculate force
-				Vec tmp_force = atom->calculate_force(neighbouring_atom, distance);
-				force += tmp_force;
+				Vec tmp_force = atom->calculate_force(neighbouring_atom, distance, distance_length);
+				atom->add_tmp_force(tmp_force);
+				neighbouring_atom->add_tmp_force(-1*tmp_force);
 				//Calculate pressure
-				pressure += atom->calculate_pressure(neighbouring_atom, tmp_force, distance);
+				pressure += 2*atom->calculate_pressure(neighbouring_atom, tmp_force, distance_length);
 			}
 		}
-//		cout << "Neighbours within cutoff: " << count << endl;
-//		system("pause");
+		//cout << "Neighbours within cutoff: " << count << endl;
+		//system("pause");
 		//Destruct neighbouring_atom?
 
 		//Calculate new_acceleration = f(r)
-		new_acceleration = atom->calculate_acceleration(force);
+		new_acceleration = atom->calculate_acceleration(atom->get_tmp_force());
 		//Kinetic energy
 		tmp_E_kin = atom->calculate_kinetic_energy();
 		E_kin += tmp_E_kin;
@@ -497,7 +528,12 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_prev_acceleration(atom->get_acceleration());
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
+
+		clock_t t4 = clock();
+		at += t3 - t2;
+		bt += t4 - t3;
 	}
+	clock_t t5 = clock();
 
 	//Calculate average temperature of system
 	temperature = temperature/number_of_atoms;
@@ -519,12 +555,6 @@ void Simulation::next_time_step(int current_time_step){
 		float Diff_coef = 0;
 		float coh_e = E_pot; // cohesive energy is the same as potential when equilibrium is reached.
 	}
-	
-	//Update cell_list every fifth time step
-	if (fmod(current_time_step, 5.0) == 0){
-			cell_list->clear_cells();
-			cell_list->add_atoms_to_cells(list_of_atoms);
-	}
 
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
 	// Write to file every time step
@@ -537,6 +567,16 @@ void Simulation::next_time_step(int current_time_step){
 	
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
+
+	
+	clock_t t7 = clock();
+	at = at/number_of_atoms;
+	bt = bt/number_of_atoms;
+	cout << "whole next_time_step " << t7 - t6 << endl;
+	cout << "whole for loop " << t5 - t1 << endl;
+	cout << "get neighbouring atoms " << at << endl;
+	cout << "rest of for loop " << bt << endl << endl;
+	
 
 	return;
 }
@@ -709,7 +749,9 @@ cell list.
 ------------------------------*/
 void Simulation::create_cell_list(){
 	cell_list = new Cell_list(cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,pbc_z);
-	cell_list->add_atoms_to_cells(list_of_atoms);
+	for(int i = 0; i < list_of_atoms.size(); i++){
+		cell_list->add_atom_to_cells(list_of_atoms[i]);
+	}
 }
 
 /*-----

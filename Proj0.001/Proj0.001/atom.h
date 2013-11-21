@@ -8,6 +8,7 @@
 
 class Atom{
 private:
+	int atom_number;
 	Vec position;
 	Vec velocity;
 	Vec prev_position;
@@ -30,6 +31,8 @@ private:
 	float total_energy;
 	float initial_velocity_modulus;
 	bool pbc_z;
+	vector<Atom*> atom_neighbours;
+	Vec tmp_force;
 
 	Vec distance_vector_pbc(Atom*);
 	Vec distance_vector_no_pbc(Atom*);
@@ -45,6 +48,7 @@ public:
 	~Atom ();
 
 	//Getters
+	int get_atom_number();
 	Vec get_velocity();
 	Vec get_position();
 	Vec get_next_position();
@@ -53,8 +57,11 @@ public:
 	Vec get_prev_position();
 	Vec get_initial_velocity();
 	float get_mass();
+	vector<Atom*> get_atom_neighbours();
+	Vec get_tmp_force();
 
 	//Setters
+	void set_atom_number(int);
 	void set_velocity(Vec);
 	void set_position(Vec);
 	void set_next_position(Vec);
@@ -64,12 +71,13 @@ public:
 	void set_initial_velocity(Vec);
 	void set_cell_number(int);
 	void set_cutoff(float);
+	void add_tmp_force(Vec);
 
 	//Other functions
-	Vec calculate_force(Atom*, Vec);
-	float calculate_pressure(Atom*, Vec, Vec);
+	Vec calculate_force(Atom*, Vec, float);
+	float calculate_pressure(Atom*, Vec, float);
 	Vec calculate_acceleration(Vec);
-	float calculate_potential(Atom*, Vec);
+	float calculate_potential(Atom*, float);
 	Vec calculate_velocity();
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);
@@ -78,7 +86,9 @@ public:
 	Vec calculate_next_position();
 	Vec generate_random_vector();
 	void update_atom();	
-	vector<Atom*> reduce_neighbours_list(vector<Atom*> original_list);
+	void update_neighbour_list(vector<Atom*> new_neighbours);
+	void clear_tmp_force();
+
 };
 
 #endif
