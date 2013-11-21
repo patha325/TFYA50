@@ -7,7 +7,6 @@
 #include <fstream>
 #include <vector>
 #include "GraphicsTestProject.h"
-#include <time.h>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
