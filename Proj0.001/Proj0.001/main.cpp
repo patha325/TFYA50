@@ -123,7 +123,7 @@ Parameters:
 	cout << "Running simulation..." << endl << endl;
 	
 	simulation->run_simulation();
-
+	
 /*
 	Simulation* simulation = new Simulation(simulation2);
 	cout << "Number of atoms: " << simulation->get_list_of_atoms().size() << endl;

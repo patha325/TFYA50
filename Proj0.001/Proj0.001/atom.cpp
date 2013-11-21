@@ -170,6 +170,7 @@ float Atom::calculate_temperature(float E_kin){
 
 }
 
+
 	
 /*----------------------
 FUNCTION:distance_vector
@@ -504,6 +505,11 @@ Vec Atom::get_initial_velocity() {
 	return initial_velocity;
 }
 
+Vec Atom::get_initial_position() {
+
+	return initial_position;
+}
+
 float Atom::get_mass(){
 
 	return mass;
@@ -569,6 +575,12 @@ void Atom::set_prev_acceleration(Vec new_acceleration){
 void Atom::set_initial_velocity(Vec new_initial_velocity) {
 
 	initial_velocity = new_initial_velocity;
+	return;
+}
+
+void Atom::set_initial_position(Vec new_initial_position) {
+
+	initial_position = new_initial_position;
 	return;
 }
 

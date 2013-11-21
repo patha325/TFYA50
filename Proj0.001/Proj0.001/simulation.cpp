@@ -85,7 +85,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	
 	std::ofstream fs2("energytemp.txt", ios::trunc);
 	// Write out steps, time_step and dummy index to energytemp.
-	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0 <<endl;
+	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<<0 <<endl;
 	fs2.close();
 	
 	//}
@@ -130,6 +130,7 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	equilibrium = new_equilibrium;
 	prev_diff_coeff = 0;
 	Diff_coeff = 0;
+	
 
 	//Boltzmann constant
 	k_b = 8.617342e-5f;
@@ -141,6 +142,7 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	lattice_constant = old_simulation->get_lattice_constant();
 	crystal_structure = old_simulation->get_crystal_structure();
 
+	volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3); 
 
 	// Edit the first line of energytemp after that add other data to the file.
 	configure_data(steps);
@@ -151,10 +153,20 @@ void Simulation::configure_data(int steps){
 	std::vector<float> pot_energy_vector;
 	std::vector<float> kin_energy_vector;
 	std::vector<float> temperature_vector;
+	std::vector<float> pressure_vector;
+	std::vector<float> MSD_vector;
+	std::vector<float> Debye_temp_vector;
+	std::vector<float> Diff_coeff_vector;
+	std::vector<float> coh_e_vector;
 	float in_t_energy;
 	float in_e_pot;
 	float in_e_kin;
 	float in_temp;
+	float in_pressure;
+	float in_MSD;
+	float in_Debye_temp;
+	float in_Diff_coeff;
+	float in_coh_e;
 	istringstream iss;
 	string line;
 	ifstream in("energytemp.txt");
@@ -164,24 +176,29 @@ void Simulation::configure_data(int steps){
 	while(getline(in,line)){
 		istringstream iss(line);
 		if(!line_number==0){
-			iss>>in_t_energy>>in_e_pot>>in_e_kin>>in_temp;
+			iss>>in_t_energy>>in_e_pot>>in_e_kin>>in_temp>>in_pressure>>in_MSD>>in_Debye_temp>>in_Diff_coeff>>in_coh_e;
 			total_energy_vector.push_back(in_t_energy);
 			pot_energy_vector.push_back(in_e_pot);
 			kin_energy_vector.push_back(in_e_kin);
 			temperature_vector.push_back(in_temp);
+			pressure_vector.push_back(in_pressure);
+			MSD_vector.push_back(in_MSD);
+			Debye_temp_vector.push_back(in_Debye_temp);
+			Diff_coeff_vector.push_back(in_Diff_coeff);
+			coh_e_vector.push_back(in_coh_e);
 		}
 		line_number++;
 	}	
 	in.close();
 	step_out+=steps;
-
+	
 	std::ofstream fs2("energytemp.txt", ios::trunc);
-	fs2 << steps << " " << step_out << " " <<time_step<< " " << 0 <<endl;
+	fs2 << steps << " " << step_out << " " <<time_step<< " " << 0<< " " << 0<< " " << 0<< " " << 0<< " " << 0<<" "<< 0<<endl;
 	fs2.close();
 	
 	for(unsigned int i=0;i<total_energy_vector.size();i++){
 		std::ofstream fs2("energytemp.txt", ios::app);
-		fs2 << total_energy_vector[i] << " " << pot_energy_vector[i] << " " << kin_energy_vector[i]<< " " << temperature_vector[i] <<endl;
+		fs2 << total_energy_vector[i] << " " << pot_energy_vector[i] << " " << kin_energy_vector[i]<< " " << temperature_vector[i]<< " " <<pressure_vector[i]<< " " <<MSD_vector[i]<< " " <<Debye_temp_vector[i]<< " " <<Diff_coeff_vector[i] <<" "<<coh_e_vector[i]<<endl;
 		fs2.close();
 	}
 
@@ -420,6 +437,7 @@ void Simulation::next_time_step(int current_time_step){
 	float MSD = 0;
 	float Debye_temp = 0;
 	float tmp_diff_coeff = 0;
+	float coh_e =0;
 		
 	//Update atoms' positions to next position
 	Atom* atom;
@@ -509,13 +527,15 @@ void Simulation::next_time_step(int current_time_step){
 
 			if(current_time_step == 1) {
 				atom->set_initial_velocity(atom->get_velocity());
-			}
+				atom->set_initial_position(atom->get_position());
+			} // Used to calculate Diff_coeff and MSD, 1 shold be change to another number if we decide equilibrium is reached after "number" steps...
 
-			if(equilibrium) {
+			if(equilibrium && current_time_step > 1) {
 				// Diffusion coefficient, later??
 				tmp_diff_coeff += atom->get_velocity().length()*atom->get_initial_velocity().length();
 				// Mean square distance
 				MSD += calculate_MSD(atom);
+				//cout<< "Dump1 " << MSD<<endl<<" "<<calculate_MSD(atom);
 			}
 		}
 
@@ -537,23 +557,25 @@ void Simulation::next_time_step(int current_time_step){
 
 	//Calculate average temperature of system
 	temperature = temperature/number_of_atoms;
-	//Calculate average MSD
-	MSD = MSD/number_of_atoms;
-	//Calculate diffusion coeff
-	tmp_diff_coeff = tmp_diff_coeff/number_of_atoms;
-	Diff_coeff += time_step*(tmp_diff_coeff + prev_diff_coeff)/2;
-	prev_diff_coeff = tmp_diff_coeff;
-	//Calculate Debye temperature
-	Debye_temp += 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
+	
 	//Calculate total pressure of system
+	
 	pressure = number_of_atoms*k_b*temperature/volume + 1/(6*volume)*pressure;
 	//Calculate total energy of system
 	total_energy = E_pot + E_kin;
 	
 	//Calculate cohesive energy
-	if(equilibrium){
-		float Diff_coef = 0;
-		float coh_e = E_pot; // cohesive energy is the same as potential when equilibrium is reached.
+	if(equilibrium && current_time_step > 1){
+		coh_e = E_pot/number_of_atoms; // cohesive energy is the same as potential when equilibrium is reached.
+		//Calculate average MSD
+		MSD = MSD/number_of_atoms;
+		//cout <<"Dump2 "<< MSD <<endl;
+		//Calculate diffusion coeff
+		tmp_diff_coeff = tmp_diff_coeff/number_of_atoms;
+		Diff_coeff += time_step*(tmp_diff_coeff + prev_diff_coeff)/2;
+		prev_diff_coeff = tmp_diff_coeff;
+		//Calculate Debye temperature
+		Debye_temp += 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
 	}
 
 	// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
@@ -565,7 +587,7 @@ void Simulation::next_time_step(int current_time_step){
 
 	std::ofstream fs2("energytemp.txt", ios::app);
 	
-	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
+	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature << " " <<pressure<< " " << MSD<< " " <<Debye_temp<< " " <<Diff_coeff<<" "<<coh_e<<endl;
 	fs2.close();
 
 	
@@ -661,8 +683,8 @@ float Simulation::calculate_MSD(Atom* atom){
 		Vec temp_pos = atom->get_position();
 		Vec equi_pos (0,0,0); // Här ska positionen då jämvikt uppnåddes hämtas
 		float temp_diff = (temp_pos - equi_pos).length();
-		MSD += 1/number_of_atoms*pow(temp_diff,2); 
-	}
+		MSD += 1.0f/number_of_atoms * pow(temp_diff,2);
+		}
 	return MSD;
 }
 

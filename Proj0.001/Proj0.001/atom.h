@@ -17,6 +17,7 @@ private:
 	Vec prev_acceleration;		// Needed to calculate next pos.
 	Vec next_acceleration;		// Needed to calculate next vel.
 	Vec initial_velocity;
+	Vec initial_position;
 	int cell_number;
 	int number_of_neighbours;
 	float cutoff;
@@ -56,6 +57,7 @@ public:
 	int get_cell_number();
 	Vec get_prev_position();
 	Vec get_initial_velocity();
+	Vec get_initial_position();
 	float get_mass();
 	vector<Atom*> get_atom_neighbours();
 	Vec get_tmp_force();
@@ -69,6 +71,7 @@ public:
 	void set_acceleration(Vec);
 	void set_prev_acceleration(Vec);
 	void set_initial_velocity(Vec);
+	void set_initial_position(Vec);
 	void set_cell_number(int);
 	void set_cutoff(float);
 	void add_tmp_force(Vec);
