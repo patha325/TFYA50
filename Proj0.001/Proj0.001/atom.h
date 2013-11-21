@@ -15,6 +15,7 @@ private:
 	Vec acceleration;			// Needed to calculate next pos.
 	Vec prev_acceleration;		// Needed to calculate next pos.
 	Vec next_acceleration;		// Needed to calculate next vel.
+	Vec initial_velocity;
 	int cell_number;
 	int number_of_neighbours;
 	float cutoff;
@@ -50,6 +51,7 @@ public:
 	Vec get_acceleration();
 	int get_cell_number();
 	Vec get_prev_position();
+	Vec get_initial_velocity();
 	float get_mass();
 
 	//Setters
@@ -59,6 +61,7 @@ public:
 	void set_prev_position(Vec);
 	void set_acceleration(Vec);
 	void set_prev_acceleration(Vec);
+	void set_initial_velocity(Vec);
 	void set_cell_number(int);
 	void set_cutoff(float);
 
@@ -70,6 +73,7 @@ public:
 	Vec calculate_velocity();
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);
+	float calculate_diffusion_coeff(Vec);
 	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? done
 	Vec calculate_next_position();
 	Vec generate_random_vector();

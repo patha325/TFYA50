@@ -51,6 +51,8 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	equilibrium = new_equilibrium;
 	pbc_z = new_pbc_z;
 	volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3);
+	prev_diff_coeff = 0;
+	Diff_coeff = 0;
 	
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
@@ -125,6 +127,8 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	total_energy = old_simulation->get_total_energy();
 	cell_list = old_simulation->get_cell_list();
 	equilibrium = new_equilibrium;
+	prev_diff_coeff = 0;
+	Diff_coeff = 0;
 
 	//Boltzmann constant
 	k_b = 8.617342e-5f;
@@ -407,6 +411,7 @@ void Simulation::next_time_step(int current_time_step){
 	float pressure = 0;
 	float MSD = 0;
 	float Debye_temp = 0;
+	float tmp_diff_coeff = 0;
 		
 	//Update atoms' positions to next position
 	Atom* atom;
@@ -421,17 +426,10 @@ void Simulation::next_time_step(int current_time_step){
 	vector<Atom*> neighbouring_atoms;
 	Atom* neighbouring_atom;
 
-	clock_t t6 = clock();
-	float at = 0;
-	float bt = 0;
 	for(int i = 0; i < number_of_atoms; i++){
 		atom = list_of_atoms[i];
 
-		clock_t t1 = clock();
-
 		neighbouring_atoms = cell_list->get_neighbours(atom); 
-
-		clock_t t2 = clock();
 
 		//neighbouring_atoms = atom->reduce_neighbours_list(neighbouring_atoms);
 
@@ -477,6 +475,17 @@ void Simulation::next_time_step(int current_time_step){
 		//Calculate and set correct velocity only if not first time step
 		if(current_time_step != 0){
 			calculate_and_set_velocity(atom);
+
+			if(current_time_step == 1) {
+				atom->set_initial_velocity(atom->get_velocity());
+			}
+
+			if(equilibrium) {
+				// Diffusion coefficient, later??
+				tmp_diff_coeff += atom->get_velocity().length()*atom->get_initial_velocity().length();
+				// Mean square distance
+				MSD += calculate_MSD(atom);
+			}
 		}
 
 		//Calculate temperature (even if thermostat. want to check to see that temperature is held constant)
@@ -488,26 +497,16 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_prev_acceleration(atom->get_acceleration());
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
-		
-		//Calculate specific heat, MSD and debye temperature if in equilibrium
-		if(equilibrium){
-			MSD += calculate_MSD(atom);
-			// Diffusion coefficient, later??
-		}
-		clock_t t5 = clock();
-		at += t2 - t1;
-		bt += t5 - t2;
 	}
-	clock_t t7 = clock();
-	//cout << "for loop " << t7-t6 << endl;
-
-	//How to calculate volume? It will vary after time steps
-	//float volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3);
 
 	//Calculate average temperature of system
 	temperature = temperature/number_of_atoms;
 	//Calculate average MSD
 	MSD = MSD/number_of_atoms;
+	//Calculate diffusion coeff
+	tmp_diff_coeff = tmp_diff_coeff/number_of_atoms;
+	Diff_coeff += time_step*(tmp_diff_coeff + prev_diff_coeff)/2;
+	prev_diff_coeff = tmp_diff_coeff;
 	//Calculate Debye temperature
 	Debye_temp += 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
 	//Calculate total pressure of system
@@ -538,12 +537,6 @@ void Simulation::next_time_step(int current_time_step){
 	
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
-
-	at = at/number_of_atoms;
-	bt = bt/number_of_atoms;
-	cout << "get neighbours " << at << endl;
-	cout << "rest of for loop " << bt << endl;
-	cout << "whole for loop " << t7 - t6 << endl;
 
 	return;
 }
