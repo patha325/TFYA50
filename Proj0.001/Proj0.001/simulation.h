@@ -123,6 +123,8 @@ public:
 	float get_lattice_constant();
 	std::string get_crystal_structure();
 	Cell_list* get_cell_list(); 
+
+	void configure_data(int);
 	
 	// abort simulation button?
 	// handle end of simulation?

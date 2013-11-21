@@ -139,7 +139,10 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 
 
 	// Edit the first line of energytemp after that add other data to the file.
-	
+	configure_data(steps);
+
+}
+void Simulation::configure_data(int steps){
 	std::vector<float> total_energy_vector;
 	std::vector<float> pot_energy_vector;
 	std::vector<float> kin_energy_vector;
@@ -178,6 +181,10 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	}
 
 }
+
+
+
+
 
 /*-------------------------
 DESTRUCTOR
