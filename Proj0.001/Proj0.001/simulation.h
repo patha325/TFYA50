@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <time.h>
 
 #include "atom.h"
 #include "cell_list.h"
@@ -99,7 +100,7 @@ public:
 		bool thermostat,
 		bool equilibrium,
 		bool pbc_z);
-	Simulation(Simulation* old_simulation); //Take off where we left off-constructor
+	Simulation(Simulation* old_simulation, int steps, bool equilibrium); //Take off where we left off-constructor
 
 	//Destructor
 	~Simulation();

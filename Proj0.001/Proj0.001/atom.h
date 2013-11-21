@@ -12,9 +12,9 @@ private:
 	Vec velocity;
 	Vec prev_position;
 	Vec next_position;
-	Vec acceleration;			// Needed to calculate nex pos.
-	Vec prev_acceleration;		// Needed to calculate nex pos.
-	Vec next_acceleration;		// Needed to calculate nex vel.
+	Vec acceleration;			// Needed to calculate next pos.
+	Vec prev_acceleration;		// Needed to calculate next pos.
+	Vec next_acceleration;		// Needed to calculate next vel.
 	int cell_number;
 	int number_of_neighbours;
 	float cutoff;
@@ -63,10 +63,10 @@ public:
 	void set_cutoff(float);
 
 	//Other functions
-	Vec calculate_force(Atom*);
-	float calculate_pressure(Atom*, Vec);
+	Vec calculate_force(Atom*, Vec);
+	float calculate_pressure(Atom*, Vec, Vec);
 	Vec calculate_acceleration(Vec);
-	float calculate_potential(Atom*);
+	float calculate_potential(Atom*, Vec);
 	Vec calculate_velocity();
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);

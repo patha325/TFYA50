@@ -144,7 +144,7 @@ Parameters:
 		cin >> input_steps;
 		cout << "Starting new simulation back to back with previous!" << endl;
 		//Create new simulation
-		Simulation* btb_simulation = new Simulation(simulation);
+		Simulation* btb_simulation = new Simulation(simulation, input_steps, input_equilibrium);
 		cout << "Running simulation..." << endl << endl;
 		btb_simulation->run_simulation();
 
