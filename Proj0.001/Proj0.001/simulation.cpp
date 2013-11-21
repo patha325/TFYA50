@@ -383,10 +383,13 @@ void Simulation::next_time_step(int current_time_step){
 	Atom* neighbouring_atom;
 
 	for(int i = 0; i < number_of_atoms; i++){
-
 		atom = list_of_atoms[i];
-		neighbouring_atoms = atom->reduce_neighbours_list(cell_list->get_neighbours(atom));
-		//neighbouring_atoms = atom->reduce_neighbours_list(neighbouring_atoms);
+
+		//These two are the time monsters!
+		neighbouring_atoms = cell_list->get_neighbours(atom); //0.69
+		//OPTIMIZE!!
+
+		neighbouring_atoms = atom->reduce_neighbours_list(neighbouring_atoms);
 
 		//Before doing anything else: Update atom_positions with current position for each atom for this time step
 		//This is for animation
@@ -489,12 +492,11 @@ void Simulation::next_time_step(int current_time_step){
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	//TODO: MSD and Debye_temp should also be written to file
 
-	
 	std::ofstream fs2("energytemp.txt", ios::app);
 	
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
-	
+
 	return;
 }
 
