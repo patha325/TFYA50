@@ -80,10 +80,12 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	//std::ofstream fs("atoms.txt", ios::trunc);
 	
 	//if(last_state.empty()){
+	
 	std::ofstream fs2("energytemp.txt", ios::trunc);
 	// Write out steps, time_step and dummy index to energytemp.
 	fs2 << steps << " " << time_step << " " << 0  << " " << 0 <<endl;
 	fs2.close();
+	
 	//}
 	
 	
@@ -107,12 +109,12 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	// Todo: Save all the input!	
 }
 
-Simulation::Simulation(Simulation* old_simulation){
+Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equilibrium){
 
 	list_of_atoms = old_simulation->get_list_of_atoms();
 	number_of_atoms = old_simulation->get_number_of_atoms();
 	time_step = old_simulation->get_time_step();
-	steps = old_simulation->get_steps();
+	steps = new_steps;
 	temperature = old_simulation->get_temperature();
 	cutoff = old_simulation->get_cutoff();
 	thermostat = old_simulation->get_thermostat();
@@ -123,6 +125,7 @@ Simulation::Simulation(Simulation* old_simulation){
 	unit_cells_z = old_simulation->get_unit_cells_z();
 	total_energy = old_simulation->get_total_energy();
 	cell_list = old_simulation->get_cell_list();
+	equilibrium = new_equilibrium;
 
 	//Boltzmann constant
 	k_b = 8.617342e-5f;
@@ -133,6 +136,7 @@ Simulation::Simulation(Simulation* old_simulation){
 	epsilon = old_simulation->get_epsilon();
 	lattice_constant = old_simulation->get_lattice_constant();
 	crystal_structure = old_simulation->get_crystal_structure();
+
 
 	// Edit the first line of energytemp after that add other data to the file.
 	
@@ -164,11 +168,8 @@ Simulation::Simulation(Simulation* old_simulation){
 	in.close();
 	kappa++;
 	step_out+=steps;
-	std::ofstream fs2("energytemp.txt", ios::trunc);
-	fs2 << steps << " " << step_out << " " << 0  << " " << 0 <<endl;
-	fs2.close();
-	
-	
+
+	//Clear energytemp.txt and start fresh every time! Is this what we want?
 	
 	for(int i=0;i<total_energy_vector.size();i++){
 	std::ofstream fs2("energytemp.txt", ios::app);
@@ -207,6 +208,7 @@ void Simulation::run_simulation(){
 	*/
 
 	//Start next_time_step while loop
+
 	int i = 0;
 	while(i < steps){
 		next_time_step(i);
@@ -220,8 +222,9 @@ void Simulation::run_simulation(){
 		C_v = calculate_specific_heat();
 	}
 
+	//Check if system is in equilibrium
+	//check_equilibrium();
 	return;
-	//return last_state;
 }
 
 /*-----------------------------
@@ -387,20 +390,37 @@ Alter everything in the simulation to get to the next time step.
 void Simulation::next_time_step(int current_time_step){
 	// TODO: put calculate_force, calculate_pressure, calculate_acceleration och calculate_potential i samma funktion
 	// för att slippa loopa igenom neighbouring_atoms flera gånger!!
-	
+
+	if (fmod(current_time_step, 5.0) == 0){
 	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
+	}
 
 	float E_pot = 0;
 	float E_kin = 0;
-	if (!thermostat){
-		float temperature = 0;
-	}
+	float temperature = 0;
 	float tmp_E_kin = 0;
+	float pressure = 0;
+	float MSD = 0;
+	float Debye_temp = 0;
 		
+	//Update atoms' positions to next position
+	Atom* atom;
+	Vec new_acceleration;
+
 	for(int i = 0; i < number_of_atoms; i++){
-		Atom* atom = list_of_atoms[i];
-		vector<Atom*> neighbouring_atoms = cell_list->get_neighbours(atom);
-		neighbouring_atoms = atom->reduce_neighbours_list(neighbouring_atoms);
+		atom = list_of_atoms[i];
+		//Update position
+		atom->set_position(atom->get_next_position());
+	}
+
+	vector<Atom*> neighbouring_atoms;
+	Atom* neighbouring_atom;
+
+	for(int i = 0; i < number_of_atoms; i++){
+
+		atom = list_of_atoms[i];
+		neighbouring_atoms = atom->reduce_neighbours_list(cell_list->get_neighbours(atom));
+		//neighbouring_atoms = atom->reduce_neighbours_list(neighbouring_atoms);
 
 		//Before doing anything else: Update atom_positions with current position for each atom for this time step
 		//This is for animation
@@ -409,18 +429,22 @@ void Simulation::next_time_step(int current_time_step){
 			atom_positions[current_time_step].push_back(atom->get_position());
 		}
 		*/
-		Vec new_acceleration = Vec (0, 0, 0);
+
 		Vec force = Vec (0, 0, 0);
 		//Calculate things which need to loop over neighbouring atoms
 		for(unsigned int j = 0; j < neighbouring_atoms.size(); j++){
-			//Calculate potential energy = f(r)
-			E_pot += atom->calculate_potential(neighbouring_atoms[j]);
+			neighbouring_atom = neighbouring_atoms[j];
+			//Cacluate distance vector to this neighbouring atom
+			Vec distance = atom->distance_vector(neighbouring_atom);
+			//Calculate potential energy
+			E_pot += atom->calculate_potential(neighbouring_atom, distance);
 			//Calculate force
-			Vec tmp_force = atom->calculate_force(neighbouring_atoms[j]);
+			Vec tmp_force = atom->calculate_force(neighbouring_atom, distance);
 			force += tmp_force;
-			//Calculate pressure = f(r)
-			pressure += atom->calculate_pressure(neighbouring_atoms[j], tmp_force);
+			//Calculate pressure
+			pressure += atom->calculate_pressure(neighbouring_atom, tmp_force, distance);
 		}
+		//Destruct neighbouring_atom?
 
 		//Calculate new_acceleration = f(r)
 		new_acceleration = atom->calculate_acceleration(force);
@@ -447,17 +471,20 @@ void Simulation::next_time_step(int current_time_step){
 		
 		//Calculate specific heat, MSD and debye temperature if in equilibrium
 		if(equilibrium){
-			float C_v = 0;
-			float MSD = calculate_MSD(atom);
-			float Debye_temp = 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
+			MSD += calculate_MSD(atom);
 			// Diffusion coefficient, later??
 		}
 	}
 
+	//How to calculate volume? It will vary after time steps
 	//float volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3);
 
 	//Calculate average temperature of system
 	temperature = temperature/number_of_atoms;
+	//Calculate average MSD
+	MSD = MSD/number_of_atoms;
+	//Calculate Debye temperature
+	Debye_temp += 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
 	//Calculate total pressure of system
 	pressure = number_of_atoms*k_b*temperature/volume + 1/(6*volume)*pressure;
 	//Calculate total energy of system
@@ -467,14 +494,6 @@ void Simulation::next_time_step(int current_time_step){
 	if(equilibrium){
 		float Diff_coef = 0;
 		float coh_e = E_pot; // cohesive energy is the same as potential when equilibrium is reached.
-	}
-
-	//Update atoms' positions to next position
-	//Cannot do this before because it will affect the potential energy
-	for(int i = 0; i < number_of_atoms; i++){
-		Atom* atom = list_of_atoms[i];
-		//Update position
-		atom->set_position(atom->get_next_position());
 	}
 	
 	//Update cell_list every fifth time step
@@ -502,7 +521,8 @@ void Simulation::next_time_step(int current_time_step){
 	*/
 
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
-	
+	//TODO: MSD and Debye_temp should also be written to file
+
 	
 	std::ofstream fs2("energytemp.txt", ios::app);
 	

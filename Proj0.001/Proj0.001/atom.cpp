@@ -54,15 +54,15 @@ Calculates force on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-Vec Atom::calculate_force(Atom* neighbouring_atom){
+Vec Atom::calculate_force(Atom* neighbouring_atom, Vec distance){
 
 	Vec tmp_force (0,0,0);
 
-	float r = distance_vector(neighbouring_atom).length();
+	float r = distance.length();
 	float r2 = pow(r,-12);
 	float r3 = pow(r,-7);
 	if (r <= cutoff){
-		tmp_force = (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance_vector(neighbouring_atom).normalize();
+		tmp_force = (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance.normalize();
 	}
 
 	return tmp_force;
@@ -78,11 +78,11 @@ Calculates pressure on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-float Atom::calculate_pressure(Atom* neighbouring_atom, Vec tmp_force){
+float Atom::calculate_pressure(Atom* neighbouring_atom, Vec tmp_force, Vec distance){
 
     float tmp_pressure = 0;
 
-	float r = distance_vector(neighbouring_atom).length();
+	float r = distance.length();
 	if (r <= cutoff){
 		tmp_pressure = tmp_force.length()*r;
 	}
@@ -115,13 +115,12 @@ Returns: float (scalar potential)
 Calculates (LJ) potential on 
 the atom, from closest atom.
 ----------------------*/
-float Atom::calculate_potential(Atom* neighbouring_atom){
+float Atom::calculate_potential(Atom* neighbouring_atom, Vec distance){
 
 	float tmp_potential = 0;
 	// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
-	Vec closest_vector_tmp = distance_vector(neighbouring_atom);
-	float tmp_distance = closest_vector_tmp.length();
+	float tmp_distance = distance.length();
 	if(tmp_distance <= cutoff){
 		tmp_potential = 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
 	}
@@ -142,7 +141,7 @@ Vec Atom::calculate_velocity(){
 
 	Vec position_diff = position - prev_position;
 	Vec tmp_velocity;
-	tmp_velocity.setCoords(position_diff.getX()/time_step,position_diff.getY()/time_step,position_diff.getZ()/time_step);
+	tmp_velocity.setCoords(position_diff.getX()/time_step, position_diff.getY()/time_step, position_diff.getZ()/time_step);
 	return tmp_velocity;
 }
 
