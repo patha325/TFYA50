@@ -6,7 +6,6 @@
 
 using namespace std;
 
-int kappa=1;
 int step_out=0;
 /*-----------------------
 CONSTRUCTOR
@@ -85,7 +84,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	
 	std::ofstream fs2("energytemp.txt", ios::trunc);
 	// Write out steps, time_step and dummy index to energytemp.
-	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0  << " " << 0 <<endl;
+	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0 <<endl;
 	fs2.close();
 	
 	//}
@@ -162,28 +161,27 @@ void Simulation::configure_data(int steps){
 
 	// Read in all data from energytemp
 	while(getline(in,line)){
-	istringstream iss(line);
-	if(!line_number==0){
-	iss>>in_t_energy>>in_e_pot>>in_e_kin>>in_temp;
-	total_energy_vector.push_back(in_t_energy);
-	pot_energy_vector.push_back(in_e_pot);
-	kin_energy_vector.push_back(in_e_kin);
-	temperature_vector.push_back(in_temp);
+		istringstream iss(line);
+		if(!line_number==0){
+			iss>>in_t_energy>>in_e_pot>>in_e_kin>>in_temp;
+			total_energy_vector.push_back(in_t_energy);
+			pot_energy_vector.push_back(in_e_pot);
+			kin_energy_vector.push_back(in_e_kin);
+			temperature_vector.push_back(in_temp);
 		}
-	line_number++;
+		line_number++;
 	}	
 	in.close();
-	kappa++;
 	step_out+=steps;
 
 	std::ofstream fs2("energytemp.txt", ios::trunc);
-	fs2 << steps << " " << step_out << " " << 0  << " " << 0 <<endl;
+	fs2 << steps << " " << step_out << " " <<time_step<< " " << 0 <<endl;
 	fs2.close();
 	
-	for(int i=0;i<total_energy_vector.size();i++){
-	std::ofstream fs2("energytemp.txt", ios::app);
-	fs2 << total_energy_vector[i] << " " << pot_energy_vector[i] << " " << kin_energy_vector[i]<< " " << temperature_vector[i] <<endl;
-	fs2.close();
+	for(unsigned int i=0;i<total_energy_vector.size();i++){
+		std::ofstream fs2("energytemp.txt", ios::app);
+		fs2 << total_energy_vector[i] << " " << pot_energy_vector[i] << " " << kin_energy_vector[i]<< " " << temperature_vector[i] <<endl;
+		fs2.close();
 	}
 
 }
@@ -401,8 +399,6 @@ Alter everything in the simulation to get to the next time step.
 	Save energies and temperature to txt.
 ------------------------------*/
 void Simulation::next_time_step(int current_time_step){
-	// TODO: put calculate_force, calculate_pressure, calculate_acceleration och calculate_potential i samma funktion
-	// för att slippa loopa igenom neighbouring_atoms flera gånger!!
 
 	if (fmod(current_time_step, 5.0) == 0){
 	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
@@ -431,9 +427,10 @@ void Simulation::next_time_step(int current_time_step){
 	Atom* neighbouring_atom;
 
 	for(int i = 0; i < number_of_atoms; i++){
-
 		atom = list_of_atoms[i];
-		neighbouring_atoms = atom->reduce_neighbours_list(cell_list->get_neighbours(atom));
+
+		neighbouring_atoms = cell_list->get_neighbours(atom); 
+
 		//neighbouring_atoms = atom->reduce_neighbours_list(neighbouring_atoms);
 
 		//Before doing anything else: Update atom_positions with current position for each atom for this time step
@@ -446,18 +443,25 @@ void Simulation::next_time_step(int current_time_step){
 
 		Vec force = Vec (0, 0, 0);
 		//Calculate things which need to loop over neighbouring atoms
+//		cout << "Total neighbours: " << neighbouring_atoms.size() << endl;
+		int count = 0;
 		for(unsigned int j = 0; j < neighbouring_atoms.size(); j++){
 			neighbouring_atom = neighbouring_atoms[j];
 			//Cacluate distance vector to this neighbouring atom
 			Vec distance = atom->distance_vector(neighbouring_atom);
-			//Calculate potential energy
-			E_pot += atom->calculate_potential(neighbouring_atom, distance);
-			//Calculate force
-			Vec tmp_force = atom->calculate_force(neighbouring_atom, distance);
-			force += tmp_force;
-			//Calculate pressure
-			pressure += atom->calculate_pressure(neighbouring_atom, tmp_force, distance);
+			if(distance.length() != 0 && distance.length() <= cutoff){
+				count ++;
+				//Calculate potential energy
+				E_pot += atom->calculate_potential(neighbouring_atom, distance);
+				//Calculate force
+				Vec tmp_force = atom->calculate_force(neighbouring_atom, distance);
+				force += tmp_force;
+				//Calculate pressure
+				pressure += atom->calculate_pressure(neighbouring_atom, tmp_force, distance);
+			}
 		}
+//		cout << "Neighbours within cutoff: " << count << endl;
+//		system("pause");
 		//Destruct neighbouring_atom?
 
 		//Calculate new_acceleration = f(r)
@@ -493,11 +497,7 @@ void Simulation::next_time_step(int current_time_step){
 		atom->set_prev_acceleration(atom->get_acceleration());
 		//Acceleration
 		atom->set_acceleration(new_acceleration);
-
 	}
-
-	//How to calculate volume? It will vary after time steps
-	//float volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3);
 
 	//Calculate average temperature of system
 	temperature = temperature/number_of_atoms;
@@ -533,12 +533,11 @@ void Simulation::next_time_step(int current_time_step){
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	//TODO: MSD and Debye_temp should also be written to file
 
-	
 	std::ofstream fs2("energytemp.txt", ios::app);
 	
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature <<endl;
 	fs2.close();
-	
+
 	return;
 }
 

@@ -138,6 +138,7 @@ Parameters:
 	bool back_to_back = true;
 	cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;
 	cin >> back_to_back;
+
 	while (back_to_back){
 		cout << "System in equilibrium? (Yes = 1/No = 0)" << endl;
 		cin >> input_equilibrium;
