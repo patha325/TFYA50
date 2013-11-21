@@ -33,6 +33,8 @@ private:
 	int unit_cells_z;
 	float volume;
 	float total_energy;
+	float Diff_coeff;
+	float prev_diff_coeff;
 	map<int, vector<Vec>> atom_positions;
 
 	//Boltzmann constant
