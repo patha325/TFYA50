@@ -61,9 +61,7 @@ Vec Atom::calculate_force(Atom* neighbouring_atom, Vec distance){
 	float r = distance.length();
 	float r2 = pow(r,-12);
 	float r3 = pow(r,-7);
-	if (r <= cutoff){
-		tmp_force = (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance.normalize();
-	}
+	tmp_force = (48/r)*epsilon*(pow(sigma/r, 12)-pow(sigma/r, 6))*distance.normalize();
 
 	return tmp_force;
 
@@ -83,9 +81,7 @@ float Atom::calculate_pressure(Atom* neighbouring_atom, Vec tmp_force, Vec dista
     float tmp_pressure = 0;
 
 	float r = distance.length();
-	if (r <= cutoff){
-		tmp_pressure = tmp_force.length()*r;
-	}
+	tmp_pressure = tmp_force.length()*r;
 
 	return tmp_pressure;
 }
@@ -121,9 +117,7 @@ float Atom::calculate_potential(Atom* neighbouring_atom, Vec distance){
 	// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
 	float tmp_distance = distance.length();
-	if(tmp_distance <= cutoff){
-		tmp_potential = 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
-	}
+	tmp_potential = 4*epsilon*(pow(sigma/tmp_distance,12)-pow(sigma/tmp_distance,6));
 	
 	return tmp_potential;
 }

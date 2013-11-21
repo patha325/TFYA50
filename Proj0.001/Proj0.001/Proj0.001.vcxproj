@@ -37,10 +37,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Patha\Desktop\Github\TFYA50\freeglut\include;$(IncludePath)</IncludePath>
+    <IncludePath>L:\TFYA50\freeglut\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>C:\Users\Patha\Desktop\Github\TFYA50\freeglut\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>L:\TFYA50\freeglut\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
