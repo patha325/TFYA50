@@ -592,8 +592,6 @@ void Simulation::next_time_step(int current_time_step){
 	// Seperate the positions for different timesteps
 	
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
-	//TODO: MSD and Debye_temp should also be written to file
-
 	std::ofstream fs2("energytemp.txt", ios::app);
 	
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature << " " <<pressure<< " " << MSD<< " " <<Debye_temp<< " " <<Diff_coeff<<" "<<coh_e<<endl;
@@ -691,14 +689,14 @@ Calculates mean square displacement for an atom
 ------------------------------*/
 float Simulation::calculate_MSD(Atom* atom){
 	
-	float MSD = 0;
+	float MSD_tmp = 0;
 
 	Vec temp_pos = atom->get_position();
 	Vec equi_pos = atom->get_initial_position();
 	float temp_diff = (temp_pos - equi_pos).length();
-	MSD = pow(temp_diff,2);
+	MSD_tmp = pow(temp_diff,2);
 
-	return MSD;
+	return MSD_tmp;
 }
 
 /*------------------------------
