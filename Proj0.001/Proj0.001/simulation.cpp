@@ -463,6 +463,8 @@ void Simulation::next_time_step(int current_time_step){
 
 	float at = 0;
 	float bt = 0;
+	float ct = 0;
+	float dt = 0;
 	clock_t t1 = clock();
 
 	for(int i = 0; i < number_of_atoms; i++){
@@ -521,6 +523,9 @@ void Simulation::next_time_step(int current_time_step){
 		//Next position
 		atom->set_next_position(atom->calculate_next_position());
 		
+		clock_t t8 = clock();
+		clock_t t9 = clock();
+		clock_t t10 = clock();
 		//Calculate and set correct velocity only if not first time step
 		if(current_time_step != 0){
 			calculate_and_set_velocity(atom);
@@ -530,12 +535,14 @@ void Simulation::next_time_step(int current_time_step){
 				atom->set_initial_position(atom->get_position());
 			} // Used to calculate Diff_coeff and MSD, 1 shold be change to another number if we decide equilibrium is reached after "number" steps...
 
-			if(equilibrium && current_time_step > 1) {
+			if(equilibrium && current_time_step > 10) {
 				// Diffusion coefficient, later??
+				t8 = clock();
 				tmp_diff_coeff += atom->get_velocity().length()*atom->get_initial_velocity().length();
 				// Mean square distance
+				t9 = clock();
 				MSD += calculate_MSD(atom);
-				//cout<< "Dump1 " << MSD<<endl<<" "<<calculate_MSD(atom);
+				t10 = clock();
 			}
 		}
 
@@ -552,6 +559,8 @@ void Simulation::next_time_step(int current_time_step){
 		clock_t t4 = clock();
 		at += t3 - t2;
 		bt += t4 - t3;
+		ct += t9 - t8;
+		dt += t10 - t9;
 	}
 	clock_t t5 = clock();
 
@@ -565,7 +574,7 @@ void Simulation::next_time_step(int current_time_step){
 	total_energy = E_pot + E_kin;
 	
 	//Calculate cohesive energy
-	if(equilibrium && current_time_step > 1){
+	if(equilibrium && current_time_step > 10){
 		coh_e = E_pot/number_of_atoms; // cohesive energy is the same as potential when equilibrium is reached.
 		//Calculate average MSD
 		MSD = MSD/number_of_atoms;
@@ -590,15 +599,19 @@ void Simulation::next_time_step(int current_time_step){
 	fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature << " " <<pressure<< " " << MSD<< " " <<Debye_temp<< " " <<Diff_coeff<<" "<<coh_e<<endl;
 	fs2.close();
 
-	
+	/*
 	clock_t t7 = clock();
 	at = at/number_of_atoms;
 	bt = bt/number_of_atoms;
-	cout << "whole next_time_step " << t7 - t6 << endl;
-	cout << "whole for loop " << t5 - t1 << endl;
-	cout << "get neighbouring atoms " << at << endl;
-	cout << "rest of for loop " << bt << endl << endl;
-	
+	ct = ct/number_of_atoms;
+	dt = dt/number_of_atoms;
+	if(equilibrium){
+		cout << "whole next_time_step " << t7 - t6 << endl;
+		cout << "whole for loop " << t5 - t1 << endl;
+		cout << "tmp_diff_coeff " << ct << endl;
+		cout << "MSD " << bt << endl << endl;
+	}
+	*/
 
 	return;
 }
@@ -679,12 +692,12 @@ Calculates mean square displacement for an atom
 float Simulation::calculate_MSD(Atom* atom){
 	
 	float MSD = 0;
-	for(int i = 1; i <= number_of_atoms; i++) {
-		Vec temp_pos = atom->get_position();
-		Vec equi_pos (0,0,0); // Här ska positionen då jämvikt uppnåddes hämtas
-		float temp_diff = (temp_pos - equi_pos).length();
-		MSD += 1.0f/number_of_atoms * pow(temp_diff,2);
-		}
+
+	Vec temp_pos = atom->get_position();
+	Vec equi_pos = atom->get_initial_position();
+	float temp_diff = (temp_pos - equi_pos).length();
+	MSD = pow(temp_diff,2);
+
 	return MSD;
 }
 
@@ -771,7 +784,7 @@ cell list.
 ------------------------------*/
 void Simulation::create_cell_list(){
 	cell_list = new Cell_list(cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,pbc_z);
-	for(int i = 0; i < list_of_atoms.size(); i++){
+	for(unsigned int i = 0; i < list_of_atoms.size(); i++){
 		cell_list->add_atom_to_cells(list_of_atoms[i]);
 	}
 }
