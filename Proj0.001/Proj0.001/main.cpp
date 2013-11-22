@@ -123,12 +123,6 @@ Parameters:
 	cout << "Running simulation..." << endl << endl;
 	
 	simulation->run_simulation();
-	
-/*
-	Simulation* simulation = new Simulation(simulation2);
-	cout << "Number of atoms: " << simulation->get_list_of_atoms().size() << endl;
-	cout << "Energy: " << simulation->get_total_energy() << endl;
-*/
 
 	//Run back to back simulation
 	//Always with most recent simulation as it is now
@@ -146,8 +140,9 @@ Parameters:
 		cout << "Starting new simulation back to back with previous!" << endl;
 		//Create new simulation
 		Simulation* btb_simulation = new Simulation(simulation, input_steps, input_equilibrium);
+		simulation = btb_simulation;
 		cout << "Running simulation..." << endl << endl;
-		btb_simulation->run_simulation();
+		simulation->run_simulation();
 
 		//Ask again to runt new btb simulation
 		cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;
@@ -155,9 +150,8 @@ Parameters:
 	}
 
 	system("pause");
-
-//	plotter(argc, argv,simulation2->get_list_of_atoms(),simulation2->get_number_of_atoms());
-
+	//simulation->~Simulation (); Inte riktigt testad...
+	
 	return 0;
 }
 

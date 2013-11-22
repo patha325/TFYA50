@@ -11,15 +11,12 @@ private:
 	int atom_number;
 	Vec position;
 	Vec prev_position;
-	Vec next_position;
 
 	Vec velocity;
 	Vec prev_velocity;
-	Vec next_velocity;
 
-	Vec acceleration;			// Needed to calculate next pos.
-	Vec prev_acceleration;		// Needed to calculate next pos.
-	Vec next_acceleration;		// Needed to calculate next vel.
+	Vec acceleration;
+	Vec prev_acceleration;
 
 	Vec initial_velocity;
 	Vec initial_position;
@@ -48,7 +45,7 @@ public:
 	//Constructor
 
 
-	Atom (Vec starting_position, Vec new_prev_acceleration, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
+	Atom (Vec starting_position, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus, bool new_pbc_z);
 
 
@@ -58,7 +55,6 @@ public:
 	int get_atom_number();
 	Vec get_velocity();
 	Vec get_position();
-	Vec get_next_position();
 	Vec get_acceleration();
 	Vec get_prev_acceleration();
 	int get_cell_number();
@@ -72,11 +68,6 @@ public:
 	//Setters
 	void set_atom_number(int);
 	void set_velocity(Vec);
-	void set_position(Vec);
-	void set_next_position(Vec);
-	void set_prev_position(Vec);
-	void set_acceleration(Vec);
-	void set_prev_acceleration(Vec);
 	void set_initial_velocity(Vec);
 	void set_initial_position(Vec);
 	void set_cell_number(int);
@@ -92,8 +83,7 @@ public:
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);
 	float calculate_diffusion_coeff(Vec);
-	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? done
-	Vec calculate_next_position();
+	Vec distance_vector(Atom*);
 	void calculate_and_set_position();
 	Vec generate_random_vector();
 	void update_atom();	

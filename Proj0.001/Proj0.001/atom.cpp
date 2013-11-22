@@ -13,18 +13,15 @@ Sets starting position
 ----------------------*/
 
 
-Atom::Atom(Vec starting_position, Vec new_acceleration, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
+Atom::Atom(Vec starting_position, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus, bool new_pbc_z){
 	
 	position = starting_position;
-	prev_acceleration = new_acceleration;
+	prev_acceleration = Vec (0,0,0);
 	velocity = initial_velocity_modulus * generate_random_vector(); //generates normed vector in some random direction
 	prev_velocity = velocity;
-	next_velocity = velocity;
 	prev_position = position;
-	next_position = position;
-	acceleration = new_acceleration;
-	next_acceleration = new_acceleration;
+	acceleration = Vec (0,0,0);
 	initial_velocity = velocity;
 	pbc_z = new_pbc_z;
 
@@ -60,12 +57,8 @@ within cutoff.
 Vec Atom::calculate_force(Atom* neighbouring_atom, Vec distance, float distance_length){
 
 	Vec tmp_force (0,0,0);
-
-
-	//float r2 = pow(r,-12);
-	//float r3 = pow(r,-7);
 	float q = sigma/distance_length;
-	tmp_force = (48/distance_length)*epsilon*(pow(q, 12)-pow(q, 6))*distance.normalize();
+	tmp_force = (48/pow(distance_length,2))*epsilon*(pow(q, 12)-0.5f*pow(q, 6))*distance.normalize();
 
 	return tmp_force;
 
@@ -404,28 +397,6 @@ Vec Atom::distance_vector_no_pbc(Atom* other_atom){
 }
 
 /*-------------------------
-FUNCTION: calculate_next_position()
-Parameters: None
-Returns: next_position
--
-Calculates next position for an atom
---------------------------*/
-Vec Atom::calculate_next_position(){
-	float time_step2 = time_step*time_step;
-	//You should not change atom attributes, Markus!
-	Vec next_position (0,0,0);
-
-	next_position.setCoords(
-		position.getX() + velocity.getX()*time_step + acceleration.getX()*1/2*time_step2,
-		position.getY() + velocity.getY()*time_step + acceleration.getY()*1/2*time_step2, 
-		position.getZ() + velocity.getZ()*time_step + acceleration.getZ()*1/2*time_step2);
-
-
-	return next_position;
-	// Change the cell number? Should there be a call for that? Has been added in add_atoms_to_cell in cell_list
-}
-
-/*-------------------------
 FUNCTION: calculate_and_set_position()
 Parameters: None
 Returns: None
@@ -508,10 +479,6 @@ Vec Atom::get_position(){
 	return position;
 }
 
-Vec Atom::get_next_position(){
-	return next_position;
-}
-
 Vec Atom::get_acceleration(){
 
 	return acceleration;
@@ -569,38 +536,9 @@ void Atom::set_velocity(Vec new_velocity){
 	velocity = new_velocity;
 	return;
 }
-	
-void Atom::set_position(Vec new_position){
-	position = new_position;
-	return;
-}
 
 void Atom::set_cell_number(int new_cell_number){
 	cell_number = new_cell_number;
-	return;
-}
-
-void Atom::set_prev_position(Vec new_position){
-
-	prev_position = new_position;
-	return;
-}
-
-void Atom::set_next_position(Vec new_next_position){
-
-	next_position = new_next_position;
-	return;
-}
-
-void Atom::set_acceleration(Vec new_acceleration){
-	
-	acceleration = new_acceleration;
-	return;
-}
-
-void Atom::set_prev_acceleration(Vec new_acceleration){
-
-	prev_acceleration = new_acceleration;
 	return;
 }
 
