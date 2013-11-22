@@ -77,7 +77,8 @@ Parameters:
 	bool input_thermostat = false;
 	bool input_equilibrium = false;
 	bool pbc_z = false;
-	map<string, vector<Vec>> last_state;	//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
+	map<string, vector<Vec>> last_state;	//Not needed
+											//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
 											//				"prev_position":[...], "prev_acceleration":[...], "next_acceleration":[...]}
 											//take over next to last state. Otherwise we will not have a proper next_position
 	
