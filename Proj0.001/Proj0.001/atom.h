@@ -10,14 +10,20 @@ class Atom{
 private:
 	int atom_number;
 	Vec position;
-	Vec velocity;
 	Vec prev_position;
 	Vec next_position;
+
+	Vec velocity;
+	Vec prev_velocity;
+	Vec next_velocity;
+
 	Vec acceleration;			// Needed to calculate next pos.
 	Vec prev_acceleration;		// Needed to calculate next pos.
 	Vec next_acceleration;		// Needed to calculate next vel.
+
 	Vec initial_velocity;
 	Vec initial_position;
+
 	int cell_number;
 	int number_of_neighbours;
 	float cutoff;
@@ -54,6 +60,7 @@ public:
 	Vec get_position();
 	Vec get_next_position();
 	Vec get_acceleration();
+	Vec get_prev_acceleration();
 	int get_cell_number();
 	Vec get_prev_position();
 	Vec get_initial_velocity();
@@ -79,14 +86,15 @@ public:
 	//Other functions
 	Vec calculate_force(Atom*, Vec, float);
 	float calculate_pressure(Atom*, Vec, float);
-	Vec calculate_acceleration(Vec);
+	void calculate_and_set_acceleration(Vec);
 	float calculate_potential(Atom*, float);
-	Vec calculate_velocity();
+	void calculate_and_set_velocity();
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);
 	float calculate_diffusion_coeff(Vec);
 	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? done
 	Vec calculate_next_position();
+	void calculate_and_set_position();
 	Vec generate_random_vector();
 	void update_atom();	
 	void update_neighbour_list(vector<Atom*> new_neighbours);
