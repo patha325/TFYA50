@@ -249,6 +249,7 @@ void Simulation::run_simulation(){
 	float C_v;
 	if(equilibrium) {
 		C_v = calculate_specific_heat();
+		cout << "Specific heat " << C_v << endl;
 	}
 
 	//Check if system is in equilibrium
@@ -290,6 +291,7 @@ void Simulation::create_list_of_atoms(){
 		list_of_atoms[i]->set_atom_number(i);
 	}
 }
+
 void Simulation::scc_structure(){
 		for(int k=0;k<unit_cells_z;k++){//Create the cells in z
 		for(int j=0;j<unit_cells_y;j++){//Create the cells in y
@@ -448,8 +450,10 @@ void Simulation::next_time_step(int current_time_step){
 	}
 	for(int i = 0; i < number_of_atoms; i++){
 		atom = list_of_atoms[i];
-		//Update position
+		//prev_position = position etc.
 		atom->update_atom();
+		//Calculate and set position
+		atom->calculate_and_set_position();
 		atom->clear_tmp_force();
 
 		//Update cell_list every fifth time step
@@ -515,21 +519,22 @@ void Simulation::next_time_step(int current_time_step){
 		//system("pause");
 		//Destruct neighbouring_atom?
 
-		//Calculate new_acceleration = f(r)
-		new_acceleration = atom->calculate_acceleration(atom->get_tmp_force());
+		//Calculate and set acceleration = f(r)
+		atom->calculate_and_set_acceleration(atom->get_tmp_force());
+		//Calculate and set velocity = f(prev_vel, acc, prev_acc)
+		calculate_and_set_velocity(atom);
+
 		//Kinetic energy
 		tmp_E_kin = atom->calculate_kinetic_energy();
 		E_kin += tmp_E_kin;
-		//Next position
-		atom->set_next_position(atom->calculate_next_position());
+		//Calculate temperature (even if thermostat. want to check to see that temperature is held constant)
+		temperature += atom->calculate_temperature(tmp_E_kin);
 		
 		clock_t t8 = clock();
 		clock_t t9 = clock();
 		clock_t t10 = clock();
 		//Calculate and set correct velocity only if not first time step
 		if(current_time_step != 0){
-			calculate_and_set_velocity(atom);
-
 			if(current_time_step == 1) {
 				atom->set_initial_velocity(atom->get_velocity());
 				atom->set_initial_position(atom->get_position());
@@ -537,24 +542,11 @@ void Simulation::next_time_step(int current_time_step){
 
 			if(equilibrium && current_time_step > 10) {
 				// Diffusion coefficient, later??
-				t8 = clock();
 				tmp_diff_coeff += atom->get_velocity().length()*atom->get_initial_velocity().length();
 				// Mean square distance
-				t9 = clock();
 				MSD += calculate_MSD(atom);
-				t10 = clock();
 			}
 		}
-
-		//Calculate temperature (even if thermostat. want to check to see that temperature is held constant)
-		temperature += atom->calculate_temperature(tmp_E_kin);
-
-		//Previous position
-		atom->set_prev_position(atom->get_position());
-		//Previous acceleration
-		atom->set_prev_acceleration(atom->get_acceleration());
-		//Acceleration
-		atom->set_acceleration(new_acceleration);
 
 		clock_t t4 = clock();
 		at += t3 - t2;
@@ -566,9 +558,7 @@ void Simulation::next_time_step(int current_time_step){
 
 	//Calculate average temperature of system
 	temperature = temperature/number_of_atoms;
-	
 	//Calculate total pressure of system
-	
 	pressure = number_of_atoms*k_b*temperature/volume + 1/(6*volume)*pressure;
 	//Calculate total energy of system
 	total_energy = E_pot + E_kin;
@@ -624,9 +614,10 @@ Checks if system has thermostat
 ------------------------------*/
 void Simulation::calculate_and_set_velocity(Atom* atom){
 	//Calculate velocity as if total energy is to be constant
-	Vec new_velocity = atom->calculate_velocity();
+	atom->calculate_and_set_velocity();
 	if (thermostat){
 		//Update velocity so temperature is constant
+		Vec new_velocity = atom->get_velocity();
 		float new_velocity_modulus = new_velocity.length();
 		float right_modulus = 0;
 		//This is just a simple check in order to not get infinities
@@ -640,10 +631,6 @@ void Simulation::calculate_and_set_velocity(Atom* atom){
 			new_velocity = atom->generate_random_vector();
 		}
 		atom->set_velocity(right_modulus*new_velocity);
-	}
-	else{ //not thermostat
-		//Update velocity where total energy is constant
-		atom->set_velocity(new_velocity);
 	}
 }
 
