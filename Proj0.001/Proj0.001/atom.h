@@ -8,13 +8,16 @@
 
 class Atom{
 private:
+	int atom_number;
 	Vec position;
 	Vec velocity;
 	Vec prev_position;
 	Vec next_position;
-	Vec acceleration;			// Needed to calculate nex pos.
-	Vec prev_acceleration;		// Needed to calculate nex pos.
-	Vec next_acceleration;		// Needed to calculate nex vel.
+	Vec acceleration;			// Needed to calculate next pos.
+	Vec prev_acceleration;		// Needed to calculate next pos.
+	Vec next_acceleration;		// Needed to calculate next vel.
+	Vec initial_velocity;
+	Vec initial_position;
 	int cell_number;
 	int number_of_neighbours;
 	float cutoff;
@@ -29,6 +32,8 @@ private:
 	float total_energy;
 	float initial_velocity_modulus;
 	bool pbc_z;
+	vector<Atom*> atom_neighbours;
+	Vec tmp_force;
 
 	Vec distance_vector_pbc(Atom*);
 	Vec distance_vector_no_pbc(Atom*);
@@ -44,36 +49,49 @@ public:
 	~Atom ();
 
 	//Getters
+	int get_atom_number();
 	Vec get_velocity();
 	Vec get_position();
 	Vec get_next_position();
 	Vec get_acceleration();
 	int get_cell_number();
 	Vec get_prev_position();
+	Vec get_initial_velocity();
+	Vec get_initial_position();
 	float get_mass();
+	vector<Atom*> get_atom_neighbours();
+	Vec get_tmp_force();
 
 	//Setters
+	void set_atom_number(int);
 	void set_velocity(Vec);
 	void set_position(Vec);
 	void set_next_position(Vec);
 	void set_prev_position(Vec);
 	void set_acceleration(Vec);
 	void set_prev_acceleration(Vec);
+	void set_initial_velocity(Vec);
+	void set_initial_position(Vec);
 	void set_cell_number(int);
 	void set_cutoff(float);
+	void add_tmp_force(Vec);
 
 	//Other functions
-	Vec calculate_force(std::vector<Atom*>);
-	float calculate_pressure(std::vector<Atom*>);
-	Vec calculate_acceleration(std::vector<Atom*>);
-	float calculate_potential(std::vector<Atom*>);
+	Vec calculate_force(Atom*, Vec, float);
+	float calculate_pressure(Atom*, Vec, float);
+	Vec calculate_acceleration(Vec);
+	float calculate_potential(Atom*, float);
 	Vec calculate_velocity();
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);
+	float calculate_diffusion_coeff(Vec);
 	Vec distance_vector(Atom*); // Take care of periodic boundry conditions? done
 	Vec calculate_next_position();
 	Vec generate_random_vector();
 	void update_atom();	
+	void update_neighbour_list(vector<Atom*> new_neighbours);
+	void clear_tmp_force();
+
 };
 
 #endif

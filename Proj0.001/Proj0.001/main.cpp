@@ -77,10 +77,7 @@ Parameters:
 	bool input_thermostat = false;
 	bool input_equilibrium = false;
 	bool pbc_z = false;
-	map<string, vector<Vec>> last_state;	//Not needed
-											//last_state = {"next_position":[...], "position":[...], "velocity":[...], "acceleration":[...]
-											//				"prev_position":[...], "prev_acceleration":[...], "next_acceleration":[...]}
-											//take over next to last state. Otherwise we will not have a proper next_position
+
 	
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
 	cin >> input_x;
@@ -123,17 +120,25 @@ Parameters:
 		//Create first simulation world
 	Simulation* simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
 											input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,
-											input_thermostat, input_equilibrium, last_state, pbc_z);
+											input_thermostat, input_equilibrium, pbc_z);
 	cout << "Running simulation..." << endl << endl;
-		//Save last state
-	last_state = simulation->run_simulation();
+	
+	simulation->run_simulation();
+	
+/*
+	Simulation* simulation = new Simulation(simulation2);
+	cout << "Number of atoms: " << simulation->get_list_of_atoms().size() << endl;
+	cout << "Energy: " << simulation->get_total_energy() << endl;
+*/
 
-		//Run back to back simulation
-		//Always with most recent simulation as it is now
-		//btb = back to back
+	//Run back to back simulation
+	//Always with most recent simulation as it is now
+	//btb = back to back
+
 	bool back_to_back = true;
 	cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;
 	cin >> back_to_back;
+
 	while (back_to_back){
 		cout << "System in equilibrium? (Yes = 1/No = 0)" << endl;
 		cin >> input_equilibrium;
@@ -141,11 +146,9 @@ Parameters:
 		cin >> input_steps;
 		cout << "Starting new simulation back to back with previous!" << endl;
 		//Create new simulation
-		Simulation* btb_simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff,
-													input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,
-													input_thermostat,input_equilibrium, last_state,pbc_z);
+		Simulation* btb_simulation = new Simulation(simulation, input_steps, input_equilibrium);
 		cout << "Running simulation..." << endl << endl;
-		last_state = btb_simulation->run_simulation();
+		btb_simulation->run_simulation();
 
 		//Ask again to runt new btb simulation
 		cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;

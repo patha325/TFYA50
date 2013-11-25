@@ -75,7 +75,9 @@
     <ClInclude Include="simulation.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GraphicsTestProject.cpp" />
+    <ClCompile Include="GraphicsTestProject.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\Patha\Desktop\Github\TFYA50\GraphicsTestProject\GraphicsTestProject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="vec.cpp" />
     <ClCompile Include="atom.cpp" />
     <ClCompile Include="cell.cpp" />

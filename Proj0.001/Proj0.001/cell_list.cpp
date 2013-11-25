@@ -1,4 +1,6 @@
 #include <iostream>
+#include <time.h>
+
 #include "cell_list.h"
 #include "cell.h"
 #include "atom.h"
@@ -19,7 +21,7 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
     lattice_constant = new_lattice_constant;
 	pbc_z = new_pbc_z;
     
-/*
+	/*
     cout << "Cutoff: " << cutoff << endl;
     cout << "Lattice constant: " << lattice_constant << endl;
 	if(pbc_z) cout << "Periodic boundary condition IS used." << endl << endl;
@@ -28,7 +30,8 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
     cout << "Unit cells in X: " << unit_cells_x << endl;
     cout << "Unit cells in Y: " << unit_cells_y << endl;
     cout << "Unit cells in Z: " << unit_cells_z << endl << endl;
-*/
+	*/
+
     
     bulk_length_x = (unit_cells_x+1)*lattice_constant;
     bulk_length_y = (unit_cells_y+1)*lattice_constant;
@@ -45,11 +48,13 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
     cell_length_y = bulk_length_y/floor(bulk_length_y/cutoff);
     cell_length_z = bulk_length_z/floor(bulk_length_z/cutoff);
     
-/*
+	/*
     cout << "Cell length X: " << cell_length_x << endl;
     cout << "Cell length Y: " << cell_length_y << endl;
     cout << "Cell length Z: " << cell_length_z << endl << endl;
-*/
+
+	system("pause");
+	*/
     create_cells();
     
 }
@@ -74,13 +79,13 @@ PUBLIC
 --- */
 
 /* ------------------------------
-FUNCTION: Cell_list::add_atoms_to_cells()
+FUNCTION: Cell_list::add_atom_to_cells()
 PARAMETERS: vector<Atoms*>
 RETURN: void
 -
 Adds all Atoms to the cells
 ------------------------------ */
-void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
+void Cell_list::add_atom_to_cells(Atom* current_atom){
 
 
 /*
@@ -94,30 +99,30 @@ void Cell_list::add_atoms_to_cells(vector<Atom*> atoms_list){
     }
 */
 
-    for (string::size_type i = 0; i<atoms_list.size(); i++) {
-        Atom* current_atom = atoms_list[i];
-        int cell_number_iterator = 0;
-        bool found = false;
-        while (!found) {
-            if (current_atom->get_position().getX()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+lattice_constant &&
-                current_atom->get_position().getY()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+lattice_constant &&
-                current_atom->get_position().getZ()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+lattice_constant) {
+    //for (string::size_type i = 0; i<atoms_list.size(); i++) {
+        //Atom* current_atom = atoms_list[i];
+    int cell_number_iterator = 0;
+    bool found = false;
+    while (!found) {
+        if (current_atom->get_position().getX()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+lattice_constant &&
+            current_atom->get_position().getY()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+lattice_constant &&
+            current_atom->get_position().getZ()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+lattice_constant) {
                 
                 
 //                cout << "Atom " << i << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;
                 
-                list_of_cells[cell_number_iterator]->add_atom(current_atom);
+            list_of_cells[cell_number_iterator]->add_atom(current_atom);
 
 //				cout << "Cell with number " << cell_number_iterator << " has " << list_of_cells[cell_number_iterator]->get_number_of_atoms_in_cell() << " atoms in it." << endl;
 
-                found = true;
-            }
-            else {
-                cell_number_iterator++;
-            }
+            found = true;
         }
-		current_atom->set_cell_number(cell_number_iterator);
+        else {
+            cell_number_iterator++;
+        }
     }
+	current_atom->set_cell_number(cell_number_iterator);
+    //}
 }
 
 
@@ -130,19 +135,26 @@ Returns a vector with all Atoms which
 are neighbours to the parameter Atom.
 ------------------------------ */
 vector<Atom*> Cell_list::get_neighbours(Atom* atom){
+	//clock_t t1 = clock();
 
     int cell_number = atom->get_cell_number();
+	int atom_number = atom->get_atom_number();
     vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
     vector<Atom*> neighbouring_atoms;
 		
-    for (string::size_type i = 0; i < neighbouring_cells.size(); i++) {
+	//clock_t t3 = clock();
+    for (unsigned int i = 0; i < neighbouring_cells.size(); i++) {
 		vector<Atom*> atoms_to_add = neighbouring_cells[i]->get_atoms_in_cell();
-		for (string::size_type j = 0; j < atoms_to_add.size(); j++){
-			 if (atom->distance_vector(atoms_to_add[j]).length() != 0){
-				 neighbouring_atoms.push_back(atoms_to_add[j]);
-			 }
+		for (unsigned int j = 0; j < atoms_to_add.size(); j++){
+			//float distance = atom->distance_vector(atoms_to_add[j]).length();
+			if (atom_number < atoms_to_add[j]->get_atom_number()){
+				neighbouring_atoms.push_back(atoms_to_add[j]);
+			}
 		}
     }
+	//clock_t t2 = clock();
+	//cout << "before for loop " << t3 - t1 << endl;
+	//cout << "for loop " << t2 - t3 << endl;
 	return neighbouring_atoms;
 } 
 
@@ -242,7 +254,8 @@ void Cell_list::create_cells(){
 
 
 	cout << "Cells created!" << endl;
-	cout << "Created in total " << i << " cells." << endl << endl;
+	cout << "Created in total " << i << " cells." << endl;
+	cout << "Cell dimensions are: " << cell_length_x << " x " << cell_length_y << " x "  << cell_length_z << endl << endl;
 
     
     //Number of cells in each direction
