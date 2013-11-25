@@ -68,8 +68,6 @@ public:
 	float calculate_specific_heat();
 	float calculate_MSD(Atom*);
 	void regulate_thermostat(); //Regulate the kinetic energy so that the temperature remains "constant"
-	void update_atoms_btb(); //If back to back simulation, update atoms to be in correct state
-	void update_last_state(Atom*, bool, bool, bool); //Save data for btb simulation
 	void run_simulation(); //Loop through next_time_step and return last state
 	void save(); //Save ??? to a .txt file with some structure.
 	void update_atoms(); // Run through list_of_atoms and .update_atom
