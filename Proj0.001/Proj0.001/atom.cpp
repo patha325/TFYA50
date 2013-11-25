@@ -58,7 +58,7 @@ Vec Atom::calculate_force(Atom* neighbouring_atom, Vec distance, float distance_
 
 	Vec tmp_force (0,0,0);
 	float q = sigma/distance_length;
-	tmp_force = (48/pow(distance_length,2))*epsilon*(pow(q, 12)-0.5f*pow(q, 6))*distance.normalize();
+	tmp_force = (48/distance_length)*epsilon*(pow(q, 12)-0.5f*pow(q, 6))*distance.normalize();
 
 	return tmp_force;
 
