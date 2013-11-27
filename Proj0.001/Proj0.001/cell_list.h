@@ -29,6 +29,7 @@ public:
 	Cell_list(float cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float lattice_constant, bool new_pbc_z); // unit_cells is a material parameter.
 	~Cell_list();
 	void add_atom_to_cells(Atom*);
+	//int my_sign(float);
     void create_cells();
 	std::vector<Atom*> get_neighbours(Atom* atom); 
 	void clear_cells();

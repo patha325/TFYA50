@@ -75,16 +75,17 @@ public:
 	void add_tmp_force(Vec);
 
 	//Other functions
-	Vec calculate_force(Atom*, Vec, float);
-	float calculate_pressure(Atom*, Vec, float);
+	Vec calculate_force(Vec, float);
+	float calculate_pressure(Vec, float);
 	void calculate_and_set_acceleration(Vec);
-	float calculate_potential(Atom*, float);
+	float calculate_potential(float);
 	void calculate_and_set_velocity();
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);
 	float calculate_diffusion_coeff(Vec);
 	Vec distance_vector(Atom*);
 	void calculate_and_set_position();
+	int my_sign(float);
 	Vec generate_random_vector();
 	void update_atom();	
 	void update_neighbour_list(vector<Atom*> new_neighbours);

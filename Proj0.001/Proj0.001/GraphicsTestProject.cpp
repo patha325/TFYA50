@@ -104,7 +104,7 @@ void renderScene(void) {
 				0.0f, 1.0f,  0.0f);
 
 	// Draw atoms
-	for(string::size_type k=0; k < list_of_atoms.size()/number_of_atoms;k++){
+	for(unsigned int k=0; k < list_of_atoms.size()/number_of_atoms;k++){
 		for(int i = 0; i < number_of_atoms;i++){
 		glPushMatrix();
 		glTranslatef(list_of_atoms[i]->get_position().getX(),list_of_atoms[i]->get_position().getY(),list_of_atoms[i]->get_position().getZ());

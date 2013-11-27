@@ -90,8 +90,8 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	
 	
 	/*// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
-	for(string::size_type i = 0; i < list_of_atoms.size();i++){
-		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
+	for(unsigned int i = 0; i < list_of_atoms.size();i++){
+		// unsigned int ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
 		cout << i<<endl;
 		cout << list_of_atoms[i]->get_position()<<endl;
@@ -215,7 +215,7 @@ Simulation::~Simulation (){
 	for(int i = 0; i < number_of_atoms; i++){
 		delete list_of_atoms[i];
 	}
-	delete cell_list;	
+	delete cell_list;
 }
 
 /*----------------------------
@@ -497,13 +497,13 @@ void Simulation::next_time_step(int current_time_step){
 				count ++;
 				//Calculate potential energy
 				//times two because of how we loop over neighbouring atoms
-				E_pot += 2*atom->calculate_potential(neighbouring_atom, distance_length);
+				E_pot += 2*atom->calculate_potential(distance_length);
 				//Calculate force
-				Vec tmp_force = atom->calculate_force(neighbouring_atom, distance, distance_length);
+				Vec tmp_force = atom->calculate_force(distance, distance_length);
 				atom->add_tmp_force(tmp_force);
 				neighbouring_atom->add_tmp_force(-1*tmp_force);
 				//Calculate pressure
-				pressure += 2*atom->calculate_pressure(neighbouring_atom, tmp_force, distance_length);
+				pressure += 2*atom->calculate_pressure(tmp_force, distance_length);
 			}
 		}
 		//cout << "Neighbours within cutoff: " << count << endl;

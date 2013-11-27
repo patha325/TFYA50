@@ -85,7 +85,8 @@ public:
 
 	//Constructors
 	//std::ofstream fs2;
-	Simulation (int unit_cells_x,
+	Simulation (
+		int unit_cells_x,
 		int unit_cells_y, // unit_cells is a material parameter.
 		int unit_cells_z,
 		float time_step,

@@ -68,7 +68,7 @@ Destroys cells in list_of_cells
 ------------------------------ */
 Cell_list::~Cell_list(){
 
-    for (string::size_type i = 0; i<list_of_cells.size(); i++) {
+    for (unsigned int i = 0; i<list_of_cells.size(); i++) {
         delete list_of_cells[i];
     }
 }
@@ -99,14 +99,45 @@ void Cell_list::add_atom_to_cells(Atom* current_atom){
     }
 */
 
-    //for (string::size_type i = 0; i<atoms_list.size(); i++) {
+    //for (unsigned int i = 0; i<atoms_list.size(); i++) {
         //Atom* current_atom = atoms_list[i];
-    int cell_number_iterator = 0;
+	/*bool skogen = false;
+	if (current_atom->get_position().getX() > bulk_length_x ||
+		current_atom->get_position().getY() > bulk_length_y ||
+		current_atom->get_position().getZ() > bulk_length_z) {
+			cout << "ÅT SKOGEN" << endl;
+			skogen = true;
+	}*/
+
+	/*Vec tmp_position = current_atom->get_position();
+	//Check if atom outside cells
+	//x
+	while(tmp_position.getX() < 0 || tmp_position.getX() > bulk_length_x){
+		int sign = my_sign(tmp_position.getX());
+		tmp_position.setX(tmp_position.getX()-sign*bulk_length_x);
+	}
+	//y
+	while(tmp_position.getY() < 0 || tmp_position.getY() > bulk_length_y){
+		int sign = my_sign(tmp_position.getY());
+		tmp_position.setY(tmp_position.getY()-sign*bulk_length_y);
+	}
+	//z
+	while(tmp_position.getZ() < 0 || tmp_position.getZ() > bulk_length_z){
+		int sign = my_sign(tmp_position.getZ());
+		tmp_position.setZ(tmp_position.getZ()-sign*bulk_length_z);
+	}*/
+
+	/*if(skogen){
+		cout << "tmp_position " << tmp_position << endl;
+	}*/
+
+	//cout << "Before while loop in add_atom_to_cells" << endl;
+	int cell_number_iterator = 0;
     bool found = false;
     while (!found) {
-        if (current_atom->get_position().getX()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+lattice_constant &&
-            current_atom->get_position().getY()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+lattice_constant &&
-            current_atom->get_position().getZ()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+lattice_constant) {
+        if (current_atom->get_position().getX()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+cell_length_x && 
+            current_atom->get_position().getY()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+cell_length_y &&
+            current_atom->get_position().getZ()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+cell_length_z) {
                 
                 
 //                cout << "Atom " << i << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;
@@ -121,10 +152,28 @@ void Cell_list::add_atom_to_cells(Atom* current_atom){
             cell_number_iterator++;
         }
     }
+	//cout << "After while loop in add_atom_to_cells" << endl;
 	current_atom->set_cell_number(cell_number_iterator);
-    //}
 }
 
+/* ------------------------------
+FUNCTION: sign
+PARAMETERS: float
+RETURN: int
+-
+Returns +1 or -1 depending on the
+sign of the incoming float
+------------------------------
+int Cell_list::my_sign(float number){
+	int sign;
+	if(number < 0){
+		sign = -1;
+	}
+	else{
+		sign = +1;
+	}
+	return sign;
+}*/
 
 /* ------------------------------
 FUNCTION: Cell_list::get_neighbours()
@@ -140,8 +189,9 @@ vector<Atom*> Cell_list::get_neighbours(Atom* atom){
     int cell_number = atom->get_cell_number();
 	int atom_number = atom->get_atom_number();
     vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
-    vector<Atom*> neighbouring_atoms;
+	vector<Atom*> neighbouring_atoms;
 		
+
 	//clock_t t3 = clock();
     for (unsigned int i = 0; i < neighbouring_cells.size(); i++) {
 		vector<Atom*> atoms_to_add = neighbouring_cells[i]->get_atoms_in_cell();
@@ -172,7 +222,7 @@ Removes all atoms from all cells
 ------------------------------ */
 void Cell_list::clear_cells(){
 
-	for(string::size_type i=0; i< list_of_cells.size(); i++){
+	for(unsigned int i=0; i< list_of_cells.size(); i++){
 	list_of_cells[i]->clear_cell();	 
 	}
 }
