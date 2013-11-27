@@ -416,7 +416,7 @@ Alter everything in the simulation to get to the next time step.
 ------------------------------*/
 void Simulation::next_time_step(int current_time_step){
 
-	clock_t t6 = clock();
+//	clock_t t6 = clock();
 
 	if (fmod(current_time_step, 5.0) == 0){
 	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
@@ -460,18 +460,18 @@ void Simulation::next_time_step(int current_time_step){
 	float bt = 0;
 	float ct = 0;
 	float dt = 0;
-	clock_t t1 = clock();
+//	clock_t t1 = clock();
 
 	for(int i = 0; i < number_of_atoms; i++){
 		atom = list_of_atoms[i];
 
-		clock_t t2 = clock();
+		//clock_t t2 = clock();
 
 		//cout << "next_time_step cell_list->get_neighbours(atom).size(): " << cell_list->get_neighbours(atom).size() << endl;
 		atom->update_neighbour_list(cell_list->get_neighbours(atom));
 		vector<Atom*> neighbouring_atoms = atom->get_atom_neighbours();
 
-		clock_t t3 = clock();
+		//clock_t t3 = clock();
 
 		//neighbouring_atoms = cell_list->get_neighbours(atom); 
 
@@ -485,10 +485,13 @@ void Simulation::next_time_step(int current_time_step){
 		}
 		*/
 
+		
+		
+
 		//Calculate things which need to loop over neighbouring atoms
 //		cout << "Total neighbours: " << neighbouring_atoms.size() << endl;
 		int count = 0;
-		for(unsigned int j = 0; j < neighbouring_atoms.size(); j++){
+		for(unsigned int j = 0; j < neighbouring_atoms.size(); j++){			
 			neighbouring_atom = neighbouring_atoms[j];
 			//Cacluate distance vector to this neighbouring atom
 			Vec distance = atom->distance_vector(neighbouring_atom);
@@ -497,7 +500,7 @@ void Simulation::next_time_step(int current_time_step){
 				count ++;
 				//Calculate potential energy
 				//times two because of how we loop over neighbouring atoms
-				E_pot += 2*atom->calculate_potential(distance_length);
+				E_pot += 2*atom->calculate_potential(distance_length,neighbouring_atom);
 				//Calculate force
 				Vec tmp_force = atom->calculate_force(distance, distance_length);
 				atom->add_tmp_force(tmp_force);
@@ -520,9 +523,9 @@ void Simulation::next_time_step(int current_time_step){
 		E_kin += tmp_E_kin;
 	
 		
-		clock_t t8 = clock();
-		clock_t t9 = clock();
-		clock_t t10 = clock();
+		//clock_t t8 = clock();
+		//clock_t t9 = clock();
+		//clock_t t10 = clock();
 
 		//Calculate and set correct velocity only if not first time step
 		if(current_time_step == 1){
@@ -543,14 +546,15 @@ void Simulation::next_time_step(int current_time_step){
 				MSD += calculate_MSD(atom);
 			}
 		//}
-
+/*
 		clock_t t4 = clock();
 		at += t3 - t2;
 		bt += t4 - t3;
 		ct += t9 - t8;
 		dt += t10 - t9;
+		*/
 	}
-	clock_t t5 = clock();
+	//clock_t t5 = clock();
 
 
 	//if(current_time_step < 500 || fmod(current_time_step,10.0) == 0){ // Görs alltid vid de 500 första tidsstegen, sedan var 10e tidssteg

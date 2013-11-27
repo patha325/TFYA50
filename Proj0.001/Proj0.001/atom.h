@@ -22,7 +22,7 @@ private:
 	Vec initial_position;
 
 	int cell_number;
-	int number_of_neighbours;
+	//int number_of_neighbours;
 	float cutoff;
 	float bulk_length_x;
 	float bulk_length_y;
@@ -78,7 +78,7 @@ public:
 	Vec calculate_force(Vec, float);
 	float calculate_pressure(Vec, float);
 	void calculate_and_set_acceleration(Vec);
-	float calculate_potential(float);
+	float calculate_potential(float, Atom*);
 	void calculate_and_set_velocity();
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);

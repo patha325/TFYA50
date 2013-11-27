@@ -33,15 +33,15 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
 	*/
 
     
-    bulk_length_x = (unit_cells_x+1)*lattice_constant;
-    bulk_length_y = (unit_cells_y+1)*lattice_constant;
-    bulk_length_z = (unit_cells_z+1)*lattice_constant;
+    bulk_length_x = unit_cells_x*lattice_constant;
+    bulk_length_y = unit_cells_y*lattice_constant;
+    bulk_length_z = unit_cells_z*lattice_constant;
     
-/*
+
     cout << "Bulk length X: " << bulk_length_x << endl;
     cout << "Bulk length Y: " << bulk_length_y << endl;
     cout << "Bulk length Z: " << bulk_length_z << endl << endl;
-*/
+
     
 	//Could be an issue if cell_length:s are a multiple of lattice_constant
     cell_length_x = bulk_length_x/floor(bulk_length_x/cutoff);
@@ -390,7 +390,32 @@ void Cell_list::create_cells(){
 */
 
 }
+
+/*
+void Cell_list::print_my_cell_number(int atom_number){
+
+	for(int i = 0; i<list_of_cells.size(); i++){
+		if
+	}
+	cout << 
+}
+*/
+
+void Cell_list::print_my_cell_neighbours(int atom_number){
+
+	vector<Cell*> lst = number_to_cell_vector_map[atom_number];
+	cout << endl << "The neighbouring cells for atom #" << atom_number << " are: ";
+	for (int i = 0; i < lst.size(); i++){
+		cout << lst[i]->get_cell_number() << " ";
+	}
+	cout << endl;
+}
 	
+Cell* Cell_list::get_cell_with_number(int cell_number){
+
+	return list_of_cells[cell_number];
+}
+
 /*
 void Cell_list::add_to_map(int key, vector<Cell*> entry){
     

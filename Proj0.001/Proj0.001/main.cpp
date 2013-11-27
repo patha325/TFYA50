@@ -99,7 +99,6 @@ Parameters:
 	cout << "Simulate with thermostat? (Yes = 1/No = 0)" << endl;
 	cin >> input_thermostat;
 
-
 	cout << endl << "------------" << endl;
 	cout << "- RUNNING -" << endl;
 	cout << "-----------" << endl << endl;
