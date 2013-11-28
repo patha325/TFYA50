@@ -33,6 +33,9 @@ public:
     void create_cells();
 	std::vector<Atom*> get_neighbours(Atom* atom); 
 	void clear_cells();
+	void print_my_cell_number(int atom_number);
+	void print_my_cell_neighbours(int atom_number);
+	Cell* get_cell_with_number(int cell_number);
 };
 
 #endif
