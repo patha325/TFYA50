@@ -111,7 +111,6 @@ float Atom::calculate_potential(float distance_length){
 	float tmp_potential = 0;
 	float q = sigma/distance_length; 
 	tmp_potential = 4*epsilon*(pow(q,12)-pow(q,6));
-	
 	return tmp_potential;
 }
 
@@ -343,7 +342,9 @@ Vec Atom::distance_vector_pbc(Atom* other_atom){
 		shortest_distance = l8.length();
 		shortest_vec = l8;
 	}
-
+	/*if(shortest_vec.length() < 0.5 && atom_number != other_atom->get_atom_number()){
+		cout << "Atom " << atom_number << " mkt nära" << other_atom->get_atom_number() << endl;
+	}*/
 	// Returns the vector to the closest atom from list
 	return shortest_vec;
 }
@@ -425,8 +426,17 @@ void Atom::calculate_and_set_position(){
 		next_position.setZ(next_position.getZ()-sign*bulk_length_z);
 	}
 
-	position = next_position;
+	/*position = next_position;
+	if((abs(position.getX()-prev_position.getX()) > 0.5 && abs(position.getX()-prev_position.getX()) < 25.5)||
+		(abs(position.getY()-prev_position.getY()) > 0.5 && abs(position.getY()-prev_position.getY()) < 25.5)||
+		(abs(position.getZ()-prev_position.getZ()) > 0.5 && abs(position.getZ()-prev_position.getZ()) < 25.5))
+	{
+			cout << "hopp i position, atom " << atom_number << endl;
+			cout << "  position:     " << position << endl;
+			cout << "  prev_position " << prev_position << endl << endl;
 
+	}*/
+	
 	return;
 	// Change the cell number? Should there be a call for that? Has been added in add_atoms_to_cell in cell_list
 }

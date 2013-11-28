@@ -418,8 +418,12 @@ void Simulation::next_time_step(int current_time_step){
 
 	clock_t t6 = clock();
 
-	if (fmod(current_time_step, 5.0) == 0){
+	//if (fmod(current_time_step, 5.0) == 0){
 	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
+	//}
+
+	if(current_time_step == 1295){
+		cout << "time_step = 1295" << endl;
 	}
 
 	float E_pot = 0;
@@ -450,7 +454,10 @@ void Simulation::next_time_step(int current_time_step){
 		//Update cell_list every fifth time step
 		if (fmod(current_time_step, 5.0) == 0){
 			cell_list->add_atom_to_cells(atom);
+
+		
 		}
+		
 	}
 
 	vector<Atom*> neighbouring_atoms;
@@ -484,7 +491,7 @@ void Simulation::next_time_step(int current_time_step){
 			atom_positions[current_time_step].push_back(atom->get_position());
 		}
 		*/
-
+		float E_pot_tmp = 0;
 		//Calculate things which need to loop over neighbouring atoms
 //		cout << "Total neighbours: " << neighbouring_atoms.size() << endl;
 		int count = 0;
@@ -493,13 +500,22 @@ void Simulation::next_time_step(int current_time_step){
 			//Cacluate distance vector to this neighbouring atom
 			Vec distance = atom->distance_vector(neighbouring_atom);
 			float distance_length = distance.length();
-			if(distance_length != 0 && distance_length <= cutoff){
+			if(atom->get_atom_number() != neighbouring_atom->get_atom_number() && distance_length <= cutoff){
 				count ++;
 				//Calculate potential energy
 				//times two because of how we loop over neighbouring atoms
 				E_pot += 2*atom->calculate_potential(distance_length);
+				
 				//Calculate force
 				Vec tmp_force = atom->calculate_force(distance, distance_length);
+				//if(atom->get_atom_number() == 3 && neighbouring_atom->get_atom_number() == 62) {
+				//	cout << "distance_length " << distance_length << endl;
+				//}
+				/*if(E_pot_tmp > 0){
+					cout << "tmp_force stor, = " << tmp_force << endl;
+					cout << "atom " << atom->get_atom_number() << "och atom " << neighbouring_atom->get_atom_number() << endl;
+					cout << "distance_lenght = " << distance_length << endl;
+				}*/
 				atom->add_tmp_force(tmp_force);
 				neighbouring_atom->add_tmp_force(-1*tmp_force);
 				//Calculate pressure
