@@ -73,7 +73,6 @@ Cell_list::~Cell_list(){
     }
 }
 
-
 /* ---
 PUBLIC
 --- */
@@ -99,9 +98,10 @@ void Cell_list::add_atom_to_cells(Atom* current_atom){
     }
 */
 
-    //for (unsigned int i = 0; i<atoms_list.size(); i++) {
-        //Atom* current_atom = atoms_list[i];
-	/*bool skogen = false;
+    /*
+	for (unsigned int i = 0; i< atoms_list.size(); i++) {
+        Atom* current_atom = atoms_list[i];
+	bool skogen = false;
 	if (current_atom->get_position().getX() > bulk_length_x ||
 		current_atom->get_position().getY() > bulk_length_y ||
 		current_atom->get_position().getZ() > bulk_length_z) {
@@ -135,9 +135,9 @@ void Cell_list::add_atom_to_cells(Atom* current_atom){
 	int cell_number_iterator = 0;
     bool found = false;
     while (!found) {
-        if (current_atom->get_position().getX()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+cell_length_x && 
-            current_atom->get_position().getY()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+cell_length_y &&
-            current_atom->get_position().getZ()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+cell_length_z) {
+        if (current_atom->get_position().getX()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+cell_length_x && 
+            current_atom->get_position().getY()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+cell_length_y &&
+            current_atom->get_position().getZ()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+cell_length_z) {
                 
                 
 //                cout << "Atom " << i << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;

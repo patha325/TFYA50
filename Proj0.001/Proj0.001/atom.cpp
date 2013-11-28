@@ -121,14 +121,6 @@ float Atom::calculate_potential(float distance_length, Atom* other_atom){
 	
 		cout << "Error!" << endl;
 	}
-	
-	if(tmp_potential > 100000) {
-	
-		cout << "Fel!" << endl;
-		cout << "Atom position: " << position << endl;
-		cout << "Distance length: " << distance_length << endl;
-		cout << "Sigma: " << sigma << endl;
-	}
 
 	return tmp_potential;
 }
@@ -361,7 +353,9 @@ Vec Atom::distance_vector_pbc(Atom* other_atom){
 		shortest_distance = l8.length();
 		shortest_vec = l8;
 	}
-
+	/*if(shortest_vec.length() < 0.5 && atom_number != other_atom->get_atom_number()){
+		cout << "Atom " << atom_number << " mkt nära" << other_atom->get_atom_number() << endl;
+	}*/
 	// Returns the vector to the closest atom from list
 	return shortest_vec;
 }
@@ -428,23 +422,34 @@ void Atom::calculate_and_set_position(){
 
 	//Check if atom outside cells and move it inside if it is
 	//x
-	while(next_position.getX() < 0 || next_position.getX() > bulk_length_x){
+	while(next_position.getX() < 0 || next_position.getX() >= bulk_length_x){
 		int sign = my_sign(next_position.getX());
 		next_position.setX(next_position.getX()-sign*bulk_length_x);
 	}
 	//y
-	while(next_position.getY() < 0 || next_position.getY() > bulk_length_y){
+	while(next_position.getY() < 0 || next_position.getY() >= bulk_length_y){
 		int sign = my_sign(next_position.getY());
 		next_position.setY(next_position.getY()-sign*bulk_length_y);
 	}
 	//z
-	while(next_position.getZ() < 0 || next_position.getZ() > bulk_length_z){
+	while(next_position.getZ() < 0 || next_position.getZ() >= bulk_length_z){
 		int sign = my_sign(next_position.getZ());
 		next_position.setZ(next_position.getZ()-sign*bulk_length_z);
 	}
 
-	position = next_position;
+	/*position = next_position;
+	if((abs(position.getX()-prev_position.getX()) > 0.5 && abs(position.getX()-prev_position.getX()) < 25.5)||
+		(abs(position.getY()-prev_position.getY()) > 0.5 && abs(position.getY()-prev_position.getY()) < 25.5)||
+		(abs(position.getZ()-prev_position.getZ()) > 0.5 && abs(position.getZ()-prev_position.getZ()) < 25.5))
+	{
+			cout << "hopp i position, atom " << atom_number << endl;
+			cout << "  position:     " << position << endl;
+			cout << "  prev_position " << prev_position << endl << endl;
 
+	}*/
+
+	position = next_position;
+	
 	return;
 	// Change the cell number? Should there be a call for that? Has been added in add_atoms_to_cell in cell_list
 }
