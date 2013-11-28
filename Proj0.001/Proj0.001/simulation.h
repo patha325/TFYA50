@@ -27,6 +27,7 @@ private:
 	bool thermostat;
 	bool equilibrium;
 	bool pbc_z;
+	int thermostat_update_freq;
 	float initial_velocity_modulus;
 	int unit_cells_x;
 	int unit_cells_y;
@@ -64,7 +65,7 @@ public:
 	void create_list_of_atoms(); //Create all atoms in this class? Convert from fcc to atom positions.
 	bool check_input();
 	void next_time_step(int current_time_step); //Alter everything in the simulation to get to the next time step.
-	void calculate_and_set_velocity(Atom* atom); //Sets velocity. Checks if system has thermostat or not
+	void calculate_and_set_velocity(Atom* atom,double current_time_step); //Sets velocity. Checks if system has thermostat or not
 	float calculate_specific_heat();
 	float calculate_MSD(Atom*);
 	void regulate_thermostat(); //Regulate the kinetic energy so that the temperature remains "constant"
@@ -100,7 +101,8 @@ public:
 		std::string crystal_structure,
 		bool thermostat,
 		bool equilibrium,
-		bool pbc_z);
+		bool pbc_z,
+		int thermostat_update_freq);
 	Simulation(Simulation* old_simulation, int steps, bool equilibrium); //Take off where we left off-constructor
 
 	//Destructor
