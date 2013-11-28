@@ -106,11 +106,22 @@ Returns: float (scalar potential)
 Calculates (LJ) potential on 
 the atom, from closest atom.
 ----------------------*/
-float Atom::calculate_potential(float distance_length){
+float Atom::calculate_potential(float distance_length, Atom* other_atom){
 
 	float tmp_potential = 0;
 	float q = sigma/distance_length; 
 	tmp_potential = 4*epsilon*(pow(q,12)-pow(q,6));
+
+	/*
+	if(atom_number == 0){
+		cout << "Distance to atom #" << other_atom->get_atom_number() << " is: " <<distance_length << endl;
+	}
+	*/
+	if(tmp_potential > 100) {
+	
+		cout << "Error!" << endl;
+	}
+
 	return tmp_potential;
 }
 
