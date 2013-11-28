@@ -36,7 +36,7 @@ private:
 	float Diff_coeff;
 	float prev_diff_coeff;
 	map<int, vector<Vec>> atom_positions;
-
+	int eq_time_steps;
 	//Boltzmann constant
 	float k_b;
 	//Planck's constant

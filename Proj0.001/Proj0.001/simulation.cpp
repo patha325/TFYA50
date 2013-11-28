@@ -54,7 +54,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3);
 	prev_diff_coeff = 0;
 	Diff_coeff = 0;
-	
+	eq_time_steps =0;
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
 	k_b = 8.617342e-5f; //[eV][K]^{-1}
@@ -128,6 +128,7 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	equilibrium = new_equilibrium;
 	prev_diff_coeff = 0;
 	Diff_coeff = 0;
+	eq_time_steps=0;
 	
 
 	//Boltzmann constant
@@ -188,10 +189,15 @@ void Simulation::configure_data(int steps){
 		line_number++;
 	}	
 	in.close();
-	step_out+=steps;
 	
+	
+	if(equilibrium && eq_time_steps==0){
+		eq_time_steps=step_out;
+	}
+	step_out+=steps;
+
 	std::ofstream fs2("energytemp.txt", ios::trunc);
-	fs2 << steps << " " << step_out << " " <<time_step<< " " << 0<< " " << 0<< " " << 0<< " " << 0<< " " << 0<<" "<< 0<<endl;
+	fs2 << steps << " " << step_out << " " <<time_step<< " " << eq_time_steps<< " " << 0<< " " << 0<< " " << 0<< " " << 0<<" "<< 0<<endl;
 	fs2.close();
 	
 	for(unsigned int i=0;i<total_energy_vector.size();i++){
@@ -417,14 +423,17 @@ Alter everything in the simulation to get to the next time step.
 void Simulation::next_time_step(int current_time_step){
 
 //	clock_t t6 = clock();
+	clock_t start_of_time_step_time = clock();
 
 	if (fmod(current_time_step, 5.0) == 0){
 		cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
 	}
 
+	/*
 	if(current_time_step == 1295){
 		cout << "time_step = 1295" << endl;
 	}
+	*/
 
 	float E_pot = 0;
 	float E_kin = 0;
@@ -604,8 +613,10 @@ void Simulation::next_time_step(int current_time_step){
 		//Calculate total energy of system
 		total_energy = E_pot + E_kin;
 	
+		
+
 		//Calculate cohesive energy
-		if(equilibrium && current_time_step > 10){
+		if(equilibrium && current_time_step > 50){
 			coh_e = E_pot/number_of_atoms; // cohesive energy is the same as potential when equilibrium is reached.
 			//Calculate average MSD
 			MSD = MSD/number_of_atoms;
@@ -615,6 +626,7 @@ void Simulation::next_time_step(int current_time_step){
 			prev_diff_coeff = tmp_diff_coeff;
 			//Calculate Debye temperature
 			Debye_temp += 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
+
 		}
 	
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
@@ -641,6 +653,8 @@ void Simulation::next_time_step(int current_time_step){
 		cout << "MSD " << bt << endl << endl;
 	}
 	*/
+	clock_t end_of_time_step_time = clock();
+	cout << "Time step " <<  current_time_step << " has duration: " << end_of_time_step_time-start_of_time_step_time << endl;
 
 	return;
 }
