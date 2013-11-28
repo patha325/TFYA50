@@ -80,6 +80,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 	number_of_atoms = list_of_atoms.size();	
 
+
 	//Clear files that will be written to for every simulation.
 	//std::ofstream fs("atoms.txt", ios::trunc);
 	
@@ -469,30 +470,6 @@ void Simulation::next_time_step(int current_time_step){
 	vector<Atom*> neighbouring_atoms;
 	Atom* neighbouring_atom;
 
-	//if(atom->get_atom_number() == 499) cout << "Atom 499 is in cell: " << atom->get_cell_number()<< endl;
-
-	
-	
-
-
-	/*
-	vector<int> list_of_included_atom_numbers;
-	for(int i = 0; i < neighbouring_atoms.size(); i++){
-		
-		list_of_included_atom_numbers.push_back(neighbouring_atoms[i]->get_atom_number());
-	}
-
-	for(int j = 0; j < list_of_atoms.size(); j++){
-		int at_num = list_of_atoms[j]->get_atom_number(); 
-		if(list_of_atoms[j]->distance_vector(atom).length() <= cutoff && at_num>atom->get_atom_number()){
-			bool found = false;
-			for(int k = 0; k < list_of_included_atom_numbers.size(); k++){
-				if (at_num == list_of_included_atom_numbers[k]) found = true;
-			}
-			if (!found) cout << endl << "Not included atom number: " << at_num << " to atom " << atom->get_atom_number() << endl;
-		}
-	}
-	*/
 	float at = 0;
 	float bt = 0;
 	float ct = 0;
@@ -507,38 +484,14 @@ void Simulation::next_time_step(int current_time_step){
 		//cout << "next_time_step cell_list->get_neighbours(atom).size(): " << cell_list->get_neighbours(atom).size() << endl;
 		//atom->last_step_atom_neighbours = atom->get_atom_neighbours();
 
-		//atom->update_neighbour_list(cell_list->get_neighbours(atom));
+
 		
-		
+		//Creates the vector with atoms which neighbour the current atom
 		if (fmod(current_time_step, 5.0) == 0){
 			atom->update_neighbour_list(cell_list->get_neighbours(atom));
-		}
-		
-		
+		}	
 		vector<Atom*> neighbouring_atoms = atom->get_atom_neighbours();
 
-
-
-		/*
-		if(atom->get_atom_number()==0){
-			//cout << "Atom 0 is in cell " << atom->get_cell_number() << endl;
-			//cout << "Atom 0 has position: " << atom->get_position() << endl;
-			cout << "Time step " << current_time_step << ":" << endl;
-			//cell_list->print_my_cell_neighbours(atom->get_atom_number());
-			
-			
-			if(neighbouring_atoms.size()!=atom->last_step_atom_neighbours.size()) cout << "Different number of neighbours" << endl;
-			else{
-				for(int it = 0; it < neighbouring_atoms.size(); it++){
-					if(atom->last_step_atom_neighbours[it]->get_atom_number()!=neighbouring_atoms[it]->get_atom_number()) cout << "Not same neighbours" << endl;
-				}
-			}
-			//cout << endl;
-			
-			
-		}
-		
-		*/
 		//clock_t t3 = clock();
 
 		//neighbouring_atoms = cell_list->get_neighbours(atom); 

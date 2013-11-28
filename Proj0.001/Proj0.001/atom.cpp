@@ -117,10 +117,6 @@ float Atom::calculate_potential(float distance_length, Atom* other_atom){
 		cout << "Distance to atom #" << other_atom->get_atom_number() << " is: " <<distance_length << endl;
 	}
 	*/
-	if(tmp_potential > 100) {
-	
-		cout << "Error!" << endl;
-	}
 
 	return tmp_potential;
 }
@@ -509,6 +505,7 @@ void Atom::update_atom(){
 void Atom::update_neighbour_list(vector<Atom*> new_neighbours){
 
 	atom_neighbours = new_neighbours;
+	number_of_neighbours = new_neighbours.size();
 	//cout << "update_neighbour_list atom_neighbours.size(): " << atom_neighbours.size() << endl;
 }
 
@@ -531,6 +528,7 @@ Vec Atom::get_initial_position() { return initial_position; }
 float Atom::get_mass(){ return mass; }
 vector<Atom*> Atom::get_atom_neighbours(){ return atom_neighbours; }
 Vec Atom::get_tmp_force(){ return tmp_force; }
+int Atom::get_number_of_neighbours(){return number_of_neighbours;}
 
 
 

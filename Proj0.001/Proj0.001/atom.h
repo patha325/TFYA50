@@ -22,7 +22,7 @@ private:
 	Vec initial_position;
 
 	int cell_number;
-	//int number_of_neighbours;
+	int number_of_neighbours;
 	float cutoff;
 	float bulk_length_x;
 	float bulk_length_y;
@@ -64,6 +64,7 @@ public:
 	float get_mass();
 	vector<Atom*> get_atom_neighbours();
 	Vec get_tmp_force();
+	int get_number_of_neighbours();
 
 	//Setters
 	void set_atom_number(int);

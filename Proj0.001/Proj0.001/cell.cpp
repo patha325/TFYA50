@@ -46,6 +46,8 @@ std::vector<Atom*> Cell::get_atoms_in_cell(){
     return atoms_in_cell;
 }
 
+
+
 /*------------------
  SETTERS
 -------------------*/
@@ -72,6 +74,8 @@ void Cell::add_atom(Atom* atom){
     number_of_atoms_in_cell++;
 }
 
+
+
 /*---------------------
 FUNCTION: clear_cell()
 PARAMETERS: None
@@ -85,6 +89,8 @@ void Cell::clear_cell(){
     atoms_in_cell.clear();
     number_of_atoms_in_cell=0;
 }
+
+
 
 
 

@@ -20,6 +20,7 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
     cutoff = new_cutoff; 
     lattice_constant = new_lattice_constant;
 	pbc_z = new_pbc_z;
+	number_of_cells = 0;
     
 	/*
     cout << "Cutoff: " << cutoff << endl;
@@ -138,11 +139,14 @@ void Cell_list::add_atom_to_cells(Atom* current_atom){
         if (current_atom->get_position().getX()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+cell_length_x && 
             current_atom->get_position().getY()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+cell_length_y &&
             current_atom->get_position().getZ()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+cell_length_z) {
+
                 
                 
-//                cout << "Atom " << i << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;
+//				cout << "Atom " << current_atom->get_atom_number() << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;
                 
-            list_of_cells[cell_number_iterator]->add_atom(current_atom);
+				list_of_cells[cell_number_iterator]->add_atom(current_atom);
+				//list_of_cells[cell_number_iterator]->add_atom_number(current_atom->get_atom_number());
+
 
 //				cout << "Cell with number " << cell_number_iterator << " has " << list_of_cells[cell_number_iterator]->get_number_of_atoms_in_cell() << " atoms in it." << endl;
 
@@ -185,6 +189,7 @@ are neighbours to the parameter Atom.
 ------------------------------ */
 vector<Atom*> Cell_list::get_neighbours(Atom* atom){
 	//clock_t t1 = clock();
+	//cout << "Atom number " << atom->get_atom_number() << endl;
 
     int cell_number = atom->get_cell_number();
 	int atom_number = atom->get_atom_number();
@@ -204,8 +209,9 @@ vector<Atom*> Cell_list::get_neighbours(Atom* atom){
     }
 	//clock_t t2 = clock();
 	//cout << "before for loop " << t3 - t1 << endl;
-	//cout << "for loop " << t2 - t3 << endl;
+	//cout << "Time for getting neighbours: " << t2 - t1 << endl;
 	return neighbouring_atoms;
+	
 } 
 
 
@@ -228,7 +234,7 @@ void Cell_list::clear_cells(){
 }
 
 /* ------------------------------
-FUNCTION: Cell_list::create_cell()
+FUNCTION: Cell_list::create_cells()
 PARAMETERS: None
 RETURN: void
 -
@@ -285,6 +291,7 @@ void Cell_list::create_cells(){
             
                 list_of_cells.insert(list_of_cells.end(), new Cell(i,current_origin));
                 vec_to_number_map.insert(pair<Vec,int>(current_matrix_coordinates,i));
+				number_of_cells++;
                 
                 //cout << i << ": " << current_origin << endl;
             
@@ -410,6 +417,23 @@ void Cell_list::print_my_cell_neighbours(int atom_number){
 	}
 	cout << endl;
 }
+
+void Cell_list::print_atoms_in_each_cell(){
+
+	cout << endl << "ATOMS IN EACH CELL:" << endl;
+	for(int i = 0; i < number_of_cells; i++){
+		cout << "Atoms in cell " << i << endl;
+		vector<Atom*> list_of_atoms = list_of_cells[i]->get_atoms_in_cell();
+
+		cout << "Atoms: ";
+		for(int j = 0; j < list_of_atoms.size(); j++){
+			cout << list_of_atoms[j]->get_atom_number() << " ";
+		}
+		cout << endl;
+	
+	}
+}
+
 	
 Cell* Cell_list::get_cell_with_number(int cell_number){
 
@@ -422,3 +446,8 @@ void Cell_list::add_to_map(int key, vector<Cell*> entry){
     number_to_cell_vector_map.insert(pair<int, vector<Cell*>>(key,entry));
 }
 */
+
+int Cell_list::get_number_of_cells(){
+
+	return number_of_cells;
+}

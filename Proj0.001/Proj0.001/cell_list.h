@@ -8,6 +8,7 @@
 class Cell_list{
 private:
 	//Variables
+	int number_of_cells; 
 	float cutoff; //Potential cutoff
 	float cell_length_x; //Length of side of cell
     float cell_length_y; //Length of side of cell
@@ -35,7 +36,9 @@ public:
 	void clear_cells();
 	void print_my_cell_number(int atom_number);
 	void print_my_cell_neighbours(int atom_number);
+	void print_atoms_in_each_cell();
 	Cell* get_cell_with_number(int cell_number);
+	int get_number_of_cells();
 };
 
 #endif
