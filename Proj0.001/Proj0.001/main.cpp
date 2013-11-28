@@ -77,6 +77,8 @@ Parameters:
 	bool input_thermostat = false;
 	bool input_equilibrium = false;
 	bool pbc_z = false;
+	int thermostat_update_freq = 0;
+	float input_lattice_scaling = 1;
 	
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
 	cin >> input_x;
@@ -93,11 +95,17 @@ Parameters:
 	get_input_file(input_material,file);
 	cout << "Start temperature (K):" << endl;
 	cin >> input_temperature;
+	cout << "Scaling of lattice constant " << endl;
+	cin >> input_lattice_scaling;
 	cout << "Input cutoff multiples of lattice_constant:" <<endl;
 	cin >> input_cutoff;
 	input_cutoff = input_cutoff*lattice;
 	cout << "Simulate with thermostat? (Yes = 1/No = 0)" << endl;
 	cin >> input_thermostat;
+	if(input_thermostat) {
+		cout << "Update frequency for thermostat " << endl;
+		cin >> thermostat_update_freq;
+	}
 
 	cout << endl << "------------" << endl;
 	cout << "- RUNNING -" << endl;
@@ -107,18 +115,18 @@ Parameters:
 	input_epsilon = epsilon; //[eV]
 	input_crystal_structure = structure;
 	input_mass = mass; //[eV/c^2]=[eV][Å]^2[fs]^-2
-	input_lattice_constant=lattice;
+	input_lattice_constant=lattice*input_lattice_scaling;
 
 	cout << "Sigma: "<< sigma << endl;
 	cout << "Epsilon: "<<epsilon<<endl;
 	cout << "Structure: "<<structure<<endl;
 	cout << "Mass: "<<mass<<endl;
-	cout << "Lattice: "<<lattice<<endl;
+	cout << "Lattice: "<<input_lattice_constant<<endl;
 	
 		//Create first simulation world
 	Simulation* simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
 											input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,
-											input_thermostat, input_equilibrium, pbc_z);
+											input_thermostat, input_equilibrium, pbc_z, thermostat_update_freq);
 	cout << "Running simulation..." << endl << endl;
 	
 	simulation->run_simulation();

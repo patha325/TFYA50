@@ -32,7 +32,7 @@ Calls constructors for all atoms and the cell list.
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
                         float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat,
-						bool new_equilibrium, bool new_pbc_z){
+						bool new_equilibrium, bool new_pbc_z, int new_thermostat_update_freq){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -54,6 +54,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3);
 	prev_diff_coeff = 0;
 	Diff_coeff = 0;
+	thermostat_update_freq = new_thermostat_update_freq;
 	
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
@@ -422,10 +423,6 @@ void Simulation::next_time_step(int current_time_step){
 		cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
 	}
 
-	if(current_time_step == 1295){
-		cout << "time_step = 1295" << endl;
-	}
-
 	float E_pot = 0;
 	float E_kin = 0;
 	float temperature = 0;
@@ -531,7 +528,7 @@ void Simulation::next_time_step(int current_time_step){
 		//Calculate and set acceleration = f(r)
 		atom->calculate_and_set_acceleration(atom->get_tmp_force());
 		//Calculate and set velocity = f(prev_vel, acc, prev_acc)
-		calculate_and_set_velocity(atom);
+		calculate_and_set_velocity(atom,current_time_step);
 
 		//Kinetic energy
 		tmp_E_kin = atom->calculate_kinetic_energy();
@@ -629,10 +626,10 @@ Returns: None
 Calculates and sets correct velocity
 Checks if system has thermostat
 ------------------------------*/
-void Simulation::calculate_and_set_velocity(Atom* atom){
+void Simulation::calculate_and_set_velocity(Atom* atom,double current_time_step){
 	//Calculate velocity as if total energy is to be constant
 	atom->calculate_and_set_velocity();
-	if (thermostat){
+	if (thermostat && fmod(current_time_step,thermostat_update_freq)==0){
 		//Update velocity so temperature is constant
 		Vec new_velocity = atom->get_velocity();
 		float new_velocity_modulus = new_velocity.length();
