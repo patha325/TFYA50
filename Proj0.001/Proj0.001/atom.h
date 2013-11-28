@@ -91,6 +91,9 @@ public:
 	void update_neighbour_list(vector<Atom*> new_neighbours);
 	void clear_tmp_force();
 
+	//For tests only
+	vector<Atom*> last_step_atom_neighbours;
+
 };
 
 #endif

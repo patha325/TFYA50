@@ -537,7 +537,10 @@ Vec Atom::get_tmp_force(){ return tmp_force; }
 // -------- SETTERS --------
 void Atom::set_atom_number(int new_atom_number){ atom_number = new_atom_number; }
 void Atom::set_velocity(Vec new_velocity){ velocity = new_velocity; }
-void Atom::set_cell_number(int new_cell_number){ cell_number = new_cell_number; }
+void Atom::set_cell_number(int new_cell_number){ 
+	//if(new_cell_number!=cell_number) cout << "Moved atom " << atom_number << endl;
+	cell_number = new_cell_number; 
+}
 void Atom::set_initial_velocity(Vec new_initial_velocity) { initial_velocity = new_initial_velocity; }
 void Atom::set_initial_position(Vec new_initial_position) { initial_position = new_initial_position; }
 void Atom::set_cutoff(float new_cutoff){ cutoff = new_cutoff; }

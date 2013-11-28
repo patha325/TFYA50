@@ -116,6 +116,7 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	time_step = old_simulation->get_time_step();
 	steps = new_steps;
 	temperature = old_simulation->get_temperature();
+	thermostat = old_simulation->get_thermostat();
 	cutoff = old_simulation->get_cutoff();
 	thermostat = old_simulation->get_thermostat();
 	pbc_z = old_simulation->get_pbc_z();
@@ -508,9 +509,40 @@ void Simulation::next_time_step(int current_time_step){
 		//clock_t t2 = clock();
 
 		//cout << "next_time_step cell_list->get_neighbours(atom).size(): " << cell_list->get_neighbours(atom).size() << endl;
-		atom->update_neighbour_list(cell_list->get_neighbours(atom));
+		//atom->last_step_atom_neighbours = atom->get_atom_neighbours();
+
+		//atom->update_neighbour_list(cell_list->get_neighbours(atom));
+		
+		
+		if (fmod(current_time_step, 5.0) == 0){
+			atom->update_neighbour_list(cell_list->get_neighbours(atom));
+		}
+		
+		
 		vector<Atom*> neighbouring_atoms = atom->get_atom_neighbours();
 
+
+
+		/*
+		if(atom->get_atom_number()==0){
+			//cout << "Atom 0 is in cell " << atom->get_cell_number() << endl;
+			//cout << "Atom 0 has position: " << atom->get_position() << endl;
+			cout << "Time step " << current_time_step << ":" << endl;
+			//cell_list->print_my_cell_neighbours(atom->get_atom_number());
+			
+			
+			if(neighbouring_atoms.size()!=atom->last_step_atom_neighbours.size()) cout << "Different number of neighbours" << endl;
+			else{
+				for(int it = 0; it < neighbouring_atoms.size(); it++){
+					if(atom->last_step_atom_neighbours[it]->get_atom_number()!=neighbouring_atoms[it]->get_atom_number()) cout << "Not same neighbours" << endl;
+				}
+			}
+			//cout << endl;
+			
+			
+		}
+		
+		*/
 		//clock_t t3 = clock();
 
 		//neighbouring_atoms = cell_list->get_neighbours(atom); 
