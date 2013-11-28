@@ -460,6 +460,30 @@ void Simulation::next_time_step(int current_time_step){
 	vector<Atom*> neighbouring_atoms;
 	Atom* neighbouring_atom;
 
+	//if(atom->get_atom_number() == 499) cout << "Atom 499 is in cell: " << atom->get_cell_number()<< endl;
+
+	
+	
+
+
+	/*
+	vector<int> list_of_included_atom_numbers;
+	for(int i = 0; i < neighbouring_atoms.size(); i++){
+		
+		list_of_included_atom_numbers.push_back(neighbouring_atoms[i]->get_atom_number());
+	}
+
+	for(int j = 0; j < list_of_atoms.size(); j++){
+		int at_num = list_of_atoms[j]->get_atom_number(); 
+		if(list_of_atoms[j]->distance_vector(atom).length() <= cutoff && at_num>atom->get_atom_number()){
+			bool found = false;
+			for(int k = 0; k < list_of_included_atom_numbers.size(); k++){
+				if (at_num == list_of_included_atom_numbers[k]) found = true;
+			}
+			if (!found) cout << endl << "Not included atom number: " << at_num << " to atom " << atom->get_atom_number() << endl;
+		}
+	}
+	*/
 	float at = 0;
 	float bt = 0;
 	float ct = 0;
