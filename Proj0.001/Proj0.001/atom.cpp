@@ -422,17 +422,17 @@ void Atom::calculate_and_set_position(){
 
 	//Check if atom outside cells and move it inside if it is
 	//x
-	while(next_position.getX() < 0 || next_position.getX() > bulk_length_x){
+	while(next_position.getX() < 0 || next_position.getX() >= bulk_length_x){
 		int sign = my_sign(next_position.getX());
 		next_position.setX(next_position.getX()-sign*bulk_length_x);
 	}
 	//y
-	while(next_position.getY() < 0 || next_position.getY() > bulk_length_y){
+	while(next_position.getY() < 0 || next_position.getY() >= bulk_length_y){
 		int sign = my_sign(next_position.getY());
 		next_position.setY(next_position.getY()-sign*bulk_length_y);
 	}
 	//z
-	while(next_position.getZ() < 0 || next_position.getZ() > bulk_length_z){
+	while(next_position.getZ() < 0 || next_position.getZ() >= bulk_length_z){
 		int sign = my_sign(next_position.getZ());
 		next_position.setZ(next_position.getZ()-sign*bulk_length_z);
 	}
@@ -447,6 +447,8 @@ void Atom::calculate_and_set_position(){
 			cout << "  prev_position " << prev_position << endl << endl;
 
 	}*/
+
+	position = next_position;
 	
 	return;
 	// Change the cell number? Should there be a call for that? Has been added in add_atoms_to_cell in cell_list

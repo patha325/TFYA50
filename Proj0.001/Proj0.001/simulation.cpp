@@ -418,9 +418,9 @@ void Simulation::next_time_step(int current_time_step){
 
 //	clock_t t6 = clock();
 
-	//if (fmod(current_time_step, 5.0) == 0){
-	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
-	//}
+	if (fmod(current_time_step, 5.0) == 0){
+		cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
+	}
 
 	if(current_time_step == 1295){
 		cout << "time_step = 1295" << endl;
@@ -492,6 +492,7 @@ void Simulation::next_time_step(int current_time_step){
 		}
 		*/
 
+		
 		//Calculate things which need to loop over neighbouring atoms
 //		cout << "Total neighbours: " << neighbouring_atoms.size() << endl;
 		int count = 0;
