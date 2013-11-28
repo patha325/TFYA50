@@ -112,6 +112,14 @@ float Atom::calculate_potential(float distance_length){
 	float q = sigma/distance_length; 
 	tmp_potential = 4*epsilon*(pow(q,12)-pow(q,6));
 	
+	if(tmp_potential > 100000) {
+	
+		cout << "Fel!" << endl;
+		cout << "Atom position: " << position << endl;
+		cout << "Distance length: " << distance_length << endl;
+		cout << "Sigma: " << sigma << endl;
+	}
+
 	return tmp_potential;
 }
 
