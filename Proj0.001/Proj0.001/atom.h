@@ -54,6 +54,7 @@ public:
 	//Getters
 	int get_atom_number();
 	Vec get_velocity();
+	Vec get_prev_velocity();
 	Vec get_position();
 	Vec get_acceleration();
 	Vec get_prev_acceleration();

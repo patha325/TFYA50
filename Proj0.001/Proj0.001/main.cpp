@@ -7,13 +7,13 @@
 #include <fstream>
 #include <vector>
 #include "GraphicsTestProject.h"
-
+/*
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
-
+*/
 using namespace std;
 	//initialvalues for get_input_file()
 	string atom;
@@ -56,6 +56,7 @@ Parameters:
     float lattice_constant			: Lattice constant
     std::string crystal_structure	: Name of chrystal structure (scc, fcc, hcp, bcc...)
     bool thermostat					: If a thermostat is employed
+	bool old_sim					: Start from an old simulation?
  */
 
 	//initializegraphics
@@ -79,6 +80,12 @@ Parameters:
 	bool pbc_z = false;
 	int thermostat_update_freq = 0;
 	float input_lattice_scaling = 1;
+	bool old_sim;
+	
+	cout << "Do you want to start from an old simulation? (Yes = 1/No = 0)" <<endl;
+	cin >> old_sim;
+	// cout << "Input filename.txt where old simulation can be found" <<endl;
+	// cin >> old_sim_filename:
 	
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
 	cin >> input_x;
@@ -126,7 +133,7 @@ Parameters:
 		//Create first simulation world
 	Simulation* simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
 											input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,
-											input_thermostat, input_equilibrium, pbc_z, thermostat_update_freq);
+											input_thermostat, input_equilibrium, pbc_z, thermostat_update_freq, old_sim);
 	cout << "Running simulation..." << endl << endl;
 	
 	simulation->run_simulation();
@@ -138,6 +145,10 @@ Parameters:
 	bool back_to_back = true;
 	cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;
 	cin >> back_to_back;
+	if(!back_to_back){
+		simulation->end_of_simulation();
+	}
+
 
 	while (back_to_back){
 		cout << "System in equilibrium? (Yes = 1/No = 0)" << endl;
@@ -154,6 +165,10 @@ Parameters:
 		//Ask again to runt new btb simulation
 		cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;
 		cin >> back_to_back;
+		
+		if(!back_to_back){
+			btb_simulation->end_of_simulation();
+		}
 	}
 
 	system("pause");

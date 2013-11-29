@@ -37,6 +37,9 @@ Atom::Atom(Vec starting_position, float start_cutoff, int unit_cells_x, int unit
 	time_step = new_time_step;
 }
 
+
+
+
 /*--------------------
 DESTRUCTOR
 Does nothing
@@ -530,6 +533,7 @@ float Atom::get_mass(){ return mass; }
 vector<Atom*> Atom::get_atom_neighbours(){ return atom_neighbours; }
 Vec Atom::get_tmp_force(){ return tmp_force; }
 int Atom::get_number_of_neighbours(){return number_of_neighbours;}
+Vec Atom::get_prev_velocity(){return prev_velocity;}
 
 
 
@@ -544,6 +548,7 @@ void Atom::set_initial_velocity(Vec new_initial_velocity) { initial_velocity = n
 void Atom::set_initial_position(Vec new_initial_position) { initial_position = new_initial_position; }
 void Atom::set_cutoff(float new_cutoff){ cutoff = new_cutoff; }
 void Atom::add_tmp_force(Vec new_tmp_force){ tmp_force = tmp_force + new_tmp_force; }
+
 
 
 
