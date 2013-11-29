@@ -460,7 +460,8 @@ void Cell_list::print_atoms_in_each_cell(){
 	
 Cell* Cell_list::get_cell_with_number(int cell_number){
 
-	return list_of_cells[cell_number];
+	if(cell_number==-1) return list_of_cells[list_of_cells.size()-1];
+	else return list_of_cells[cell_number];
 }
 
 /*

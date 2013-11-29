@@ -445,6 +445,7 @@ void Simulation::next_time_step(int current_time_step){
 
 	if (fmod(current_time_step, 5.0) == 0){
 		cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
+		//if(!pbc_z) cout << "Number of atoms in cell " << cell_list->get_cell_with_number(-1)->get_cell_number() << " is " << cell_list->get_cell_with_number(-1)->get_number_of_atoms_in_cell() << endl;
 	}
 
 	float E_pot = 0;
@@ -654,7 +655,7 @@ void Simulation::next_time_step(int current_time_step){
 	}
 	*/
 	clock_t end_of_time_step_time = clock();
-	cout << "Time step " <<  current_time_step << " has duration: " << end_of_time_step_time-start_of_time_step_time << endl;
+	//cout << "Time step " <<  current_time_step << " has duration: " << end_of_time_step_time-start_of_time_step_time << endl;
 
 	return;
 }
