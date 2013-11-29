@@ -32,7 +32,7 @@ Calls constructors for all atoms and the cell list.
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
                         float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat,
-						bool new_equilibrium, bool new_pbc_z, int new_thermostat_update_freq){
+						bool new_equilibrium, bool new_pbc_z, int new_thermostat_update_freq, bool new_old_sim){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -56,6 +56,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	Diff_coeff = 0;
 	eq_time_steps =0;
 	thermostat_update_freq = new_thermostat_update_freq;
+	old_sim=new_old_sim;
 
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
@@ -66,7 +67,16 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
     //Initial setup
-    create_list_of_atoms();
+
+
+	if(old_sim){
+    read_old_sim();
+	}
+	else{
+		create_list_of_atoms();
+	}
+
+
 	cout << "Total number of atoms: " << list_of_atoms.size() << endl;
 	if (pbc_z){
 		cout << "PBC is on in Z-direction." << endl;
@@ -911,6 +921,29 @@ void Simulation::create_cell_list(){
 		cell_list->add_atom_to_cells(list_of_atoms[i]);
 	}
 }
+void Simulation::end_of_simulation(){
+	// Write all atom data to a file. 
+
+	std::ofstream fs3("endofsimulation.txt", ios::trunc);
+	fs3.close();
+	// Write material stuff to start of file.
+	
+	for (unsigned int i=0; i<list_of_atoms.size(); i++){
+		std::ofstream fs3("endofsimulation.txt", ios::app);
+	// atom#, position, previous position, velocity, previous velocity, acceleration, previous acceleration, initial velocity, initial position
+
+		fs3<<list_of_atoms[i]->get_atom_number()<<" "<<list_of_atoms[i]->get_position()<<" "<<list_of_atoms[i]->get_prev_position()<<" "<<
+			list_of_atoms[i]->get_velocity()<<" "<<list_of_atoms[i]->get_prev_velocity()<<" "<<list_of_atoms[i]->get_acceleration()<<" "<<
+			list_of_atoms[i]->get_prev_acceleration()<<" "<<list_of_atoms[i]->get_initial_velocity()<<" "<<list_of_atoms[i]->get_initial_position()<<endl;
+		fs3.close();
+	}
+	
+
+}
+
+void Simulation::read_old_sim(){}
+
+
 
 /*-----
 GETTERS
