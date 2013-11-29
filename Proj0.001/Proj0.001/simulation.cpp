@@ -733,13 +733,169 @@ Calculates mean square displacement for an atom
 float Simulation::calculate_MSD(Atom* atom){
 	
 	float MSD_tmp = 0;
-
-	Vec temp_pos = atom->get_position();
-	Vec equi_pos = atom->get_initial_position();
-	float temp_diff = (temp_pos - equi_pos).length();
+	float temp_diff = distance_between_now_and_initial(atom).length();
 	MSD_tmp = pow(temp_diff,2);
 
 	return MSD_tmp;
+}
+
+/*------------------------------
+FUNCTION distance_between_now_and_initial
+Paramteters: Atom*
+Returns: vector between initial position and current position
+- 
+------------------------------*/
+
+Vec Simulation::distance_between_now_and_initial(Atom* atom) {
+	
+	float bulk_length_x = unit_cells_x*lattice_constant;
+	float bulk_length_y = unit_cells_y*lattice_constant;
+	float bulk_length_z = unit_cells_z*lattice_constant;
+	
+	Vec temp_pos = atom->get_position();
+	Vec equi_pos = atom->get_initial_position();
+	
+	/* Check the x, y and z coordinate for both atoms */
+	float x1 = temp_pos.getX();
+	float x2 = equi_pos.getX();
+	float y1 = temp_pos.getY();
+	float y2 = equi_pos.getY();
+	float z1 = temp_pos.getZ();
+	float z2 = equi_pos.getZ();
+
+	/* Check distance inside this periodic bulk structure*/
+	Vec l1 = temp_pos - equi_pos;
+
+	/* Check distance to atom in neighbouring periodic bulk structures, only checking the 7 closest */
+
+	Vec l2;
+	Vec l3;
+	Vec l4;
+	Vec l5;
+	Vec l6;
+	Vec l7;
+	Vec l8;
+	
+	if(x1>=x2 && y1>=y2 && z1>=z2){
+		/* Check x + bulk_length, y + bulk_length, z + bulk_length and all combinations */
+		l2 =  temp_pos - (equi_pos + Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(bulk_length_x,bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,bulk_length_z));
+	}
+	else if(x1>=x2 && y1>=y2 && z1<=z2){
+		/* Check x + bulk_length, y + bulk_length, z - bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(bulk_length_x,0,-bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(bulk_length_x,bulk_length_y,-bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,bulk_length_y,-bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,-bulk_length_z));
+	}
+	else if(x1>=x2 && y1<=y2 && z1>=z2){
+		/* Check x + bulk_length, y - bulk_length, z + bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(bulk_length_x,-bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(bulk_length_x,-bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,bulk_length_z));
+
+	}
+	else if(x1>=x2 && y1<=y2 && z1<=z2){
+		/* Check x + bulk_length, y - bulk_length, z - bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(bulk_length_x,-bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(bulk_length_x,0,-bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(bulk_length_x,-bulk_length_y,-bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,-bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,-bulk_length_z));
+	}
+	else if(x1<=x2 && y1>=y2 && z1>=z2){
+		/* Check x - bulk_length, y + bulk_length, z + bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(-bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(-bulk_length_x,bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,bulk_length_z));
+	}
+	else if(x1<=x2 && y1<=y2 && z1>=z2){
+		/* Check x - bulk_length, y - bulk_length, z + bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(-bulk_length_x,-bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(-bulk_length_x,-bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,bulk_length_z));
+	}
+	else if(x1<=x2 && y1>=y2 && z1<=z2){
+		/* Check x - bulk_length, y + bulk_length, z - bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(-bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,-bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(-bulk_length_x,bulk_length_y,-bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,bulk_length_y,-bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,-bulk_length_z));
+	}
+	else{
+		/* Check x - bulk_length, y - bulk_length, z - bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos - Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos - Vec(bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos - Vec(bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos - Vec(bulk_length_x,bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos - Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos - Vec(0,bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos - Vec(0,0,bulk_length_z));
+	}
+
+
+	/* Check which one of the 8 atoms that are closest*/
+	float shortest_distance = l1.length();
+	Vec shortest_vec = l1;
+
+	if(l2.length() < shortest_distance){
+		shortest_distance = l2.length();
+		shortest_vec = l2;
+	}
+	if(l3.length() < shortest_distance){
+		shortest_distance = l3.length();
+		shortest_vec = l3;
+	}
+	if(l4.length() < shortest_distance){
+		shortest_distance = l4.length();
+		shortest_vec = l4;
+	}
+	if(l5.length() < shortest_distance){
+		shortest_distance = l5.length();
+		shortest_vec = l5;
+	}
+	if(l6.length() < shortest_distance){
+		shortest_distance = l6.length();
+		shortest_vec = l6;
+	}
+	if(l7.length() < shortest_distance){
+		shortest_distance = l7.length();
+		shortest_vec = l7;
+	}
+	if(l8.length() < shortest_distance){
+		shortest_distance = l8.length();
+		shortest_vec = l8;
+	}
+	/*if(shortest_vec.length() < 0.5 && atom_number != other_atom->get_atom_number()){
+		cout << "Atom " << atom_number << " mkt nära" << other_atom->get_atom_number() << endl;
+	}*/
+	// Returns the vector to the closest atom from list
+	return shortest_vec;
 }
 
 
