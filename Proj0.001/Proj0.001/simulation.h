@@ -68,6 +68,7 @@ public:
 	void calculate_and_set_velocity(Atom* atom,double current_time_step); //Sets velocity. Checks if system has thermostat or not
 	float calculate_specific_heat();
 	float calculate_MSD(Atom*);
+	Vec distance_between_now_and_initial(Atom*);
 	void regulate_thermostat(); //Regulate the kinetic energy so that the temperature remains "constant"
 	void run_simulation(); //Loop through next_time_step and return last state
 	void save(); //Save ??? to a .txt file with some structure.
