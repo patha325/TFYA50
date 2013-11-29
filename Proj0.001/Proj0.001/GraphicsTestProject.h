@@ -1,3 +1,4 @@
+/*
 #ifndef GRAPHICSTESTPROJECT_H
 #define GRAPHICSTESTPROJECT_H
 
@@ -40,3 +41,4 @@ void plotter(int argc, char** argv,std::vector<Atom*>,int);
 
 
 #endif
+*/

@@ -1,3 +1,4 @@
+/*
 #include <stdlib.h>
 #include <math.h>
 #include <vector>
@@ -171,3 +172,4 @@ void plotter(int argc, char** argv,std::vector<Atom*> incoming_list_of_atoms,int
 	// enter GLUT event processing cycle
 	glutMainLoop();
 }
+*/

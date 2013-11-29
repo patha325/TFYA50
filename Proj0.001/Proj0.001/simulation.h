@@ -28,6 +28,7 @@ private:
 	bool equilibrium;
 	bool pbc_z;
 	int thermostat_update_freq;
+	bool old_sim;
 	float initial_velocity_modulus;
 	int unit_cells_x;
 	int unit_cells_y;
@@ -83,6 +84,8 @@ public:
 	void bcc_corrector();
 	std::vector<Atom*> get_list_of_atoms();
 	int get_number_of_atoms();
+	void end_of_simulation();
+	void read_old_sim();
 
 	//Constructors
 	//std::ofstream fs2;
@@ -102,7 +105,8 @@ public:
 		bool thermostat,
 		bool equilibrium,
 		bool pbc_z,
-		int thermostat_update_freq);
+		int thermostat_update_freq,
+		bool old_sim);
 	Simulation(Simulation* old_simulation, int steps, bool equilibrium); //Take off where we left off-constructor
 
 	//Destructor
