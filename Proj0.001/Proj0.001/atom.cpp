@@ -16,6 +16,7 @@ Sets starting position
 Atom::Atom(Vec starting_position, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus, bool new_pbc_z){
 	
+
 	position = starting_position;
 	prev_acceleration = Vec (0,0,0);
 	velocity = initial_velocity_modulus * generate_random_vector(); //generates normed vector in some random direction

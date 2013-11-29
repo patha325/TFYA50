@@ -76,7 +76,9 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	} 
 	cout << "Cutoff distance: " << cutoff << endl;
 
+	list_of_atoms.push_back(new Atom(Vec(0,0,-1),cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
 	create_cell_list();
+	
 
 	number_of_atoms = list_of_atoms.size();	
 
@@ -447,9 +449,11 @@ void Simulation::next_time_step(int current_time_step){
 	Atom* atom;
 	Vec new_acceleration;
 
-	if (fmod(current_time_step, 5.0) == 0){
+	if (fmod(current_time_step, 5.0) == 0 && current_time_step!=0){
 		cell_list->clear_cells();
 	}
+
+
 	for(int i = 0; i < number_of_atoms; i++){
 		atom = list_of_atoms[i];
 		//prev_position = position etc.
@@ -459,13 +463,16 @@ void Simulation::next_time_step(int current_time_step){
 		atom->clear_tmp_force();
 
 		//Update cell_list every fifth time step
-		if (fmod(current_time_step, 5.0) == 0){
+		if (fmod(current_time_step, 5.0) == 0 && current_time_step!=0){
 			cell_list->add_atom_to_cells(atom);
 
 		
 		}
 		
 	}
+	
+
+
 
 	vector<Atom*> neighbouring_atoms;
 	Atom* neighbouring_atom;
@@ -635,7 +642,7 @@ void Simulation::next_time_step(int current_time_step){
 	}
 	*/
 	clock_t end_of_time_step_time = clock();
-	//cout << "Time step " <<  current_time_step << " has duration: " << end_of_time_step_time-start_of_time_step_time << endl;
+	cout << "Time step " <<  current_time_step << " has duration: " << end_of_time_step_time-start_of_time_step_time << endl;
 
 	return;
 }
