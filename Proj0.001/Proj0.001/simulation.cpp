@@ -86,7 +86,9 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	} 
 	cout << "Cutoff distance: " << cutoff << endl;
 
-	list_of_atoms.push_back(new Atom(Vec(0,0,-1),cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
+	
+	//list_of_atoms.push_back(new Atom(Vec(0,0,-1),cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
+	
 	create_cell_list();
 	
 

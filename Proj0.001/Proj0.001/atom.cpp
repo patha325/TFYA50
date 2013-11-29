@@ -420,21 +420,26 @@ void Atom::calculate_and_set_position(){
 		prev_position.getY() + prev_velocity.getY()*time_step + prev_acceleration.getY()*1/2*time_step2, 
 		prev_position.getZ() + prev_velocity.getZ()*time_step + prev_acceleration.getZ()*1/2*time_step2);
 
-	//Check if atom outside cells and move it inside if it is
-	//x
-	while(next_position.getX() < 0 || next_position.getX() >= bulk_length_x){
-		int sign = my_sign(next_position.getX());
-		next_position.setX(next_position.getX()-sign*bulk_length_x);
-	}
-	//y
-	while(next_position.getY() < 0 || next_position.getY() >= bulk_length_y){
-		int sign = my_sign(next_position.getY());
-		next_position.setY(next_position.getY()-sign*bulk_length_y);
-	}
-	//z
-	while(next_position.getZ() < 0 || next_position.getZ() >= bulk_length_z){
-		int sign = my_sign(next_position.getZ());
-		next_position.setZ(next_position.getZ()-sign*bulk_length_z);
+
+	//Check if atom outside cells and move it inside if it is. 
+	//If surface simulation, no atoms are moved like this.
+	if(pbc_z){
+
+		//x
+		while(next_position.getX() < 0 || next_position.getX() >= bulk_length_x){
+			int sign = my_sign(next_position.getX());
+			next_position.setX(next_position.getX()-sign*bulk_length_x);
+		}
+		//y
+		while(next_position.getY() < 0 || next_position.getY() >= bulk_length_y){
+			int sign = my_sign(next_position.getY());
+			next_position.setY(next_position.getY()-sign*bulk_length_y);
+		}
+		//z
+		while(next_position.getZ() < 0 || next_position.getZ() >= bulk_length_z){
+			int sign = my_sign(next_position.getZ());
+			next_position.setZ(next_position.getZ()-sign*bulk_length_z);
+		}
 	}
 
 	/*position = next_position;

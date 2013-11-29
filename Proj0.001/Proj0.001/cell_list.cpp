@@ -202,33 +202,29 @@ are neighbours to the parameter Atom.
 ------------------------------ */
 vector<Atom*> Cell_list::get_neighbours(Atom* atom){
 	//clock_t t1 = clock();
-	cout << "Atom number " << atom->get_atom_number() << endl;
+	//cout << "Atom number " << atom->get_atom_number() << endl;
 
     int cell_number = atom->get_cell_number();
 	int atom_number = atom->get_atom_number();
-    vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
-	if(!pbc_z) neighbouring_cells.push_back(list_of_cells[list_of_cells.size()-1]);
+
+    vector<Cell*> neighbouring_cells;
+	if(cell_number == -1) neighbouring_cells = list_of_cells;
+	else neighbouring_cells = number_to_cell_vector_map[cell_number];
+	if(!pbc_z && cell_number!=1) neighbouring_cells.push_back(list_of_cells[list_of_cells.size()-1]);
+
 	vector<Atom*> neighbouring_atoms;
 		
 
 	//clock_t t3 = clock();
-//	cout << "Neighbouring cells: ";
-	int count = 0;
     for (unsigned int i = 0; i < neighbouring_cells.size(); i++) {
-		//cout << neighbouring_cells[i]->get_cell_number() << " ";
-		if(neighbouring_cells[i]->get_cell_number()==-1) cout << "Cell -1 contains atoms: ";
 		vector<Atom*> atoms_to_add = neighbouring_cells[i]->get_atoms_in_cell();
 		for (unsigned int j = 0; j < atoms_to_add.size(); j++){
-			if(neighbouring_cells[i]->get_cell_number()==-1) cout << atoms_to_add[j]->get_atom_number() << " ";
-			count++;
-			//float distance = atom->distance_vector(atoms_to_add[j]).length();
+			
 			if (atom_number < atoms_to_add[j]->get_atom_number()){
 				neighbouring_atoms.push_back(atoms_to_add[j]);
 			}
 		}
     }
-	cout << endl;
-	cout << "Neighbours: " << count << endl;
 	//clock_t t2 = clock();
 	//cout << "before for loop " << t3 - t1 << endl;
 	//cout << "Time for getting neighbours: " << t2 - t1 << endl;
