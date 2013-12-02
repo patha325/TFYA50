@@ -27,6 +27,8 @@ private:
 	bool thermostat;
 	bool equilibrium;
 	bool pbc_z;
+	int thermostat_update_freq;
+	bool old_sim;
 	float initial_velocity_modulus;
 	int unit_cells_x;
 	int unit_cells_y;
@@ -36,7 +38,7 @@ private:
 	float Diff_coeff;
 	float prev_diff_coeff;
 	map<int, vector<Vec>> atom_positions;
-
+	int eq_time_steps;
 	//Boltzmann constant
 	float k_b;
 	//Planck's constant
@@ -64,9 +66,10 @@ public:
 	void create_list_of_atoms(); //Create all atoms in this class? Convert from fcc to atom positions.
 	bool check_input();
 	void next_time_step(int current_time_step); //Alter everything in the simulation to get to the next time step.
-	void calculate_and_set_velocity(Atom* atom); //Sets velocity. Checks if system has thermostat or not
+	void calculate_and_set_velocity(Atom* atom,double current_time_step); //Sets velocity. Checks if system has thermostat or not
 	float calculate_specific_heat();
 	float calculate_MSD(Atom*);
+	Vec distance_between_now_and_initial(Atom*);
 	void regulate_thermostat(); //Regulate the kinetic energy so that the temperature remains "constant"
 	void run_simulation(); //Loop through next_time_step and return last state
 	void save(); //Save ??? to a .txt file with some structure.
@@ -82,10 +85,13 @@ public:
 	void bcc_corrector();
 	std::vector<Atom*> get_list_of_atoms();
 	int get_number_of_atoms();
+	void end_of_simulation();
+	void read_old_sim();
 
 	//Constructors
 	//std::ofstream fs2;
-	Simulation (int unit_cells_x,
+	Simulation (
+		int unit_cells_x,
 		int unit_cells_y, // unit_cells is a material parameter.
 		int unit_cells_z,
 		float time_step,
@@ -99,7 +105,9 @@ public:
 		std::string crystal_structure,
 		bool thermostat,
 		bool equilibrium,
-		bool pbc_z);
+		bool pbc_z,
+		int thermostat_update_freq,
+		bool old_sim);
 	Simulation(Simulation* old_simulation, int steps, bool equilibrium); //Take off where we left off-constructor
 
 	//Destructor

@@ -20,6 +20,7 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
     cutoff = new_cutoff; 
     lattice_constant = new_lattice_constant;
 	pbc_z = new_pbc_z;
+	number_of_cells = 0;
     
 	/*
     cout << "Cutoff: " << cutoff << endl;
@@ -33,15 +34,15 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
 	*/
 
     
-    bulk_length_x = (unit_cells_x+1)*lattice_constant;
-    bulk_length_y = (unit_cells_y+1)*lattice_constant;
-    bulk_length_z = (unit_cells_z+1)*lattice_constant;
+    bulk_length_x = unit_cells_x*lattice_constant;
+    bulk_length_y = unit_cells_y*lattice_constant;
+    bulk_length_z = unit_cells_z*lattice_constant;
     
-/*
+
     cout << "Bulk length X: " << bulk_length_x << endl;
     cout << "Bulk length Y: " << bulk_length_y << endl;
     cout << "Bulk length Z: " << bulk_length_z << endl << endl;
-*/
+
     
 	//Could be an issue if cell_length:s are a multiple of lattice_constant
     cell_length_x = bulk_length_x/floor(bulk_length_x/cutoff);
@@ -68,11 +69,10 @@ Destroys cells in list_of_cells
 ------------------------------ */
 Cell_list::~Cell_list(){
 
-    for (string::size_type i = 0; i<list_of_cells.size(); i++) {
+    for (unsigned int i = 0; i<list_of_cells.size(); i++) {
         delete list_of_cells[i];
     }
 }
-
 
 /* ---
 PUBLIC
@@ -99,32 +99,98 @@ void Cell_list::add_atom_to_cells(Atom* current_atom){
     }
 */
 
-    //for (string::size_type i = 0; i<atoms_list.size(); i++) {
-        //Atom* current_atom = atoms_list[i];
-    int cell_number_iterator = 0;
+    /*
+	for (unsigned int i = 0; i< atoms_list.size(); i++) {
+        Atom* current_atom = atoms_list[i];
+	bool skogen = false;
+	if (current_atom->get_position().getX() > bulk_length_x ||
+		current_atom->get_position().getY() > bulk_length_y ||
+		current_atom->get_position().getZ() > bulk_length_z) {
+			cout << "ÅT SKOGEN" << endl;
+			skogen = true;
+	}*/
+
+	/*Vec tmp_position = current_atom->get_position();
+	//Check if atom outside cells
+	//x
+	while(tmp_position.getX() < 0 || tmp_position.getX() > bulk_length_x){
+		int sign = my_sign(tmp_position.getX());
+		tmp_position.setX(tmp_position.getX()-sign*bulk_length_x);
+	}
+	//y
+	while(tmp_position.getY() < 0 || tmp_position.getY() > bulk_length_y){
+		int sign = my_sign(tmp_position.getY());
+		tmp_position.setY(tmp_position.getY()-sign*bulk_length_y);
+	}
+	//z
+	while(tmp_position.getZ() < 0 || tmp_position.getZ() > bulk_length_z){
+		int sign = my_sign(tmp_position.getZ());
+		tmp_position.setZ(tmp_position.getZ()-sign*bulk_length_z);
+	}*/
+
+	/*if(skogen){
+		cout << "tmp_position " << tmp_position << endl;
+	}*/
+
+	//cout << "Before while loop in add_atom_to_cells" << endl;
+
+	//cout << "Atom with number " << current_atom->get_atom_number() << " has coordinates: " << endl;
+	//cout << current_atom->get_position().getX() << " " << current_atom->get_position().getY() << " " << current_atom->get_position().getZ() << endl;
+
+	int cell_number_iterator = 0;
     bool found = false;
-    while (!found) {
-        if (current_atom->get_position().getX()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+lattice_constant &&
-            current_atom->get_position().getY()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+lattice_constant &&
-            current_atom->get_position().getZ()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+lattice_constant) {
+	float z_coord = (current_atom->get_position()).getZ();
+	if((current_atom->get_atom_number())<0) {
+		cout << "Z: " << z_coord << endl;
+	}
+	if(!pbc_z && (z_coord < 0 || z_coord>bulk_length_z)){
+		list_of_cells[list_of_cells.size()-1]->add_atom(current_atom);
+		current_atom->set_cell_number(-1);
+		found = true;
+	}
+	else{
+		while (!found) {
+			if (current_atom->get_position().getX()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+cell_length_x && 
+				current_atom->get_position().getY()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+cell_length_y &&
+				current_atom->get_position().getZ()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+cell_length_z) {
                 
+//					cout << "Atom " << current_atom->get_atom_number() << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;
                 
-//                cout << "Atom " << i << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;
-                
-            list_of_cells[cell_number_iterator]->add_atom(current_atom);
+					list_of_cells[cell_number_iterator]->add_atom(current_atom);
+					//list_of_cells[cell_number_iterator]->add_atom_number(current_atom->get_atom_number());
 
-//				cout << "Cell with number " << cell_number_iterator << " has " << list_of_cells[cell_number_iterator]->get_number_of_atoms_in_cell() << " atoms in it." << endl;
 
-            found = true;
-        }
-        else {
-            cell_number_iterator++;
-        }
-    }
-	current_atom->set_cell_number(cell_number_iterator);
-    //}
+//					cout << "Cell with number " << cell_number_iterator << " has " << list_of_cells[cell_number_iterator]->get_number_of_atoms_in_cell() << " atoms in it." << endl;
+
+				found = true;
+			}
+			else {
+				cell_number_iterator++;
+			}
+		}
+		//cout << "After while loop in add_atom_to_cells" << endl;
+		current_atom->set_cell_number(cell_number_iterator);
+	}
 }
 
+/* ------------------------------
+FUNCTION: sign
+PARAMETERS: float
+RETURN: int
+-
+Returns +1 or -1 depending on the
+sign of the incoming float
+------------------------------
+int Cell_list::my_sign(float number){
+	int sign;
+	if(number < 0){
+		sign = -1;
+	}
+	else{
+		sign = +1;
+	}
+	return sign;
+}*/
 
 /* ------------------------------
 FUNCTION: Cell_list::get_neighbours()
@@ -136,17 +202,24 @@ are neighbours to the parameter Atom.
 ------------------------------ */
 vector<Atom*> Cell_list::get_neighbours(Atom* atom){
 	//clock_t t1 = clock();
+	//cout << "Atom number " << atom->get_atom_number() << endl;
 
     int cell_number = atom->get_cell_number();
 	int atom_number = atom->get_atom_number();
-    vector<Cell*> neighbouring_cells = number_to_cell_vector_map[cell_number];
-    vector<Atom*> neighbouring_atoms;
+
+    vector<Cell*> neighbouring_cells;
+	if(cell_number == -1) neighbouring_cells = list_of_cells;
+	else neighbouring_cells = number_to_cell_vector_map[cell_number];
+	if(!pbc_z && cell_number!=1) neighbouring_cells.push_back(list_of_cells[list_of_cells.size()-1]);
+
+	vector<Atom*> neighbouring_atoms;
 		
+
 	//clock_t t3 = clock();
     for (unsigned int i = 0; i < neighbouring_cells.size(); i++) {
 		vector<Atom*> atoms_to_add = neighbouring_cells[i]->get_atoms_in_cell();
 		for (unsigned int j = 0; j < atoms_to_add.size(); j++){
-			//float distance = atom->distance_vector(atoms_to_add[j]).length();
+			
 			if (atom_number < atoms_to_add[j]->get_atom_number()){
 				neighbouring_atoms.push_back(atoms_to_add[j]);
 			}
@@ -154,8 +227,9 @@ vector<Atom*> Cell_list::get_neighbours(Atom* atom){
     }
 	//clock_t t2 = clock();
 	//cout << "before for loop " << t3 - t1 << endl;
-	//cout << "for loop " << t2 - t3 << endl;
+	//cout << "Time for getting neighbours: " << t2 - t1 << endl;
 	return neighbouring_atoms;
+	
 } 
 
 
@@ -172,13 +246,13 @@ Removes all atoms from all cells
 ------------------------------ */
 void Cell_list::clear_cells(){
 
-	for(string::size_type i=0; i< list_of_cells.size(); i++){
+	for(unsigned int i=0; i< list_of_cells.size(); i++){
 	list_of_cells[i]->clear_cell();	 
 	}
 }
 
 /* ------------------------------
-FUNCTION: Cell_list::create_cell()
+FUNCTION: Cell_list::create_cells()
 PARAMETERS: None
 RETURN: void
 -
@@ -235,6 +309,7 @@ void Cell_list::create_cells(){
             
                 list_of_cells.insert(list_of_cells.end(), new Cell(i,current_origin));
                 vec_to_number_map.insert(pair<Vec,int>(current_matrix_coordinates,i));
+				number_of_cells++;
                 
                 //cout << i << ": " << current_origin << endl;
             
@@ -252,9 +327,14 @@ void Cell_list::create_cells(){
         max_orgin_z = current_origin.getZ();
     }
 
+	if(!pbc_z){
+		Vec narnia = Vec(bulk_length_x,bulk_length_y,bulk_length_z);
+		list_of_cells.insert(list_of_cells.end(), new Cell(-1,narnia));
+		number_of_cells++;
+	}
 
 	cout << "Cells created!" << endl;
-	cout << "Created in total " << i << " cells." << endl;
+	cout << "Created in total " << list_of_cells.size() << " cells." << endl;
 	cout << "Cell dimensions are: " << cell_length_x << " x " << cell_length_y << " x "  << cell_length_z << endl << endl;
 
     
@@ -340,10 +420,58 @@ void Cell_list::create_cells(){
 */
 
 }
+
+/*
+void Cell_list::print_my_cell_number(int atom_number){
+
+	for(int i = 0; i<list_of_cells.size(); i++){
+		if
+	}
+	cout << 
+}
+*/
+
+void Cell_list::print_my_cell_neighbours(int atom_number){
+
+	vector<Cell*> lst = number_to_cell_vector_map[atom_number];
+	cout << endl << "The neighbouring cells for atom #" << atom_number << " are: ";
+	for (int i = 0; i < lst.size(); i++){
+		cout << lst[i]->get_cell_number() << " ";
+	}
+	cout << endl;
+}
+
+void Cell_list::print_atoms_in_each_cell(){
+
+	cout << endl << "ATOMS IN EACH CELL:" << endl;
+	for(int i = 0; i < number_of_cells; i++){
+		cout << "Atoms in cell " << i << endl;
+		vector<Atom*> list_of_atoms = list_of_cells[i]->get_atoms_in_cell();
+
+		cout << "Atoms: ";
+		for(int j = 0; j < list_of_atoms.size(); j++){
+			cout << list_of_atoms[j]->get_atom_number() << " ";
+		}
+		cout << endl;
 	
+	}
+}
+
+	
+Cell* Cell_list::get_cell_with_number(int cell_number){
+
+	if(cell_number==-1) return list_of_cells[list_of_cells.size()-1];
+	else return list_of_cells[cell_number];
+}
+
 /*
 void Cell_list::add_to_map(int key, vector<Cell*> entry){
     
     number_to_cell_vector_map.insert(pair<int, vector<Cell*>>(key,entry));
 }
 */
+
+int Cell_list::get_number_of_cells(){
+
+	return number_of_cells;
+}

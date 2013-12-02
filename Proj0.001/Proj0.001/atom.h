@@ -54,6 +54,7 @@ public:
 	//Getters
 	int get_atom_number();
 	Vec get_velocity();
+	Vec get_prev_velocity();
 	Vec get_position();
 	Vec get_acceleration();
 	Vec get_prev_acceleration();
@@ -64,6 +65,7 @@ public:
 	float get_mass();
 	vector<Atom*> get_atom_neighbours();
 	Vec get_tmp_force();
+	int get_number_of_neighbours();
 
 	//Setters
 	void set_atom_number(int);
@@ -75,20 +77,24 @@ public:
 	void add_tmp_force(Vec);
 
 	//Other functions
-	Vec calculate_force(Atom*, Vec, float);
-	float calculate_pressure(Atom*, Vec, float);
+	Vec calculate_force(Vec, float);
+	float calculate_pressure(Vec, float);
 	void calculate_and_set_acceleration(Vec);
-	float calculate_potential(Atom*, float);
+	float calculate_potential(float, Atom*);
 	void calculate_and_set_velocity();
 	float calculate_kinetic_energy();
 	float calculate_temperature(float);
 	float calculate_diffusion_coeff(Vec);
 	Vec distance_vector(Atom*);
 	void calculate_and_set_position();
+	int my_sign(float);
 	Vec generate_random_vector();
 	void update_atom();	
 	void update_neighbour_list(vector<Atom*> new_neighbours);
 	void clear_tmp_force();
+
+	//For tests only
+	vector<Atom*> last_step_atom_neighbours;
 
 };
 

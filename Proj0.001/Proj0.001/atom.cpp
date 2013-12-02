@@ -16,6 +16,7 @@ Sets starting position
 Atom::Atom(Vec starting_position, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus, bool new_pbc_z){
 	
+
 	position = starting_position;
 	prev_acceleration = Vec (0,0,0);
 	velocity = initial_velocity_modulus * generate_random_vector(); //generates normed vector in some random direction
@@ -36,6 +37,9 @@ Atom::Atom(Vec starting_position, float start_cutoff, int unit_cells_x, int unit
 	time_step = new_time_step;
 }
 
+
+
+
 /*--------------------
 DESTRUCTOR
 Does nothing
@@ -54,11 +58,11 @@ Calculates force on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-Vec Atom::calculate_force(Atom* neighbouring_atom, Vec distance, float distance_length){
+Vec Atom::calculate_force(Vec distance, float distance_length){
 
 	Vec tmp_force (0,0,0);
 	float q = sigma/distance_length;
-	tmp_force = (48/distance_length)*epsilon*(pow(q, 12)-0.5f*pow(q, 6))*distance.normalize();
+	tmp_force =(48/distance_length*epsilon*(pow(q, 12)-0.5f*pow(q, 6)))*distance.normalize();
 
 	return tmp_force;
 
@@ -73,7 +77,7 @@ Calculates pressure on the atom
 from all neighbouring atoms 
 within cutoff.
 ----------------------*/
-float Atom::calculate_pressure(Atom* neighbouring_atom, Vec tmp_force, float distance_length){
+float Atom::calculate_pressure(Vec tmp_force, float distance_length){
 
     float tmp_pressure = 0;
 
@@ -93,12 +97,8 @@ from closest atom.
 
 void Atom::calculate_and_set_acceleration(Vec force){
 
-	//Vec tmp_acc (0,0,0);
-	Vec force_divided = (-1/mass)*force;
-//	tmp_acc.setCoords(-force.getX()/mass,-force.getY()/mass,-force.getZ()/mass);
+	acceleration = (-1/mass)*force;
 	
-	acceleration = force_divided;
-
 	return;
 }
 
@@ -110,13 +110,18 @@ Returns: float (scalar potential)
 Calculates (LJ) potential on 
 the atom, from closest atom.
 ----------------------*/
-float Atom::calculate_potential(Atom* neighbouring_atom, float distance_length){
+float Atom::calculate_potential(float distance_length, Atom* other_atom){
 
 	float tmp_potential = 0;
-	// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 	float q = sigma/distance_length; 
 	tmp_potential = 4*epsilon*(pow(q,12)-pow(q,6));
-	
+
+	/*
+	if(atom_number == 0){
+		cout << "Distance to atom #" << other_atom->get_atom_number() << " is: " <<distance_length << endl;
+	}
+	*/
+
 	return tmp_potential;
 }
 
@@ -210,7 +215,7 @@ Function for distance vector when using PBC in
 all directions.
 --------------------------------------------*/
 Vec Atom::distance_vector_pbc(Atom* other_atom){
-	Vec tmp =other_atom->position;
+	Vec tmp = other_atom->position;
 
 	/* Check the x, y and z coordinate for both atoms */
 	float x1 = position.getX();
@@ -348,7 +353,9 @@ Vec Atom::distance_vector_pbc(Atom* other_atom){
 		shortest_distance = l8.length();
 		shortest_vec = l8;
 	}
-
+	/*if(shortest_vec.length() < 0.5 && atom_number != other_atom->get_atom_number()){
+		cout << "Atom " << atom_number << " mkt nära" << other_atom->get_atom_number() << endl;
+	}*/
 	// Returns the vector to the closest atom from list
 	return shortest_vec;
 }
@@ -413,10 +420,62 @@ void Atom::calculate_and_set_position(){
 		prev_position.getY() + prev_velocity.getY()*time_step + prev_acceleration.getY()*1/2*time_step2, 
 		prev_position.getZ() + prev_velocity.getZ()*time_step + prev_acceleration.getZ()*1/2*time_step2);
 
-	position = next_position;
 
+	//Check if atom outside cells and move it inside if it is. 
+	//If surface simulation, no atoms are moved like this.
+	if(pbc_z){
+
+		//x
+		while(next_position.getX() < 0 || next_position.getX() >= bulk_length_x){
+			int sign = my_sign(next_position.getX());
+			next_position.setX(next_position.getX()-sign*bulk_length_x);
+		}
+		//y
+		while(next_position.getY() < 0 || next_position.getY() >= bulk_length_y){
+			int sign = my_sign(next_position.getY());
+			next_position.setY(next_position.getY()-sign*bulk_length_y);
+		}
+		//z
+		while(next_position.getZ() < 0 || next_position.getZ() >= bulk_length_z){
+			int sign = my_sign(next_position.getZ());
+			next_position.setZ(next_position.getZ()-sign*bulk_length_z);
+		}
+	}
+
+	/*position = next_position;
+	if((abs(position.getX()-prev_position.getX()) > 0.5 && abs(position.getX()-prev_position.getX()) < 25.5)||
+		(abs(position.getY()-prev_position.getY()) > 0.5 && abs(position.getY()-prev_position.getY()) < 25.5)||
+		(abs(position.getZ()-prev_position.getZ()) > 0.5 && abs(position.getZ()-prev_position.getZ()) < 25.5))
+	{
+			cout << "hopp i position, atom " << atom_number << endl;
+			cout << "  position:     " << position << endl;
+			cout << "  prev_position " << prev_position << endl << endl;
+
+	}*/
+
+	position = next_position;
+	
 	return;
 	// Change the cell number? Should there be a call for that? Has been added in add_atoms_to_cell in cell_list
+}
+
+/* ------------------------------
+FUNCTION: sign
+PARAMETERS: float
+RETURN: int
+-
+Returns +1 or -1 depending on the
+sign of the incoming float
+------------------------------*/
+int Atom::my_sign(float number){
+	int sign;
+	if(number < 0){
+		sign = -1;
+	}
+	else{
+		sign = +1;
+	}
+	return sign;
 }
 
 /*--------------------------
@@ -455,6 +514,7 @@ void Atom::update_atom(){
 void Atom::update_neighbour_list(vector<Atom*> new_neighbours){
 
 	atom_neighbours = new_neighbours;
+	number_of_neighbours = new_neighbours.size();
 	//cout << "update_neighbour_list atom_neighbours.size(): " << atom_neighbours.size() << endl;
 }
 
@@ -465,105 +525,35 @@ void Atom::clear_tmp_force(){
 }
 
 // ------- GETTERS --------
-int Atom::get_atom_number(){
-
-	return atom_number;
-}
-Vec Atom::get_velocity(){
-	
-	return velocity;
-}
-
-Vec Atom::get_position(){
-
-	return position;
-}
-
-Vec Atom::get_acceleration(){
-
-	return acceleration;
-}
-
-Vec Atom::get_prev_acceleration(){
-
-	return prev_acceleration;
-}
-
-int Atom::get_cell_number(){
-
-	return cell_number;
-}
-
-Vec Atom::get_prev_position(){
-
-	return prev_position;
-}
-
-Vec Atom::get_initial_velocity() {
-
-	return initial_velocity;
-}
-
-Vec Atom::get_initial_position() {
-
-	return initial_position;
-}
-
-float Atom::get_mass(){
-
-	return mass;
-}
-
-vector<Atom*> Atom::get_atom_neighbours(){
-
-	return atom_neighbours;
-}
-
-Vec Atom::get_tmp_force(){
-
-	return tmp_force;
-}
+int Atom::get_atom_number(){ return atom_number; }
+Vec Atom::get_velocity(){ return velocity; }
+Vec Atom::get_position(){ return position; }
+Vec Atom::get_acceleration(){ return acceleration; }
+Vec Atom::get_prev_acceleration(){ return prev_acceleration; }
+int Atom::get_cell_number(){ return cell_number; }
+Vec Atom::get_prev_position(){ return prev_position; }
+Vec Atom::get_initial_velocity() { return initial_velocity; }
+Vec Atom::get_initial_position() { return initial_position; }
+float Atom::get_mass(){ return mass; }
+vector<Atom*> Atom::get_atom_neighbours(){ return atom_neighbours; }
+Vec Atom::get_tmp_force(){ return tmp_force; }
+int Atom::get_number_of_neighbours(){return number_of_neighbours;}
+Vec Atom::get_prev_velocity(){return prev_velocity;}
 
 
 
 // -------- SETTERS --------
-void Atom::set_atom_number(int new_atom_number){
-
-	atom_number = new_atom_number;
+void Atom::set_atom_number(int new_atom_number){ atom_number = new_atom_number; }
+void Atom::set_velocity(Vec new_velocity){ velocity = new_velocity; }
+void Atom::set_cell_number(int new_cell_number){ 
+	//if(new_cell_number!=cell_number) cout << "Moved atom " << atom_number << endl;
+	cell_number = new_cell_number; 
 }
+void Atom::set_initial_velocity(Vec new_initial_velocity) { initial_velocity = new_initial_velocity; }
+void Atom::set_initial_position(Vec new_initial_position) { initial_position = new_initial_position; }
+void Atom::set_cutoff(float new_cutoff){ cutoff = new_cutoff; }
+void Atom::add_tmp_force(Vec new_tmp_force){ tmp_force = tmp_force + new_tmp_force; }
 
-void Atom::set_velocity(Vec new_velocity){
-	velocity = new_velocity;
-	return;
-}
-
-void Atom::set_cell_number(int new_cell_number){
-	cell_number = new_cell_number;
-	return;
-}
-
-void Atom::set_initial_velocity(Vec new_initial_velocity) {
-
-	initial_velocity = new_initial_velocity;
-	return;
-}
-
-void Atom::set_initial_position(Vec new_initial_position) {
-
-	initial_position = new_initial_position;
-	return;
-}
-
-void Atom::set_cutoff(float new_cutoff){
-	cutoff = new_cutoff;
-	return;
-}
-
-
-void Atom::add_tmp_force(Vec new_tmp_force){
-
-	tmp_force = tmp_force + new_tmp_force;
-}
 
 
 

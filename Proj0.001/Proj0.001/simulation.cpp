@@ -32,7 +32,7 @@ Calls constructors for all atoms and the cell list.
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
                         float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat,
-						bool new_equilibrium, bool new_pbc_z){
+						bool new_equilibrium, bool new_pbc_z, int new_thermostat_update_freq, bool new_old_sim){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -54,7 +54,10 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3);
 	prev_diff_coeff = 0;
 	Diff_coeff = 0;
-	
+	eq_time_steps =0;
+	thermostat_update_freq = new_thermostat_update_freq;
+	old_sim=new_old_sim;
+
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
 	k_b = 8.617342e-5f; //[eV][K]^{-1}
@@ -64,7 +67,16 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	cout << "initial_velocity_modulus " << initial_velocity_modulus << endl;
     
     //Initial setup
-    create_list_of_atoms();
+
+
+	if(old_sim){
+    read_old_sim();
+	}
+	else{
+		create_list_of_atoms();
+	}
+
+
 	cout << "Total number of atoms: " << list_of_atoms.size() << endl;
 	if (pbc_z){
 		cout << "PBC is on in Z-direction." << endl;
@@ -74,9 +86,14 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	} 
 	cout << "Cutoff distance: " << cutoff << endl;
 
+	
+	//list_of_atoms.push_back(new Atom(Vec(0,0,-1),cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma,epsilon,mass,time_step,initial_velocity_modulus,pbc_z));
+	
 	create_cell_list();
+	
 
 	number_of_atoms = list_of_atoms.size();	
+
 
 	//Clear files that will be written to for every simulation.
 	//std::ofstream fs("atoms.txt", ios::trunc);
@@ -90,8 +107,8 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	
 	
 	/*// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
-	for(string::size_type i = 0; i < list_of_atoms.size();i++){
-		// string::size_type ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
+	for(unsigned int i = 0; i < list_of_atoms.size();i++){
+		// unsigned int ist för int eftersom .size() returnerar en unsigned int, blir varning annars.
 
 		cout << i<<endl;
 		cout << list_of_atoms[i]->get_position()<<endl;
@@ -116,6 +133,7 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	time_step = old_simulation->get_time_step();
 	steps = new_steps;
 	temperature = old_simulation->get_temperature();
+	thermostat = old_simulation->get_thermostat();
 	cutoff = old_simulation->get_cutoff();
 	thermostat = old_simulation->get_thermostat();
 	pbc_z = old_simulation->get_pbc_z();
@@ -128,6 +146,7 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	equilibrium = new_equilibrium;
 	prev_diff_coeff = 0;
 	Diff_coeff = 0;
+	eq_time_steps=0;
 	
 
 	//Boltzmann constant
@@ -188,10 +207,15 @@ void Simulation::configure_data(int steps){
 		line_number++;
 	}	
 	in.close();
-	step_out+=steps;
 	
+	
+	if(equilibrium && eq_time_steps==0){
+		eq_time_steps=step_out;
+	}
+	step_out+=steps;
+
 	std::ofstream fs2("energytemp.txt", ios::trunc);
-	fs2 << steps << " " << step_out << " " <<time_step<< " " << 0<< " " << 0<< " " << 0<< " " << 0<< " " << 0<<" "<< 0<<endl;
+	fs2 << steps << " " << step_out << " " <<time_step<< " " << eq_time_steps<< " " << 0<< " " << 0<< " " << 0<< " " << 0<<" "<< 0<<endl;
 	fs2.close();
 	
 	for(unsigned int i=0;i<total_energy_vector.size();i++){
@@ -215,7 +239,7 @@ Simulation::~Simulation (){
 	for(int i = 0; i < number_of_atoms; i++){
 		delete list_of_atoms[i];
 	}
-	delete cell_list;	
+	delete cell_list;
 }
 
 /*----------------------------
@@ -416,10 +440,12 @@ Alter everything in the simulation to get to the next time step.
 ------------------------------*/
 void Simulation::next_time_step(int current_time_step){
 
-	clock_t t6 = clock();
+//	clock_t t6 = clock();
+	clock_t start_of_time_step_time = clock();
 
 	if (fmod(current_time_step, 5.0) == 0){
-	cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
+		cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
+		//if(!pbc_z) cout << "Number of atoms in cell " << cell_list->get_cell_with_number(-1)->get_cell_number() << " is " << cell_list->get_cell_with_number(-1)->get_number_of_atoms_in_cell() << endl;
 	}
 
 	float E_pot = 0;
@@ -436,9 +462,11 @@ void Simulation::next_time_step(int current_time_step){
 	Atom* atom;
 	Vec new_acceleration;
 
-	if (fmod(current_time_step, 5.0) == 0){
+	if (fmod(current_time_step, 5.0) == 0 && current_time_step!=0){
 		cell_list->clear_cells();
 	}
+
+
 	for(int i = 0; i < number_of_atoms; i++){
 		atom = list_of_atoms[i];
 		//prev_position = position etc.
@@ -448,10 +476,16 @@ void Simulation::next_time_step(int current_time_step){
 		atom->clear_tmp_force();
 
 		//Update cell_list every fifth time step
-		if (fmod(current_time_step, 5.0) == 0){
+		if (fmod(current_time_step, 5.0) == 0 && current_time_step!=0){
 			cell_list->add_atom_to_cells(atom);
+
+		
 		}
+		
 	}
+	
+
+
 
 	vector<Atom*> neighbouring_atoms;
 	Atom* neighbouring_atom;
@@ -460,18 +494,25 @@ void Simulation::next_time_step(int current_time_step){
 	float bt = 0;
 	float ct = 0;
 	float dt = 0;
-	clock_t t1 = clock();
+//	clock_t t1 = clock();
 
 	for(int i = 0; i < number_of_atoms; i++){
 		atom = list_of_atoms[i];
 
-		clock_t t2 = clock();
+		//clock_t t2 = clock();
 
 		//cout << "next_time_step cell_list->get_neighbours(atom).size(): " << cell_list->get_neighbours(atom).size() << endl;
-		atom->update_neighbour_list(cell_list->get_neighbours(atom));
+		//atom->last_step_atom_neighbours = atom->get_atom_neighbours();
+
+
+		
+		//Creates the vector with atoms which neighbour the current atom
+		if (fmod(current_time_step, 5.0) == 0){
+			atom->update_neighbour_list(cell_list->get_neighbours(atom));
+		}	
 		vector<Atom*> neighbouring_atoms = atom->get_atom_neighbours();
 
-		clock_t t3 = clock();
+		//clock_t t3 = clock();
 
 		//neighbouring_atoms = cell_list->get_neighbours(atom); 
 
@@ -485,28 +526,43 @@ void Simulation::next_time_step(int current_time_step){
 		}
 		*/
 
+		
 		//Calculate things which need to loop over neighbouring atoms
 		//cout << "Atom " << atom->get_atom_number() << " har total neighbours: " << neighbouring_atoms.size() << endl;
 		int count = 0;
-		for(unsigned int j = 0; j < neighbouring_atoms.size(); j++){
+		for(unsigned int j = 0; j < neighbouring_atoms.size(); j++){			
 			neighbouring_atom = neighbouring_atoms[j];
 			//Cacluate distance vector to this neighbouring atom
 			Vec distance = atom->distance_vector(neighbouring_atom);
 			float distance_length = distance.length();
-			if(distance_length != 0 && distance_length <= cutoff){
+			if(atom->get_atom_number() != neighbouring_atom->get_atom_number() && distance_length <= cutoff){
 				count ++;
 				//Calculate potential energy
 				//times two because of how we loop over neighbouring atoms
+<<<<<<< HEAD
 				if(i == 0 && j == 0){
 					cout << "time step " << current_time_step << "Atom " << i << "E_pot (ska vara 0) " << E_pot << endl;
 				}
 				E_pot += 2*atom->calculate_potential(neighbouring_atom, distance_length);
+=======
+
+				E_pot += 2*atom->calculate_potential(distance_length,neighbouring_atom);
+
+>>>>>>> 91a7cfef158da10495a462a4ada37a511e09a8c7
 				//Calculate force
-				Vec tmp_force = atom->calculate_force(neighbouring_atom, distance, distance_length);
+				Vec tmp_force = atom->calculate_force(distance, distance_length);
+				//if(atom->get_atom_number() == 3 && neighbouring_atom->get_atom_number() == 62) {
+				//	cout << "distance_length " << distance_length << endl;
+				//}
+				/*if(E_pot_tmp > 0){
+					cout << "tmp_force stor, = " << tmp_force << endl;
+					cout << "atom " << atom->get_atom_number() << "och atom " << neighbouring_atom->get_atom_number() << endl;
+					cout << "distance_lenght = " << distance_length << endl;
+				}*/
 				atom->add_tmp_force(tmp_force);
 				neighbouring_atom->add_tmp_force(-1*tmp_force);
 				//Calculate pressure
-				pressure += 2*atom->calculate_pressure(neighbouring_atom, tmp_force, distance_length);
+				pressure += 2*atom->calculate_pressure(tmp_force, distance_length);
 			}
 		}
 		//cout << "Neighbours within cutoff: " << count << endl;
@@ -516,16 +572,16 @@ void Simulation::next_time_step(int current_time_step){
 		//Calculate and set acceleration = f(r)
 		atom->calculate_and_set_acceleration(atom->get_tmp_force());
 		//Calculate and set velocity = f(prev_vel, acc, prev_acc)
-		calculate_and_set_velocity(atom);
+		calculate_and_set_velocity(atom,current_time_step);
 
 		//Kinetic energy
 		tmp_E_kin = atom->calculate_kinetic_energy();
 		E_kin += tmp_E_kin;
 	
 		
-		clock_t t8 = clock();
-		clock_t t9 = clock();
-		clock_t t10 = clock();
+		//clock_t t8 = clock();
+		//clock_t t9 = clock();
+		//clock_t t10 = clock();
 
 		//Calculate and set correct velocity only if not first time step
 		if(current_time_step == 1){
@@ -546,14 +602,15 @@ void Simulation::next_time_step(int current_time_step){
 				MSD += calculate_MSD(atom);
 			}
 		//}
-
+/*
 		clock_t t4 = clock();
 		at += t3 - t2;
 		bt += t4 - t3;
 		ct += t9 - t8;
 		dt += t10 - t9;
+		*/
 	}
-	clock_t t5 = clock();
+	//clock_t t5 = clock();
 
 
 	//if(current_time_step < 500 || fmod(current_time_step,10.0) == 0){ // Görs alltid vid de 500 första tidsstegen, sedan var 10e tidssteg
@@ -564,8 +621,10 @@ void Simulation::next_time_step(int current_time_step){
 		//Calculate total energy of system
 		total_energy = E_pot + E_kin;
 	
+		
+
 		//Calculate cohesive energy
-		if(equilibrium && current_time_step > 10){
+		if(equilibrium && current_time_step > 50){
 			coh_e = E_pot/number_of_atoms; // cohesive energy is the same as potential when equilibrium is reached.
 			//Calculate average MSD
 			MSD = MSD/number_of_atoms;
@@ -575,6 +634,7 @@ void Simulation::next_time_step(int current_time_step){
 			prev_diff_coeff = tmp_diff_coeff;
 			//Calculate Debye temperature
 			Debye_temp += 3*pow(hbar,2)*temperature/(atom->get_mass()*k_b*MSD);
+
 		}
 	
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
@@ -601,6 +661,8 @@ void Simulation::next_time_step(int current_time_step){
 		cout << "MSD " << bt << endl << endl;
 	}
 	*/
+	clock_t end_of_time_step_time = clock();
+	//cout << "Time step " <<  current_time_step << " has duration: " << end_of_time_step_time-start_of_time_step_time << endl;
 
 	return;
 }
@@ -613,10 +675,10 @@ Returns: None
 Calculates and sets correct velocity
 Checks if system has thermostat
 ------------------------------*/
-void Simulation::calculate_and_set_velocity(Atom* atom){
+void Simulation::calculate_and_set_velocity(Atom* atom,double current_time_step){
 	//Calculate velocity as if total energy is to be constant
 	atom->calculate_and_set_velocity();
-	if (thermostat){
+	if (thermostat && fmod(current_time_step,thermostat_update_freq)==0){
 		//Update velocity so temperature is constant
 		Vec new_velocity = atom->get_velocity();
 		float new_velocity_modulus = new_velocity.length();
@@ -678,13 +740,169 @@ Calculates mean square displacement for an atom
 float Simulation::calculate_MSD(Atom* atom){
 	
 	float MSD_tmp = 0;
-
-	Vec temp_pos = atom->get_position();
-	Vec equi_pos = atom->get_initial_position();
-	float temp_diff = (temp_pos - equi_pos).length();
+	float temp_diff = distance_between_now_and_initial(atom).length();
 	MSD_tmp = pow(temp_diff,2);
 
 	return MSD_tmp;
+}
+
+/*------------------------------
+FUNCTION distance_between_now_and_initial
+Paramteters: Atom*
+Returns: vector between initial position and current position
+- 
+------------------------------*/
+
+Vec Simulation::distance_between_now_and_initial(Atom* atom) {
+	
+	float bulk_length_x = unit_cells_x*lattice_constant;
+	float bulk_length_y = unit_cells_y*lattice_constant;
+	float bulk_length_z = unit_cells_z*lattice_constant;
+	
+	Vec temp_pos = atom->get_position();
+	Vec equi_pos = atom->get_initial_position();
+	
+	/* Check the x, y and z coordinate for both atoms */
+	float x1 = temp_pos.getX();
+	float x2 = equi_pos.getX();
+	float y1 = temp_pos.getY();
+	float y2 = equi_pos.getY();
+	float z1 = temp_pos.getZ();
+	float z2 = equi_pos.getZ();
+
+	/* Check distance inside this periodic bulk structure*/
+	Vec l1 = temp_pos - equi_pos;
+
+	/* Check distance to atom in neighbouring periodic bulk structures, only checking the 7 closest */
+
+	Vec l2;
+	Vec l3;
+	Vec l4;
+	Vec l5;
+	Vec l6;
+	Vec l7;
+	Vec l8;
+	
+	if(x1>=x2 && y1>=y2 && z1>=z2){
+		/* Check x + bulk_length, y + bulk_length, z + bulk_length and all combinations */
+		l2 =  temp_pos - (equi_pos + Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(bulk_length_x,bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,bulk_length_z));
+	}
+	else if(x1>=x2 && y1>=y2 && z1<=z2){
+		/* Check x + bulk_length, y + bulk_length, z - bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(bulk_length_x,0,-bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(bulk_length_x,bulk_length_y,-bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,bulk_length_y,-bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,-bulk_length_z));
+	}
+	else if(x1>=x2 && y1<=y2 && z1>=z2){
+		/* Check x + bulk_length, y - bulk_length, z + bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(bulk_length_x,-bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(bulk_length_x,-bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,bulk_length_z));
+
+	}
+	else if(x1>=x2 && y1<=y2 && z1<=z2){
+		/* Check x + bulk_length, y - bulk_length, z - bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(bulk_length_x,-bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(bulk_length_x,0,-bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(bulk_length_x,-bulk_length_y,-bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,-bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,-bulk_length_z));
+	}
+	else if(x1<=x2 && y1>=y2 && z1>=z2){
+		/* Check x - bulk_length, y + bulk_length, z + bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(-bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(-bulk_length_x,bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,bulk_length_z));
+	}
+	else if(x1<=x2 && y1<=y2 && z1>=z2){
+		/* Check x - bulk_length, y - bulk_length, z + bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(-bulk_length_x,-bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(-bulk_length_x,-bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,-bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,bulk_length_z));
+	}
+	else if(x1<=x2 && y1>=y2 && z1<=z2){
+		/* Check x - bulk_length, y + bulk_length, z - bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos + Vec(-bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos + Vec(-bulk_length_x,0,-bulk_length_z));
+		l5 = temp_pos - (equi_pos + Vec(-bulk_length_x,bulk_length_y,-bulk_length_z));
+		l6 = temp_pos - (equi_pos + Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos + Vec(0,bulk_length_y,-bulk_length_z));
+		l8 = temp_pos - (equi_pos + Vec(0,0,-bulk_length_z));
+	}
+	else{
+		/* Check x - bulk_length, y - bulk_length, z - bulk_length and all combinations */
+		l2 = temp_pos - (equi_pos - Vec(bulk_length_x,0,0));
+		l3 = temp_pos - (equi_pos - Vec(bulk_length_x,bulk_length_y,0));
+		l4 = temp_pos - (equi_pos - Vec(bulk_length_x,0,bulk_length_z));
+		l5 = temp_pos - (equi_pos - Vec(bulk_length_x,bulk_length_y,bulk_length_z));
+		l6 = temp_pos - (equi_pos - Vec(0,bulk_length_y,0));
+		l7 = temp_pos - (equi_pos - Vec(0,bulk_length_y,bulk_length_z));
+		l8 = temp_pos - (equi_pos - Vec(0,0,bulk_length_z));
+	}
+
+
+	/* Check which one of the 8 atoms that are closest*/
+	float shortest_distance = l1.length();
+	Vec shortest_vec = l1;
+
+	if(l2.length() < shortest_distance){
+		shortest_distance = l2.length();
+		shortest_vec = l2;
+	}
+	if(l3.length() < shortest_distance){
+		shortest_distance = l3.length();
+		shortest_vec = l3;
+	}
+	if(l4.length() < shortest_distance){
+		shortest_distance = l4.length();
+		shortest_vec = l4;
+	}
+	if(l5.length() < shortest_distance){
+		shortest_distance = l5.length();
+		shortest_vec = l5;
+	}
+	if(l6.length() < shortest_distance){
+		shortest_distance = l6.length();
+		shortest_vec = l6;
+	}
+	if(l7.length() < shortest_distance){
+		shortest_distance = l7.length();
+		shortest_vec = l7;
+	}
+	if(l8.length() < shortest_distance){
+		shortest_distance = l8.length();
+		shortest_vec = l8;
+	}
+	/*if(shortest_vec.length() < 0.5 && atom_number != other_atom->get_atom_number()){
+		cout << "Atom " << atom_number << " mkt nära" << other_atom->get_atom_number() << endl;
+	}*/
+	// Returns the vector to the closest atom from list
+	return shortest_vec;
 }
 
 
@@ -720,6 +938,29 @@ void Simulation::create_cell_list(){
 		cell_list->add_atom_to_cells(list_of_atoms[i]);
 	}
 }
+void Simulation::end_of_simulation(){
+	// Write all atom data to a file. 
+
+	std::ofstream fs3("endofsimulation.txt", ios::trunc);
+	fs3.close();
+	// Write material stuff to start of file.
+	
+	for (unsigned int i=0; i<list_of_atoms.size(); i++){
+		std::ofstream fs3("endofsimulation.txt", ios::app);
+	// atom#, position, previous position, velocity, previous velocity, acceleration, previous acceleration, initial velocity, initial position
+
+		fs3<<list_of_atoms[i]->get_atom_number()<<" "<<list_of_atoms[i]->get_position()<<" "<<list_of_atoms[i]->get_prev_position()<<" "<<
+			list_of_atoms[i]->get_velocity()<<" "<<list_of_atoms[i]->get_prev_velocity()<<" "<<list_of_atoms[i]->get_acceleration()<<" "<<
+			list_of_atoms[i]->get_prev_acceleration()<<" "<<list_of_atoms[i]->get_initial_velocity()<<" "<<list_of_atoms[i]->get_initial_position()<<endl;
+		fs3.close();
+	}
+	
+
+}
+
+void Simulation::read_old_sim(){}
+
+
 
 /*-----
 GETTERS

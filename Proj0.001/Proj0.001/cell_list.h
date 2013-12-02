@@ -8,6 +8,7 @@
 class Cell_list{
 private:
 	//Variables
+	int number_of_cells; 
 	float cutoff; //Potential cutoff
 	float cell_length_x; //Length of side of cell
     float cell_length_y; //Length of side of cell
@@ -29,9 +30,15 @@ public:
 	Cell_list(float cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float lattice_constant, bool new_pbc_z); // unit_cells is a material parameter.
 	~Cell_list();
 	void add_atom_to_cells(Atom*);
+	//int my_sign(float);
     void create_cells();
 	std::vector<Atom*> get_neighbours(Atom* atom); 
 	void clear_cells();
+	void print_my_cell_number(int atom_number);
+	void print_my_cell_neighbours(int atom_number);
+	void print_atoms_in_each_cell();
+	Cell* get_cell_with_number(int cell_number);
+	int get_number_of_cells();
 };
 
 #endif
