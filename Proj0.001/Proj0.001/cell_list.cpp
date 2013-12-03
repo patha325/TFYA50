@@ -435,7 +435,7 @@ void Cell_list::print_my_cell_neighbours(int atom_number){
 
 	vector<Cell*> lst = number_to_cell_vector_map[atom_number];
 	cout << endl << "The neighbouring cells for atom #" << atom_number << " are: ";
-	for (int i = 0; i < lst.size(); i++){
+	for (unsigned int i = 0; i < lst.size(); i++){
 		cout << lst[i]->get_cell_number() << " ";
 	}
 	cout << endl;
@@ -449,7 +449,7 @@ void Cell_list::print_atoms_in_each_cell(){
 		vector<Atom*> list_of_atoms = list_of_cells[i]->get_atoms_in_cell();
 
 		cout << "Atoms: ";
-		for(int j = 0; j < list_of_atoms.size(); j++){
+		for(unsigned int j = 0; j < list_of_atoms.size(); j++){
 			cout << list_of_atoms[j]->get_atom_number() << " ";
 		}
 		cout << endl;
