@@ -9,13 +9,14 @@
 \usepackage{epsfig}
 
 \addto{\captionsswedish}{\renewcommand*{\contentsname}{Table of contents}}
+\addto{\captionsswedish}{\renewcommand*{\tablename}{Table}}
 
 \begin{document}
 
 \title{Title}
 \author{Group 1}
 \authorepost{tfya50@googlegroups.com}
-\dokument{Final report} \version{0.X}
+\dokument{Final report} \version{0.1}
 \filtyp{pdf}
 \projektnummer{1} 
 \granskad{----}{\today}
@@ -32,19 +33,119 @@
 \section{Introduction}
 \label{sec:Introduction}
 
-\newpage
-%% %%
-\section{The Product}
-\label{sec:Product}
+\subsection{Involved parties}
+
+\subsection{Project Goal}
+
+\subsection{Usage}
+
+\subsection{Available Resources}
+\begin{itemize}
+\item Scientific software
+	\begin{itemize}
+	\item MD subroutines available (Fortran only). 
+	\end{itemize}
+\item Scientific publications database
+\item Software \& Hardware Tools
+	\begin{itemize}
+	\item Fortran, C, C++ compilers and related programming software. 
+	\item Matlab, Mathematica
+	\item Hardware (4 x PCs, running Windows and Linux) \& SUN workstations. 
+	\item Dedicated office
+	\end{itemize}
+\end{itemize}
 
 \newpage
 %% Overview of System %%
-\section{Overview of System}
+\section{Overview of Project}
 \label{sec:Overview}
+
+\subsection{Project Parts}
+The main parts of the project are:
+\begin{itemize}
+\item Conceive and design a MD program for a specific class of materials
+\item Implement the MD code and test the quality of the MD simulations
+\item Operate the MD program to calculate required/additional properties and assess the results
+\end{itemize}
+
+\subsection{Project Stages}
+These are three important stages in this project:
+\begin{enumerate}
+\item Successful finalisation of the MD computer program
+\item Quality assessment of the MD methodology implemented
+\item Reliable material properties prediction/calculation, comprehensive analysis of results obtained
+\end{enumerate}
+
+\subsection{Education}
+State our lectures and laborations here
+
+\newpage
+%% Design %%
+\section{Design}
+
+\subsection{Simulation World}
+
+\subsection{Calculating Physical properties}
+
+\subsection{Graphics}
+
+\newpage
+%% Performance and Requirements %%
+\section{Performance Requirements}
+Table \ref{tab:Requirements} summarizes the performance requirements of the MD program. With each requirement a degree of priority is associated.
+
+\begin{table}[h]
+\caption{Requirements for project with high priority}
+\begin{tabular}{| p{0.1\textwidth} | p{0.8\textwidth} | p{0.1\textwidth} |}
+	\hline
+	Req. 1 & \textbf{MD system set up} atomic configuration, MD parameters, periodic boundary conditions,  neighbour lists etc. & High \\
+	\hline
+	Req. 2 & \textbf{Interaction potential definition and parameterisation} based on chemical element or material chosen for simulation & High \\
+	\hline
+	Req. 3 & \textbf{Efficient integrator} for the numerical integration of equations of motion & High \\
+	\hline
+	Req. 4 & \textbf{Efficient force calculation} analytical or tabulated & High \\
+	\hline
+	Req. 5 & Routines for calculation of  \textbf{cohesive energy, temperature, internal pressure, thermostat} & High \\
+	\hline
+	Reg. 6 & \textbf{Capcbility to perform 2-dimensional simulations} necessary for surface properties/processes calculations & High \\
+	\hline 
+\end{tabular}
+\label{tab:Requirements}
+\end{table}
+
+Table \ref{tab:OptionalReq} summarizes optional upgrades of the MD program.
+
+\begin{table}[h]
+\caption{Requirements for project with low priority}
+\begin{tabular}{| p{0.1\textwidth} | p{0.8\textwidth} | p{0.1\textwidth} |}
+	\hline
+	Req. 7 & \textbf{Visualization capabilities} would be an extremely useful addition and/or upgrade to the MD code & Low \\
+	\hline
+	Req. 8 & Upgrading with routines allowing the \textbf{calculation of other important material properties} (elastic moduli and constants) & Low \\
+	\hline
+\end{tabular}
+\label{tab:OptionalReq}
+\end{table}
+
+\newpage
+%% Result and discussion %%
+\section{Result and discussion}
+\label{sec:Result}
+
+Results of mandatory processes and properties
+Does our project fulfill the requirements?
+
+Reliability
+Possible upgrades
+
+Analysis of results
+
+Comparison with experiments
 
 \newpage
 %% %%
-\section*{Appendix A}
+\section*{Appendix A - User Manual}
 \label{sec:AppendixA}
 
 
