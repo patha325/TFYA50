@@ -6,6 +6,10 @@
 *.o
 *.so
 *.suo
+*.aux
+*.out
+*.pdf
+*.toc
 
 # Packages #
 ############
