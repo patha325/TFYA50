@@ -105,7 +105,10 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	// Write out steps, time_step and dummy index to energytemp.
 	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<<0 <<endl;
 	fs2.close();
-	
+
+	ofstream atom_position_output;
+	atom_position_output.open ("atom_positions.txt", ios::trunc);
+	atom_position_output.close();
 	
 	
 	/*// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
@@ -457,6 +460,12 @@ void Simulation::next_time_step(int current_time_step){
 //	clock_t t6 = clock();
 	clock_t start_of_time_step_time = clock();
 
+
+	/* KOMMENTERA IN DETTA OM DU VILL SPARA ATOMERNAS POSITION - DEL 1/3
+	ofstream atom_position_output;
+	atom_position_output.open ("atom_positions.txt", ios::out | ios::app);
+	*/
+
 	if (fmod(current_time_step, 5.0) == 0){
 		cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
 		//if(!pbc_z) cout << "Number of atoms in cell " << cell_list->get_cell_with_number(-1)->get_cell_number() << " is " << cell_list->get_cell_with_number(-1)->get_number_of_atoms_in_cell() << endl;
@@ -609,6 +618,10 @@ void Simulation::next_time_step(int current_time_step){
 				MSD += calculate_MSD(atom);
 			}
 		//}
+
+		/* KOMMENTERA IN DETTA OM DU VILL SPARA ATOMERNAS POSITIONER - DEL 2/3
+		atom_position_output << "( " << atom->get_position().getX() << " , " << atom->get_position().getY() << " , " << atom->get_position().getZ() << " )";
+		*/
 /*
 		clock_t t4 = clock();
 		at += t3 - t2;
@@ -646,6 +659,11 @@ void Simulation::next_time_step(int current_time_step){
 
 		}
 	
+	/* KOMMENTERA IN DETTA OM DU VILL SPARA ATOMERNAS POSITIONER - DEL 2/3
+	atom_position_output << endl;
+	atom_position_output.close();
+	*/
+
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	std::ofstream fs2("energytemp.txt", ios::app);
 
