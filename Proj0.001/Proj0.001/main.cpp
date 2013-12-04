@@ -130,6 +130,7 @@ Parameters:
 	cout << "Mass: "<<mass<<endl;
 	cout << "Lattice: "<<input_lattice_constant<<endl;
 	
+	clock_t t1 = clock();
 		//Create first simulation world
 	Simulation* simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
 											input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,
@@ -138,6 +139,7 @@ Parameters:
 	
 	simulation->run_simulation();
 
+	clock_t t2 = clock();
 	//Run back to back simulation
 	//Always with most recent simulation as it is now
 	//btb = back to back
@@ -149,28 +151,32 @@ Parameters:
 		simulation->end_of_simulation();
 	}
 
-
+	float time = 0;
 	while (back_to_back){
 		cout << "System in equilibrium? (Yes = 1/No = 0)" << endl;
 		cin >> input_equilibrium;
 		cout << "Input the wanted number of steps:" << endl;
 		cin >> input_steps;
 		cout << "Starting new simulation back to back with previous!" << endl;
+		clock_t t3 = clock();
 		//Create new simulation
 		Simulation* btb_simulation = new Simulation(simulation, input_steps, input_equilibrium);
 		simulation = btb_simulation;
 		cout << "Running simulation..." << endl << endl;
 		simulation->run_simulation();
+		clock_t t4 = clock();
 
 		//Ask again to runt new btb simulation
 		cout << "Do you wish to run a new simulation back to back? (Yes = 1/No = 0)" << endl;
 		cin >> back_to_back;
 		
+		time += t4 - t3;
 		if(!back_to_back){
 			btb_simulation->end_of_simulation();
 		}
 	}
 
+	cout << "Running time " << (t2 - t1) + time << endl;
 	system("pause");
 	//simulation->~Simulation (); Inte riktigt testad...
 	
