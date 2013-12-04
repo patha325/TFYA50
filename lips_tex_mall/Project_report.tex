@@ -119,28 +119,15 @@ These are three important stages in this project:
 To facilitate the MD program design process, lectures and laboratory exercises were offered before the actual project began.
 
 \newpage
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Design %%
-\section{Design}
-
-%% Simulation World %%
-\subsection{Simulation World}
-
-%% Calculating Physical Properties %%
-\subsection{Calculating Physical Properties}
-
-%% Graphics %%
-\subsection{Graphics}
-
-\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%  Performance and Requirements %%
 \section{Performance Requirements}
 
 %% Functionality Requirements %%
 \subsection{Functionality Requirements}
-Table \ref{tab:Requirements} summarizes the performance requirements of the MD program. With each requirement a degree of priority is associated.
+Table \ref{tab:Requirements} summarizes the performance requirements of the MD program. Each requirement has a degree of priority is associated.
 
 \begin{table}[h]
-\caption{Requirements for project with high priority}
+\caption{Project requirements with high priority}
 \begin{tabular}{| p{0.1\textwidth} | p{0.8\textwidth} | p{0.1\textwidth} |}
 	\hline
 	Req. 1 & \textbf{MD system set up} atomic configuration, MD parameters, periodic boundary conditions,  neighbour lists etc. & High \\
@@ -155,22 +142,12 @@ Table \ref{tab:Requirements} summarizes the performance requirements of the MD p
 	\hline
 	Reg. 6 & \textbf{Capcbility to perform 2-dimensional simulations} necessary for surface properties/processes calculations & High \\
 	\hline 
-\end{tabular}
-\label{tab:Requirements}
-\end{table}
-
-Table \ref{tab:OptionalReq} summarizes optional upgrades of the MD program.
-
-\begin{table}[h]
-\caption{Requirements for project with low priority}
-\begin{tabular}{| p{0.1\textwidth} | p{0.8\textwidth} | p{0.1\textwidth} |}
-	\hline
 	Req. 7 & \textbf{Visualization capabilities} would be an extremely useful addition and/or upgrade to the MD code & Low \\
 	\hline
 	Req. 8 & Upgrading with routines allowing the \textbf{calculation of other important material properties} (elastic moduli and constants) & Low \\
 	\hline
 \end{tabular}
-\label{tab:OptionalReq}
+\label{tab:Requirements}
 \end{table}
 
 %% Reliability Requirements %%
@@ -193,24 +170,49 @@ Optional reliability requirements:
 \end{itemize}
 
 \newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Design %%
+\section{Design}
+
+%% Simulation World %%
+\subsection{Simulation World}
+
+%% Calculating Physical Properties %%
+\subsection{Calculating Physical Properties}
+
+%% Graphics %%
+\subsection{Graphics}
+
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%  Result and discussion %%
-\section{Result and discussion}
+\section{Result}
 \label{sec:Result}
 
-Results of mandatory processes and properties
-Does our project fulfill the requirements?
-
-Reliability
-Possible upgrades
-
-Analysis of results
-
-Comparison with experiments
+Total energy plottar för olika lattice constants för att visa att vi hittar den bästa\\
+Övriga plottar för den bästa lattice constant (Epot, Ekin, temp, pressure, MSD, Debye, Ecoh, Diffusion coeff, Cv). Plottar finns i appendix B\\
+	- Utan termostat\\
+	- Med termostat\\
+	- Surface utan termostat (ta med de plottar som ser mest vettiga ut)\\
+Jämföra dessa plottar och värden med gjorda experiment\\
+Visa tabell för vilka material som går att simulera\\
+	Målet: Justera epsilon för alla material\\
+	Visa tabell med alla material, epsilon, Ecoh, diffusion coefficient, Cv\\
+Säga att det går att ändra cutoff (ha 8 plottar som visar detta i appendix B)\\
+	Argon, utan termo, 50 K, lattice 1, cutoff 2.5\\
+Säga att det går att a icke kubisk bulk (ha 8 plottar som visar detta i appendix B)\\
+	Argon 5x15x12\\
+Säga att det går att ändra uppdateringshastigheten för termostaten (ha 8 plottar som visar detta i appendix B)\\
+	Argon, termo, var 500:e steg\\
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Appendix A - User Manual %%
 \section*{Appendix A - User Manual}
 \label{sec:AppendixA}
+
+\newpage
+\section{Appendix B - Plots}
+\label{sec:AppendixB}
+Alla plottar i resultat
+
 
 
 \end{document}
