@@ -38,7 +38,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
-\RequirePackage{datetime}
+\RequirePackage[ddmmyyyy]{datetime}
 \RequirePackage[swedish]{babel}
 \RequirePackage{graphicx}
 \RequirePackage{fancyhdr}
@@ -105,8 +105,7 @@
 }
 
 \newcommand{\makestatus}{%
-\newpage
-\pagenumbering{roman}
+\vfill
 \vspace*{1cm}
 \textbf{Status}\\
 \vspace*{5mm}
@@ -124,6 +123,7 @@ Approved & \@godkand & \@godkanddatum \\
 %%%%%%%%Projektidentitet%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\makeprojektidentitet}{%
+\pagenumbering{roman}
 \vspace*{4cm}
 \begin{center}
 \Large \textsf{Project identity \\} 
@@ -140,18 +140,22 @@ Linköpings Tekniska Högskola, IFM
 \newcommand{\makeprojektinfo}{%
 \begin{center}
 \footnotesize
-\textbf{E-mail for the whole group:} tfya50@googlegroups.com \\[0.5cm]
+\begin{table}[h]
+\begin{tabular}{r l}
+\textbf{E-mail for the whole group:} & tfya50@googlegroups.com \\[0.5cm]
 % \textbf{Hemsida för projektet:} http://www.isy.liu.se/edu/projekt/reglerteknik/2011/wheelloader/  \\[0.5cm]
-\textbf{Customer:} IFM, Linköpings Universitet, 581 83 Link\"oping \\
-\textbf{Customer contact:} Valeriu Chirita, 013-28 12 89 \\
+\textbf{Customer:} & IFM, Linköpings Universitet, 581 83 Link\"oping \\
+\textbf{Customer contact:} & Valeriu Chirita, 013-28 12 89 \\
 % \textbf{Kontakt hos Kund:} Anders Fröberg \textbf{E-post:} anders.froberg@volvo.com \\[0.5cm]
 
 % \textbf{Beställare av projektet:} Erik Frisk  \textbf{E-post:} frisk@isy.liu.se \\
-\textbf{Tutor:} Daniel Edstr\"om, daned@ifm.liu.se \\
-\textbf{Tutor:} Davide Sangiovanni, davsan@ifm.liu.se \\
+\textbf{Tutor:} & Daniel Edstr\"om, daned@ifm.liu.se \\
+\textbf{Tutor:} & Davide Sangiovanni, davsan@ifm.liu.se \\
 % \textbf{Telefon:}  +46 (0)13 - 28 5714  \\[0.5cm]
 % \textbf{Handledare:} Tomas Nilsson \textbf{E-post:} tnilsson@isy.liu.se \\ 
 % \textbf{Telefon:} +46 (0)13 - 28 4066  \\[0.5cm] 
+\end{tabular}
+\end{table}
 
 \end{center}
 \clearpage
