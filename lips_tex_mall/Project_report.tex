@@ -213,6 +213,46 @@ Comparison with experiments
 \section*{Appendix A - User Manual}
 
 \label{sec:AppendixA}
+When the program is run the user will be asked to input certain parameters in order to start the simulation.
 
+\textbf{Start from an old simulation (Yes/No)}: If an old simulation is availible the user can choose to start a new simulation back to back with the old simulation.  
+
+\textbf{Number of unit cells}: Set the number of unit cells in each cartesian direction. The number of cells in each direction does not have to be the same.
+
+\textbf{Periodic boundary condition in z:(Yes/No):} 
+
+\textbf{Time step size:} This determines the time step with which the system progresses. It is given in units of femtoseconds.
+
+\textbf{Number of steps:} Here we choose for how many time steps the simulation will run.
+
+\textbf{Input wanted material:} Choose which material to use in the simulation. The following materials are included in the program and are chosen by inputing their corresponding symbol from the periodic table, i.e. Li for Lithium, Ar for Argon etcetera. 
+
+Li - Lithium
+Na - Sodium
+Ar - Argon
+K - Potassium
+Cr - Chromium
+Fe - Iron
+Mo - Molybdenum
+W - Wolfram
+He - Helium
+
+\textbf{Start temperature:} Give the starting temperature for the system in Kelvin.
+
+\textbf{Scaling of lattice constant: }If desired, the lattice constant can be varied in multiples of the pre-set lattice constant for the given material. 
+
+\textbf{Cut-off multiples of the lattice constant:} Sets the cutoff in terms of the the given lattice constant.
+
+\textbf{Simulate with thermostat (Yes/No):} If the temperature of the system is desired, it can be measured if the thermostat is enabled. 
+
+\textbf{Update frequency for the thermostat: }The frequency with which the temperature is measured
+
+After this the simulation is started and the progress is shown each five time steps.
+
+When the simulation ends the user is given the specific heat as well as the choice of running another simulation back to back. One is prompted to answer whether or not the system is in equilibrium and then proceed by giving the number of time steps for the continued simulation. 
+
+\textbf{Visualizing the result of the simulation:}
+
+In order to make the data output from the simulation more clear to the user a Matlab script is provided with the main program. The data from the simulation is automatically exported to a text file which is read by the Matlab script in order to plot how the material properties vary over the time of the simulation. The Matlab script simply needs to be runs as is, and the plots will be generated. The properties plotted are total energy, potential energy, kinetic energy, temperature, pressure, mean square displacement, Debye temperature, diffusion coefficient and the cohesive energy 
 
 \end{document}
