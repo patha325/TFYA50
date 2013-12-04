@@ -342,12 +342,6 @@ void Cell_list::create_cells(){
     int cells_x = int(max_orgin_x/cell_length_x);
     int cells_y = int(max_orgin_y/cell_length_y);
     int cells_z = int(max_orgin_z/cell_length_z);
- 
-/*
-    cout << "Numbers of cells X: " << cells_x << endl;
-    cout << "Numbers of cells Y: " << cells_y << endl;
-    cout << "Numbers of cells Z: " << cells_z << endl << endl;
-*/
     
     /*---
      Creates a mapping from cell number to a vector of all neighbouring cells.
@@ -421,15 +415,7 @@ void Cell_list::create_cells(){
 
 }
 
-/*
-void Cell_list::print_my_cell_number(int atom_number){
 
-	for(int i = 0; i<list_of_cells.size(); i++){
-		if
-	}
-	cout << 
-}
-*/
 
 void Cell_list::print_my_cell_neighbours(int atom_number){
 

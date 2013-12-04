@@ -78,9 +78,7 @@ Parameters:
 	bool input_thermostat = false;
 	bool input_equilibrium = false;
 	bool pbc_z = false;
-<<<<<<< HEAD
 
-=======
 	int thermostat_update_freq = 0;
 	float input_lattice_scaling = 1;
 	bool old_sim;
@@ -89,7 +87,7 @@ Parameters:
 	cin >> old_sim;
 	// cout << "Input filename.txt where old simulation can be found" <<endl;
 	// cin >> old_sim_filename:
->>>>>>> 91a7cfef158da10495a462a4ada37a511e09a8c7
+
 	
 	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
 	cin >> input_x;

@@ -539,16 +539,13 @@ void Simulation::next_time_step(int current_time_step){
 				count ++;
 				//Calculate potential energy
 				//times two because of how we loop over neighbouring atoms
-<<<<<<< HEAD
+
 				if(i == 0 && j == 0){
 					cout << "time step " << current_time_step << "Atom " << i << "E_pot (ska vara 0) " << E_pot << endl;
 				}
-				E_pot += 2*atom->calculate_potential(neighbouring_atom, distance_length);
-=======
 
 				E_pot += 2*atom->calculate_potential(distance_length,neighbouring_atom);
 
->>>>>>> 91a7cfef158da10495a462a4ada37a511e09a8c7
 				//Calculate force
 				Vec tmp_force = atom->calculate_force(distance, distance_length);
 				//if(atom->get_atom_number() == 3 && neighbouring_atom->get_atom_number() == 62) {
@@ -602,15 +599,8 @@ void Simulation::next_time_step(int current_time_step){
 				MSD += calculate_MSD(atom);
 			}
 		//}
-/*
-		clock_t t4 = clock();
-		at += t3 - t2;
-		bt += t4 - t3;
-		ct += t9 - t8;
-		dt += t10 - t9;
-		*/
+
 	}
-	//clock_t t5 = clock();
 
 
 	//if(current_time_step < 500 || fmod(current_time_step,10.0) == 0){ // Görs alltid vid de 500 första tidsstegen, sedan var 10e tidssteg
@@ -648,21 +638,7 @@ void Simulation::next_time_step(int current_time_step){
 		fs2.close();
 	//}
 
-	/*
-	clock_t t7 = clock();
-	at = at/number_of_atoms;
-	bt = bt/number_of_atoms;
-	ct = ct/number_of_atoms;
-	dt = dt/number_of_atoms;
-	if(equilibrium){
-		cout << "whole next_time_step " << t7 - t6 << endl;
-		cout << "whole for loop " << t5 - t1 << endl;
-		cout << "tmp_diff_coeff " << ct << endl;
-		cout << "MSD " << bt << endl << endl;
-	}
-	*/
 	clock_t end_of_time_step_time = clock();
-	//cout << "Time step " <<  current_time_step << " has duration: " << end_of_time_step_time-start_of_time_step_time << endl;
 
 	return;
 }
@@ -898,9 +874,7 @@ Vec Simulation::distance_between_now_and_initial(Atom* atom) {
 		shortest_distance = l8.length();
 		shortest_vec = l8;
 	}
-	/*if(shortest_vec.length() < 0.5 && atom_number != other_atom->get_atom_number()){
-		cout << "Atom " << atom_number << " mkt nära" << other_atom->get_atom_number() << endl;
-	}*/
+
 	// Returns the vector to the closest atom from list
 	return shortest_vec;
 }
