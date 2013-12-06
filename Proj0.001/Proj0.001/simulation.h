@@ -45,6 +45,7 @@ private:
 	float k_b;
 	//Planck's constant
 	float hbar;
+	bool save_atom_positions;
 
 
 
@@ -109,7 +110,8 @@ public:
 		bool equilibrium,
 		bool pbc_z,
 		int thermostat_update_freq,
-		bool old_sim);
+		bool old_sim,
+		bool save_atom_positions);
 	Simulation(Simulation* old_simulation, int steps, bool equilibrium); //Take off where we left off-constructor
 
 	//Destructor
@@ -133,6 +135,7 @@ public:
 	float get_lattice_constant();
 	std::string get_crystal_structure();
 	Cell_list* get_cell_list(); 
+	bool get_save_atom_positions();
 
 	void configure_data(int);
 	

@@ -81,6 +81,7 @@ Parameters:
 	int thermostat_update_freq = 0;
 	float input_lattice_scaling = 1;
 	bool old_sim;
+	bool save_atom_positions = false;
 	
 	cout << "Do you want to start from an old simulation? (Yes = 1/No = 0)" <<endl;
 	cin >> old_sim;
@@ -113,6 +114,8 @@ Parameters:
 		cout << "Update frequency for thermostat " << endl;
 		cin >> thermostat_update_freq;
 	}
+	cout << "Do you want to save atom positions? (Yes = 1/No = 0)" << endl;
+	cin >> save_atom_positions;
 
 	cout << endl << "------------" << endl;
 	cout << "- RUNNING -" << endl;
@@ -134,7 +137,7 @@ Parameters:
 		//Create first simulation world
 	Simulation* simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
 											input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,
-											input_thermostat, input_equilibrium, pbc_z, thermostat_update_freq, old_sim);
+											input_thermostat, input_equilibrium, pbc_z, thermostat_update_freq, old_sim, save_atom_positions);
 	cout << "Running simulation..." << endl << endl;
 	
 	simulation->run_simulation();
