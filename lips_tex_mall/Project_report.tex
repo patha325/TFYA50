@@ -199,17 +199,37 @@ The program uses periodic boundary conditions at the bulk borders. This means th
 
 \subsubsection{The periodic boundary condition}
 \label{sec:the_periodic_boundary_condition}
+The program uses periodic boundary conditions. This means that an atom near one edge of the bulk will be influenced by an atom on the other side of the bulk. This will make it possible to simulate an infinite crystal. This is illustrated in figure ???.
+
+FIGURE
+
+This method is modified when running surfrace simulations, as described in section \ref{sec:surface_simulations}.
+
 
 \subsubsection{Surface simulations}
 \label{sec:surface_simulations}
+The program is capable of running surface simulations, where the crystal is infinite in two dimensions and has a finite number of atom layers in the third. The process for this kind of simulation is the same as for the bulk simulations, with the difference that the periodic boundary conditions are turned off in one dimension. This means that atoms at the \emph{top} of the crystal (at the surface) will not interact with atoms at the other side of the crystal. Atoms at the side of the crystal will interact with atoms at the other side just as for bulk simulations. 
+
+FIGURE?
 
 
 %% Calculating Physical Properties %%
 \subsection{Calculating Physical Properties}
 \label{sec:calculating_physical_properties}
 
+%% Data %%
+\subsection{Data output}
+\label{sec:data_output}
+The physical properties calculated by the program (as described in section \ref{sec:calculating_physical_properties}) are saved in \texttt{.txt} files. The output format is designed so as to be readable by a \texttt{Matlab} program. These properties can be plotted as functions over simulation time by the Matlab program, as described in section \ref{sec:graphics}. 
+
+The program also has capabilities to save the atom positions for every \emph{n}:th time step. This option is chosen at simulation startup, and can be turned on or off. These values are like the physical properties saved to a text file formatted to be read by a Matlab program. This Matlab program can animate the motion of the atoms during the simulation. 
+
+Details about the plotting and animation programs in Matlab are given in section \ref{sec:graphics}, and usage of the programs are given in appendix A.
+
 %% Graphics %%
 \subsection{Graphics}
+\label{sec:graphics}
+
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%  Result and discussion %%
