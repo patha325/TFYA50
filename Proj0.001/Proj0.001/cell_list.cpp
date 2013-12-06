@@ -55,13 +55,12 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
     cell_length_y = bulk_length_y/floor(bulk_length_y/cutoff);
     cell_length_z = bulk_length_z/floor(bulk_length_z/cutoff);
     
-	/*
+	
     cout << "Cell length X: " << cell_length_x << endl;
     cout << "Cell length Y: " << cell_length_y << endl;
     cout << "Cell length Z: " << cell_length_z << endl << endl;
 
-	system("pause");
-	*/
+
     create_cells();
 
 	/*
@@ -171,9 +170,9 @@ void Cell_list::add_atom_to_cells(Atom* current_atom){
 	*/
 	else{
 		while (!found) {
-			if (current_atom->get_position().getX()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+cell_length_x && 
-				current_atom->get_position().getY()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+cell_length_y &&
-				current_atom->get_position().getZ()<list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+cell_length_z) {
+			if (current_atom->get_position().getX()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getX()+cell_length_x*1.01 && 
+				current_atom->get_position().getY()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getY()+cell_length_y*1.01 &&
+				current_atom->get_position().getZ()<=list_of_cells[cell_number_iterator]->get_origin_of_cell().getZ()+cell_length_z*1.01) {
                 
 //					cout << "Atom " << current_atom->get_atom_number() << " with origin " << current_atom->get_position() << " is in Cell with origin " << list_of_cells[cell_number_iterator]->get_origin_of_cell() << ": " << cell_number_iterator << endl;
                 
@@ -301,7 +300,7 @@ void Cell_list::create_cells(){
 
 
 	
-	/*
+	
 	cout  << "Bulk x: " << bulk_length_x << endl;
 	cout  << "Bulk y: " << bulk_length_y << endl;
 	cout  << "Bulk z: " << bulk_length_z << endl;
@@ -310,7 +309,7 @@ void Cell_list::create_cells(){
 	cout << "Cell length x: " << cell_length_x << endl;
 	cout << "Cell length y: " << cell_length_y << endl;
 	cout << "Cell length z: " << cell_length_z << endl;
-    */
+    
 
     
     /*----
@@ -323,9 +322,9 @@ void Cell_list::create_cells(){
 
 	cout << endl << "Creating cells... " << endl;
 
-    while (current_origin.getZ()<bulk_length_z*0.99){
-        while (current_origin.getY()<bulk_length_y) {
-            while (current_origin.getX()<bulk_length_x) {
+    while (current_origin.getZ()<bulk_length_z*0.999999){
+        while (current_origin.getY()<bulk_length_y*0.999999) {
+            while (current_origin.getX()<bulk_length_x*0.999999) {
             
                 list_of_cells.insert(list_of_cells.end(), new Cell(i,current_origin));
                 vec_to_number_map.insert(pair<Vec,int>(current_matrix_coordinates,i));
@@ -355,11 +354,11 @@ void Cell_list::create_cells(){
 	}
 	*/
 
-	/*
+	
 	cout << "Max origin x: " << max_orgin_x << endl;
 	cout << "Max origin y: " << max_orgin_y << endl;
 	cout << "Max origin z: " << max_orgin_z << endl;
-	*/
+	
 
 	cout << "Cells created!" << endl;
 	cout << "Created in total " << list_of_cells.size() << " cells." << endl;
@@ -371,11 +370,11 @@ void Cell_list::create_cells(){
     int cells_y = ceil(max_orgin_y/cell_length_y);
     int cells_z = ceil(max_orgin_z/cell_length_z);
  
-	/*
+	
     cout << "Numbers of cells X: " << cells_x << endl;
     cout << "Numbers of cells Y: " << cells_y << endl;
     cout << "Numbers of cells Z: " << cells_z << endl << endl;
-	*/
+	
     
     /*---
      Creates a mapping from cell number to a vector of all neighbouring cells.
