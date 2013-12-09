@@ -33,6 +33,7 @@ Atom::Atom(Vec starting_position, float start_cutoff, int unit_cells_x, int unit
 	bulk_length_x = unit_cells_x*lattice_constant;
 	bulk_length_y = unit_cells_y*lattice_constant;
 	bulk_length_z = unit_cells_z*lattice_constant;
+	
 	mass = new_mass;
 	time_step = new_time_step;
 }
@@ -115,6 +116,10 @@ float Atom::calculate_potential(float distance_length, Atom* other_atom){
 	float tmp_potential = 0;
 	float q = sigma/distance_length; 
 	tmp_potential = 4*epsilon*(pow(q,12)-pow(q,6));
+	if(tmp_potential>100) {
+	
+		cout << "Fel!" << endl;
+	}
 
 	/*
 	if(atom_number == 0){
@@ -188,9 +193,11 @@ and the parameter atom. Jobbar förmodligen i nm när den används i potential mm..
 ----------------------*/
 Vec Atom::distance_vector(Atom* other_atom){
 	
+	return distance_vector_pbc(other_atom);
+	/*
 	if(pbc_z) return distance_vector_pbc(other_atom);
 	else return distance_vector_no_pbc(other_atom);
-	
+	*/
 /*
 	Vec v1 = distance_vector_pbc(other_atom);
 	Vec v2 = distance_vector_no_pbc(other_atom);
@@ -225,6 +232,10 @@ Vec Atom::distance_vector_pbc(Atom* other_atom){
 	float z1 = position.getZ();
 	float z2 = tmp.getZ();
 
+	float new_bulk_length_z;
+	if(!pbc_z) new_bulk_length_z = 3*bulk_length_z;
+	else new_bulk_length_z = bulk_length_z;
+
 	/* Check distance inside this periodic bulk structure*/
 	Vec l1 = tmp - position;
 
@@ -242,82 +253,82 @@ Vec Atom::distance_vector_pbc(Atom* other_atom){
 		/* Check x + bulk_length, y + bulk_length, z + bulk_length and all combinations */
 		l2 = (tmp + Vec(bulk_length_x,0,0)) - position;
 		l3 = (tmp + Vec(bulk_length_x,bulk_length_y,0)) - position;
-		l4 = (tmp + Vec(bulk_length_x,0,bulk_length_z)) - position;
-		l5 = (tmp + Vec(bulk_length_x,bulk_length_y,bulk_length_z)) - position;
+		l4 = (tmp + Vec(bulk_length_x,0,new_bulk_length_z)) - position;
+		l5 = (tmp + Vec(bulk_length_x,bulk_length_y,new_bulk_length_z)) - position;
 		l6 = (tmp + Vec(0,bulk_length_y,0)) - position;
-		l7 = (tmp + Vec(0,bulk_length_y,bulk_length_z)) - position;
-		l8 = (tmp + Vec(0,0,bulk_length_z)) - position;
+		l7 = (tmp + Vec(0,bulk_length_y,new_bulk_length_z)) - position;
+		l8 = (tmp + Vec(0,0,new_bulk_length_z)) - position;
 	}
 	else if(x1>=x2 && y1>=y2 && z1<=z2){
 		/* Check x + bulk_length, y + bulk_length, z - bulk_length and all combinations */
 		l2 = (tmp + Vec(bulk_length_x,0,0)) - position;
 		l3 = (tmp + Vec(bulk_length_x,bulk_length_y,0)) - position;
-		l4 = (tmp + Vec(bulk_length_x,0,-bulk_length_z)) - position;
-		l5 = (tmp + Vec(bulk_length_x,bulk_length_y,-bulk_length_z)) - position;
+		l4 = (tmp + Vec(bulk_length_x,0,-new_bulk_length_z)) - position;
+		l5 = (tmp + Vec(bulk_length_x,bulk_length_y,-new_bulk_length_z)) - position;
 		l6 = (tmp + Vec(0,bulk_length_y,0)) - position;
-		l7 = (tmp + Vec(0,bulk_length_y,-bulk_length_z)) - position;
-		l8 = (tmp + Vec(0,0,-bulk_length_z)) - position;
+		l7 = (tmp + Vec(0,bulk_length_y,-new_bulk_length_z)) - position;
+		l8 = (tmp + Vec(0,0,-new_bulk_length_z)) - position;
 	}
 	else if(x1>=x2 && y1<=y2 && z1>=z2){
 		/* Check x + bulk_length, y - bulk_length, z + bulk_length and all combinations */
 		l2 = (tmp + Vec(bulk_length_x,0,0)) - position;
 		l3 = (tmp + Vec(bulk_length_x,-bulk_length_y,0)) - position;
-		l4 = (tmp + Vec(bulk_length_x,0,bulk_length_z)) - position;
-		l5 = (tmp + Vec(bulk_length_x,-bulk_length_y,bulk_length_z)) - position;
+		l4 = (tmp + Vec(bulk_length_x,0,new_bulk_length_z)) - position;
+		l5 = (tmp + Vec(bulk_length_x,-bulk_length_y,new_bulk_length_z)) - position;
 		l6 = (tmp + Vec(0,-bulk_length_y,0)) - position;
-		l7 = (tmp + Vec(0,-bulk_length_y,bulk_length_z)) - position;
-		l8 = (tmp + Vec(0,0,bulk_length_z)) - position;
+		l7 = (tmp + Vec(0,-bulk_length_y,new_bulk_length_z)) - position;
+		l8 = (tmp + Vec(0,0,new_bulk_length_z)) - position;
 
 	}
 	else if(x1>=x2 && y1<=y2 && z1<=z2){
 		/* Check x + bulk_length, y - bulk_length, z - bulk_length and all combinations */
 		l2 = (tmp + Vec(bulk_length_x,0,0)) - position;
 		l3 = (tmp + Vec(bulk_length_x,-bulk_length_y,0)) - position;
-		l4 = (tmp + Vec(bulk_length_x,0,-bulk_length_z)) - position;
-		l5 = (tmp + Vec(bulk_length_x,-bulk_length_y,-bulk_length_z)) - position;
+		l4 = (tmp + Vec(bulk_length_x,0,-new_bulk_length_z)) - position;
+		l5 = (tmp + Vec(bulk_length_x,-bulk_length_y,-new_bulk_length_z)) - position;
 		l6 = (tmp + Vec(0,-bulk_length_y,0)) - position;
-		l7 = (tmp + Vec(0,-bulk_length_y,-bulk_length_z)) - position;
-		l8 = (tmp + Vec(0,0,-bulk_length_z)) - position;
+		l7 = (tmp + Vec(0,-bulk_length_y,-new_bulk_length_z)) - position;
+		l8 = (tmp + Vec(0,0,-new_bulk_length_z)) - position;
 	}
 	else if(x1<=x2 && y1>=y2 && z1>=z2){
 		/* Check x - bulk_length, y + bulk_length, z + bulk_length and all combinations */
 		l2 = (tmp + Vec(-bulk_length_x,0,0)) - position;
 		l3 = (tmp + Vec(-bulk_length_x,bulk_length_y,0)) - position;
-		l4 = (tmp + Vec(-bulk_length_x,0,bulk_length_z)) - position;
-		l5 = (tmp + Vec(-bulk_length_x,bulk_length_y,bulk_length_z)) - position;
+		l4 = (tmp + Vec(-bulk_length_x,0,new_bulk_length_z)) - position;
+		l5 = (tmp + Vec(-bulk_length_x,bulk_length_y,new_bulk_length_z)) - position;
 		l6 = (tmp + Vec(0,bulk_length_y,0)) - position;
-		l7 = (tmp + Vec(0,bulk_length_y,bulk_length_z)) - position;
-		l8 = (tmp + Vec(0,0,bulk_length_z)) - position;
+		l7 = (tmp + Vec(0,bulk_length_y,new_bulk_length_z)) - position;
+		l8 = (tmp + Vec(0,0,new_bulk_length_z)) - position;
 	}
 	else if(x1<=x2 && y1<=y2 && z1>=z2){
 		/* Check x - bulk_length, y - bulk_length, z + bulk_length and all combinations */
 		l2 = (tmp + Vec(-bulk_length_x,0,0)) - position;
 		l3 = (tmp + Vec(-bulk_length_x,-bulk_length_y,0)) - position;
-		l4 = (tmp + Vec(-bulk_length_x,0,bulk_length_z)) - position;
-		l5 = (tmp + Vec(-bulk_length_x,-bulk_length_y,bulk_length_z)) - position;
+		l4 = (tmp + Vec(-bulk_length_x,0,new_bulk_length_z)) - position;
+		l5 = (tmp + Vec(-bulk_length_x,-bulk_length_y,new_bulk_length_z)) - position;
 		l6 = (tmp + Vec(0,-bulk_length_y,0)) - position;
-		l7 = (tmp + Vec(0,-bulk_length_y,bulk_length_z)) - position;
-		l8 = (tmp + Vec(0,0,bulk_length_z)) - position;
+		l7 = (tmp + Vec(0,-bulk_length_y,new_bulk_length_z)) - position;
+		l8 = (tmp + Vec(0,0,new_bulk_length_z)) - position;
 	}
 	else if(x1<=x2 && y1>=y2 && z1<=z2){
 		/* Check x - bulk_length, y + bulk_length, z - bulk_length and all combinations */
 		l2 = (tmp + Vec(-bulk_length_x,0,0)) - position;
 		l3 = (tmp + Vec(-bulk_length_x,bulk_length_y,0)) - position;
-		l4 = (tmp + Vec(-bulk_length_x,0,-bulk_length_z)) - position;
-		l5 = (tmp + Vec(-bulk_length_x,bulk_length_y,-bulk_length_z)) - position;
+		l4 = (tmp + Vec(-bulk_length_x,0,-new_bulk_length_z)) - position;
+		l5 = (tmp + Vec(-bulk_length_x,bulk_length_y,-new_bulk_length_z)) - position;
 		l6 = (tmp + Vec(0,bulk_length_y,0)) - position;
-		l7 = (tmp + Vec(0,bulk_length_y,-bulk_length_z)) - position;
-		l8 = (tmp + Vec(0,0,-bulk_length_z)) - position;
+		l7 = (tmp + Vec(0,bulk_length_y,-new_bulk_length_z)) - position;
+		l8 = (tmp + Vec(0,0,-new_bulk_length_z)) - position;
 	}
 	else{
 		/* Check x - bulk_length, y - bulk_length, z - bulk_length and all combinations */
 		l2 = (tmp - Vec(bulk_length_x,0,0)) - position;
 		l3 = (tmp - Vec(bulk_length_x,bulk_length_y,0)) - position;
-		l4 = (tmp - Vec(bulk_length_x,0,bulk_length_z)) - position;
-		l5 = (tmp - Vec(bulk_length_x,bulk_length_y,bulk_length_z)) - position;
+		l4 = (tmp - Vec(bulk_length_x,0,new_bulk_length_z)) - position;
+		l5 = (tmp - Vec(bulk_length_x,bulk_length_y,new_bulk_length_z)) - position;
 		l6 = (tmp - Vec(0,bulk_length_y,0)) - position;
-		l7 = (tmp - Vec(0,bulk_length_y,bulk_length_z)) - position;
-		l8 = (tmp - Vec(0,0,bulk_length_z)) - position;
+		l7 = (tmp - Vec(0,bulk_length_y,new_bulk_length_z)) - position;
+		l8 = (tmp - Vec(0,0,new_bulk_length_z)) - position;
 	}
 
 
@@ -439,6 +450,24 @@ void Atom::calculate_and_set_position(){
 		while(next_position.getZ() < 0 || next_position.getZ() >= bulk_length_z){
 			int sign = my_sign(next_position.getZ());
 			next_position.setZ(next_position.getZ()-sign*bulk_length_z);
+		}
+	}
+	else{
+	
+		//x
+		while(next_position.getX() < 0 || next_position.getX() >= bulk_length_x){
+			int sign = my_sign(next_position.getX());
+			next_position.setX(next_position.getX()-sign*bulk_length_x);
+		}
+		//y
+		while(next_position.getY() < 0 || next_position.getY() >= bulk_length_y){
+			int sign = my_sign(next_position.getY());
+			next_position.setY(next_position.getY()-sign*bulk_length_y);
+		}
+		//z
+		while(next_position.getZ() < 0 || next_position.getZ() >= 3*bulk_length_z){
+			int sign = my_sign(next_position.getZ());
+			next_position.setZ(next_position.getZ()-sign*bulk_length_z*3);
 		}
 	}
 
