@@ -971,19 +971,29 @@ void Simulation::create_cell_list(){
 void Simulation::end_of_simulation(){
 	// Write all atom data to a file. 
 
-	std::ofstream fs3("endofsimulation.txt", ios::trunc);
-	fs3.close();
 	// Write material stuff to start of file.
 	
-	for (unsigned int i=0; i<list_of_atoms.size(); i++){
-		std::ofstream fs3("endofsimulation.txt", ios::app);
-	// atom#, position, previous position, velocity, previous velocity, acceleration, previous acceleration, initial velocity, initial position
 
-		fs3<<list_of_atoms[i]->get_atom_number()<<" "<<list_of_atoms[i]->get_position()<<" "<<list_of_atoms[i]->get_prev_position()<<" "<<
+	ofstream save_simulation_data_stream;
+	save_simulation_data_stream.open ("endofsimulation.txt", ios::trunc);
+	save_simulation_data_stream.close();
+	save_simulation_data_stream.open ("endofsimulation.txt", ios::out | ios::app);
+	save_simulation_data_stream << unit_cells_x << " " << unit_cells_y << " " << unit_cells_z << " " << time_step << " " << steps
+		 << " " << temperature << " " << cutoff << " " << mass << " " << sigma << " " << epsilon << " " << lattice_constant
+		 << " " << crystal_structure << " " << thermostat << " " << equilibrium << " " << pbc_z << " " << thermostat_update_freq 
+		 << " " << save_atom_positions << endl;
+	
+	for (unsigned int i=0; i<list_of_atoms.size(); i++){
+		
+		save_simulation_data_stream<<list_of_atoms[i]->get_atom_number()<<" "<<list_of_atoms[i]->get_position()<<" "<<list_of_atoms[i]->get_prev_position()<<" "<<
 			list_of_atoms[i]->get_velocity()<<" "<<list_of_atoms[i]->get_prev_velocity()<<" "<<list_of_atoms[i]->get_acceleration()<<" "<<
-			list_of_atoms[i]->get_prev_acceleration()<<" "<<list_of_atoms[i]->get_initial_velocity()<<" "<<list_of_atoms[i]->get_initial_position()<<endl;
-		fs3.close();
+			list_of_atoms[i]->get_prev_acceleration()<<" "<<list_of_atoms[i]->get_initial_velocity()<<" "<<list_of_atoms[i]->get_initial_position()<<" "<<
+			list_of_atoms[i]->get_total_energy()<<endl;
+		
 	}
+
+
+	save_simulation_data_stream.close();
 	
 
 }

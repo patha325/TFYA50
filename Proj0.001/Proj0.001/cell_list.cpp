@@ -51,9 +51,9 @@ Cell_list::Cell_list(float new_cutoff, int unit_cells_x, int unit_cells_y, int u
 
     
 	//Could be an issue if cell_length:s are a multiple of lattice_constant
-    cell_length_x = bulk_length_x/floor(bulk_length_x/cutoff);
-    cell_length_y = bulk_length_y/floor(bulk_length_y/cutoff);
-    cell_length_z = bulk_length_z/floor(bulk_length_z/cutoff);
+    cell_length_x = bulk_length_x/floor(bulk_length_x/lattice_constant);
+    cell_length_y = bulk_length_y/floor(bulk_length_y/lattice_constant);
+    cell_length_z = bulk_length_z/floor(bulk_length_z/lattice_constant);
     
 	
     cout << "Cell length X: " << cell_length_x << endl;
@@ -322,9 +322,9 @@ void Cell_list::create_cells(){
 
 	cout << endl << "Creating cells... " << endl;
 
-    while (current_origin.getZ()<bulk_length_z*0.999999){
-        while (current_origin.getY()<bulk_length_y*0.999999) {
-            while (current_origin.getX()<bulk_length_x*0.999999) {
+    while ((current_origin.getZ())<(bulk_length_z*0.999999)){
+        while ((current_origin.getY())<(bulk_length_y*0.999999)) {
+            while ((current_origin.getX())<(bulk_length_x*0.999999)) {
             
                 list_of_cells.insert(list_of_cells.end(), new Cell(i,current_origin));
                 vec_to_number_map.insert(pair<Vec,int>(current_matrix_coordinates,i));
@@ -366,9 +366,9 @@ void Cell_list::create_cells(){
 
     
     //Number of cells in each direction
-    int cells_x = ceil(max_orgin_x/cell_length_x);
-    int cells_y = ceil(max_orgin_y/cell_length_y);
-    int cells_z = ceil(max_orgin_z/cell_length_z);
+    int cells_x = floor(max_orgin_x/cell_length_x);
+    int cells_y = floor(max_orgin_y/cell_length_y);
+    int cells_z = floor(max_orgin_z/cell_length_z);
  
 	
     cout << "Numbers of cells X: " << cells_x << endl;

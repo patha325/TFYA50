@@ -1,5 +1,5 @@
 function plot_atoms()
-    f = fopen('atom_positions.txt');
+    f = fopen('../Debug/atom_positions.txt');
     
     fseek(f,0,'eof');
     filesize = ftell(f);

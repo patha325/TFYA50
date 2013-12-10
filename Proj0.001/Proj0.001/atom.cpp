@@ -39,6 +39,19 @@ Atom::Atom(Vec starting_position, float start_cutoff, int unit_cells_x, int unit
 }
 
 
+/*-----------------------
+Constructor for simulations 
+started from old simulations
+-----------------------*/
+Atom::Atom(Vec new_starting_position, float new_start_cutoff, int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_new_lattice_constant,
+float new_new_sigma, float new_new_epsilon, float new_new_mass, float new_new_time_step, float new_initial_velocity_modulus, bool new_new_pbc_z,
+int new_atom_number, Vec new_position, Vec new_prev_position, Vec new_velocity, Vec new_prev_velocity, Vec new_acceleration, Vec new_prev_acceleration,
+Vec new_initial_velocity, Vec new_initial_position, float new_total_energy){
+
+
+}
+
+
 
 
 /*--------------------
@@ -568,6 +581,7 @@ vector<Atom*> Atom::get_atom_neighbours(){ return atom_neighbours; }
 Vec Atom::get_tmp_force(){ return tmp_force; }
 int Atom::get_number_of_neighbours(){return number_of_neighbours;}
 Vec Atom::get_prev_velocity(){return prev_velocity;}
+float Atom::get_total_energy(){return total_energy;}
 
 
 

@@ -48,6 +48,12 @@ public:
 	Atom (Vec starting_position, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
 	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus, bool new_pbc_z);
 
+	//Constructor for simulations started from old simulations
+	Atom(Vec starting_position, float start_cutoff, int unit_cells_x, int unit_cells_y, int unit_cells_z, float new_lattice_constant,
+	float new_sigma, float new_epsilon, float new_mass, float new_time_step, float initial_velocity_modulus, bool new_pbc_z,
+	int atom_number, Vec position, Vec prev_position, Vec velocity, Vec prev_velocity, Vec acceleration, Vec prev_acceleration,
+	Vec initial_velocity, Vec initial_position, float total_energy);
+
 
 	~Atom ();
 
@@ -66,6 +72,7 @@ public:
 	vector<Atom*> get_atom_neighbours();
 	Vec get_tmp_force();
 	int get_number_of_neighbours();
+	float get_total_energy();
 
 	//Setters
 	void set_atom_number(int);
@@ -75,6 +82,7 @@ public:
 	void set_cell_number(int);
 	void set_cutoff(float);
 	void add_tmp_force(Vec);
+
 
 	//Other functions
 	Vec calculate_force(Vec, float);
@@ -92,6 +100,7 @@ public:
 	void update_atom();	
 	void update_neighbour_list(vector<Atom*> new_neighbours);
 	void clear_tmp_force();
+	
 
 	//For tests only
 	vector<Atom*> last_step_atom_neighbours;
