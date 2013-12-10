@@ -54,6 +54,8 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	volume = unit_cells_x*unit_cells_y*unit_cells_z*pow(lattice_constant,3);
 	prev_diff_coeff = 0;
 	Diff_coeff = 0;
+	self_diff_coeff = 0;
+	last_MSD = 0;
 	eq_time_steps =0;
 	thermostat_update_freq = new_thermostat_update_freq;
 	old_sim=new_old_sim;
@@ -146,6 +148,8 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	equilibrium = new_equilibrium;
 	prev_diff_coeff = 0;
 	Diff_coeff = 0;
+	self_diff_coeff = 0;
+	last_MSD = 0;
 	eq_time_steps=0;
 	
 
@@ -174,6 +178,7 @@ void Simulation::configure_data(int steps){
 	std::vector<float> MSD_vector;
 	std::vector<float> Debye_temp_vector;
 	std::vector<float> Diff_coeff_vector;
+	std::vector<float> self_diff_coeff_vector;
 	std::vector<float> coh_e_vector;
 	float in_t_energy;
 	float in_e_pot;
@@ -183,6 +188,7 @@ void Simulation::configure_data(int steps){
 	float in_MSD;
 	float in_Debye_temp;
 	float in_Diff_coeff;
+	float in_self_diff_coeff;
 	float in_coh_e;
 	istringstream iss;
 	string line;
@@ -202,6 +208,7 @@ void Simulation::configure_data(int steps){
 			MSD_vector.push_back(in_MSD);
 			Debye_temp_vector.push_back(in_Debye_temp);
 			Diff_coeff_vector.push_back(in_Diff_coeff);
+			//self_diff_coeff_vector.push_back(in_self_diff_coeff);
 			coh_e_vector.push_back(in_coh_e);
 		}
 		line_number++;
@@ -215,12 +222,12 @@ void Simulation::configure_data(int steps){
 	step_out+=steps;
 
 	std::ofstream fs2("energytemp.txt", ios::trunc);
-	fs2 << steps << " " << step_out << " " <<time_step<< " " << eq_time_steps<< " " << 0<< " " << 0<< " " << 0<< " " << 0<<" "<< 0<<endl;
+	fs2 << steps << " " << step_out << " " <<time_step<< " " << eq_time_steps<< " " << 0 << " " << 0 << " " << 0 << " " << 0 <<" "<< 0 <<endl;
 	fs2.close();
 	
 	for(unsigned int i=0;i<total_energy_vector.size();i++){
 		std::ofstream fs2("energytemp.txt", ios::app);
-		fs2 << total_energy_vector[i] << " " << pot_energy_vector[i] << " " << kin_energy_vector[i]<< " " << temperature_vector[i]<< " " <<pressure_vector[i]<< " " <<MSD_vector[i]<< " " <<Debye_temp_vector[i]<< " " <<Diff_coeff_vector[i] <<" "<<coh_e_vector[i]<<endl;
+		fs2 << total_energy_vector[i] << " " << pot_energy_vector[i] << " " << kin_energy_vector[i]<< " " << temperature_vector[i]<< " " <<pressure_vector[i]<< " " <<MSD_vector[i]<< " " <<Debye_temp_vector[i]<< " " <<Diff_coeff_vector[i] << " "<< coh_e_vector[i]<<endl;
 		fs2.close();
 	}
 
@@ -268,6 +275,13 @@ void Simulation::run_simulation(){
 	if(equilibrium) {
 		C_v = calculate_specific_heat();
 		cout << "Specific heat " << C_v << endl;
+	}
+
+	// Calculate Self diffusion coeff
+	float self_diff_coeff;
+	if(equilibrium) {
+		self_diff_coeff = last_MSD/(6*steps);
+		cout << "Self diffusion coefficient " << self_diff_coeff << endl;
 	}
 
 	//Check if system is in equilibrium
@@ -618,6 +632,8 @@ void Simulation::next_time_step(int current_time_step){
 			coh_e = E_pot/number_of_atoms; // cohesive energy is the same as potential when equilibrium is reached.
 			//Calculate average MSD
 			MSD = MSD/number_of_atoms;
+			// last_MSD
+			last_MSD = MSD;
 			//Calculate diffusion coeff
 			tmp_diff_coeff = tmp_diff_coeff/number_of_atoms;
 			Diff_coeff += time_step*(tmp_diff_coeff + prev_diff_coeff)/2;
@@ -634,7 +650,7 @@ void Simulation::next_time_step(int current_time_step){
 		// Write to file every time step
 		// Seperate the positions for different timesteps
 		
-		fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature << " " <<pressure<< " " << MSD<< " " <<Debye_temp<< " " <<Diff_coeff<<" "<<coh_e<<endl;
+		fs2 << total_energy << " " << E_pot << " " << E_kin << " " << temperature << " " <<pressure<< " " << MSD<< " " <<Debye_temp<< " " << Diff_coeff <<" "<<coh_e<<endl;
 		fs2.close();
 	//}
 

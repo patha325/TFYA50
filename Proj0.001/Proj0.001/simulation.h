@@ -36,6 +36,8 @@ private:
 	float volume;
 	float total_energy;
 	float Diff_coeff;
+	float self_diff_coeff;
+	float last_MSD;
 	float prev_diff_coeff;
 	map<int, vector<Vec>> atom_positions;
 	int eq_time_steps;

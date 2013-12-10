@@ -1,0 +1,218 @@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Skapad av Klas Kronander, klakr849@student.liu.se, Editerad av Per Henriksson för CDIO projektet
+%senast uppdaterad 2010-02-22
+%Latexmall för LIPS-dokument, för projektkurser vid LiTH
+%Mallen är gjord för att efterlikna de .doc-dokument som finns tillgängliga på
+%http://www.liu.se/cul/resurser/lips?l=sv
+%
+%
+%
+%Denna mall är baserad på tidigare mallar framtagna av Henrik Ohlsson, Jonas Biteus och Per %Anderson.
+%
+%Observera att variablerna kan omdefinieras i denna fil eller i .texfilen. Det går bra att definiera om 
+%variabler som redan blivit definierade i .sty-filen. 
+%
+%Se exempelfil generell_mall.tex 
+%
+%Behöver du hjälp med latex finns "the not so short introduction to latex", lshort.pdf fritt tillgänglig %ett googlesök bort.
+%
+%argumentet inom [] vid \RequirePackage[applemac]{inoutenc} bör ändras om du skriver i %windows eller *nix miljö. Se dokumentet  lshort för detaljer. 
+%
+%
+%kortlista med kommandon: \maketitle \makeinnehall \makegruppmedlemmar 
+%\makeprojektidentitet
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lips_sve}[2010/02/22 Lipssve]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%Paket%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[swedish]{babel}
+\RequirePackage[ddmmyyyy]{datetime}
+\RequirePackage{graphicx}
+\RequirePackage{fancyhdr}
+\RequirePackage[a4paper,hscale=0.65,vscale=0.75,foot=4\baselineskip,head=4\baselineskip]{geometry}
+\RequirePackage[table]{xcolor}
+\RequirePackage{sectsty}
+\RequirePackage{currfile}
+\RequirePackage{float}
+\RequirePackage[colorlinks,citecolor=black,filecolor=black,linkcolor=black,urlcolor=black]{hyperref}
+%%%%
+% Styckeformatering
+%%%%
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%% definiera typsnitt på rubriker och underrubriker%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sectionfont{\Large}
+\subsectionfont{\normalsize\textbf}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%definierbara projektdata%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\projektnamn#1{\gdef\@projektnamn{#1}}
+\def\kursnamn#1{\gdef\@kursnamn{#1}}
+\def\kurskod#1{\gdef\@kurskod{#1}}
+\def\projektgrupp#1{\gdef\@projektgrupp{#1}}
+\def\gruppepost#1{\gdef\@gruppepost{#1}}
+\def\authorepost#1{\gdef\@authorepost{#1}}
+\def\dokument#1{\gdef\@dokument{#1}}
+\def\version#1{\gdef\@version{#1}}
+\def\instution#1{\gdef\@instution{#1}}
+\def\projektnummer#1{\gdef\@projektnummer{#1}}
+\def\granskad#1#2{\gdef\@granskad{#1}\gdef\@granskaddatum{#2}}
+\def\godkand#1#2{\gdef\@godkand{#1}\gdef\@godkanddatum{#2}}
+\def\bestallare#1{\gdef\@bestallare{#1}}
+\def\filtyp#1{\gdef\@filtyp{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%Definiera projoktnamn osv%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\projektnamn{Molecular Dynamics} \kursnamn{CDIO-Project} \kurskod{TFYA50}
+\projektgrupp{Group 1} \instution{IFM} 
+\gruppepost{tfya50@googlegroups.com}
+\bestallare{Valeriu Chirita}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%titelsida %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\maketitle}{%
+\pagenumbering{gobble}
+\vspace*{4cm}
+\begin{center}
+\vspace*{3mm}
+{\Huge \textsf{\textbf{\@dokument}}}\\
+\vspace*{3mm} {\large \@author \\}
+\vspace*{3mm}
+{\large Version \@version}\\
+\vspace*{2cm}
+\end{center}
+}
+
+\newcommand{\makestatus}{%
+\vfill
+\vspace*{1cm}
+\textbf{Status}\\
+\vspace*{10mm}
+\begin{tabular}{|l|p{5cm}|p{5cm}|}
+\hline
+Reviewed & \@granskad & \@granskaddatum\\
+\hline
+Approved & \@godkand & \@godkanddatum \\
+\hline
+\end{tabular}
+\clearpage
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%Projektidentitet%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\makeprojektidentitet}{%
+\pagenumbering{roman}
+\vspace*{4cm}
+\begin{center}
+\Large \textsf{Project identity \\} 
+\normalsize
+Molecular Dynamics HT2013 TFYA50 \\
+Linköpings Tekniska Högskola, IFM
+\end{center}
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%Beställare och annan info%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\makeprojektinfo}{%
+\begin{center}
+\footnotesize
+\begin{table}[h]
+\begin{tabular}{r l}
+\textbf{E-mail for the whole group:} & tfya50@googlegroups.com \\[0.5cm]
+% \textbf{Hemsida för projektet:} http://www.isy.liu.se/edu/projekt/reglerteknik/2011/wheelloader/  \\[0.5cm]
+\textbf{Customer:} & IFM, Linköpings Universitet, 581 83 Link\"oping \\
+\textbf{Customer contact:} & Valeriu Chirita, 013-28 12 89 \\
+% \textbf{Kontakt hos Kund:} Anders Fröberg \textbf{E-post:} anders.froberg@volvo.com \\[0.5cm]
+
+% \textbf{Beställare av projektet:} Erik Frisk  \textbf{E-post:} frisk@isy.liu.se \\
+\textbf{Tutor:} & Daniel Edstr\"om, daned@ifm.liu.se \\
+\textbf{Tutor:} & Davide Sangiovanni, davsan@ifm.liu.se \\
+% \textbf{Telefon:}  +46 (0)13 - 28 5714  \\[0.5cm]
+% \textbf{Handledare:} Tomas Nilsson \textbf{E-post:} tnilsson@isy.liu.se \\ 
+% \textbf{Telefon:} +46 (0)13 - 28 4066  \\[0.5cm] 
+\end{tabular}
+\end{table}
+
+\end{center}
+\clearpage
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%gruppmedlemmar-tabell%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\makegruppmedlemmar}{%
+
+\footnotesize
+\begin{center}
+ \begin{tabular}{|l|l|l|}
+ \hline
+ \cellcolor{black} \textbf{\textcolor{white}{Name}} & \cellcolor{black} \textbf{\textcolor{white}{Responsibility}}  & \cellcolor{black} \textbf{\textcolor{white}{E-mail}}\\
+ \hline
+Ken Ryrbo & Project leader& kenry445 \\
+ \hline
+Markus Örn & Documents & maror634 \\
+ \hline
+Jessica Elevant & Coder & jesel919 \\
+ \hline
+Malin Leijon-Lind & Coder & malle904 \\
+ \hline
+Mattias Jansson & Coder & matja307 \\
+ \hline
+Patrik Hallsj\"o & Coder & patha325 \\
+ \hline 
+
+\end{tabular}
+\end{center}
+ %\clearpage 
+}
+\normalsize
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%innehållsförteckning%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\makeinnehall}{%
+\clearpage
+\footnotesize{\tableofcontents} \clearpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%sidhuvud och sidfot%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fancyhfoffset{60pt}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\lhead{\includegraphics[width=0.15\textwidth]{figs/logo}}
+\chead{\textbf{\@projektnamn}}
+\rhead{\textbf{\textsl{LiTH}} \\ \textbf{\today}}
+%\lfoot{\textbf{\@kurskod }  \textbf{\@kursnamn} \\ \textbf{\@dokument \@version.\@filtyp}  }
+\lfoot{\textbf{\@kurskod } \\ % \textbf{\jobname.\@filtyp}
+}
+\cfoot{\textbf{\@projektgrupp} \\ \textbf{\thepage}}
+\rfoot{\textsf{\Huge \textcolor{red}{L}\normalsize IPs} \\ \textbf{tfya50@googlegroups.com}}
+
+
+
