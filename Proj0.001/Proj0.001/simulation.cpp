@@ -32,7 +32,7 @@ Calls constructors for all atoms and the cell list.
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
                         float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat,
-						bool new_equilibrium, bool new_pbc_z, int new_thermostat_update_freq, bool new_old_sim){
+						bool new_equilibrium, bool new_pbc_z, int new_thermostat_update_freq, bool new_old_sim, bool new_save_atom_positions){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -59,6 +59,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	eq_time_steps =0;
 	thermostat_update_freq = new_thermostat_update_freq;
 	old_sim=new_old_sim;
+	save_atom_positions = new_save_atom_positions;
 
 	//Vec prev_acceleration = Vec(0,0,0); //Används ej
 	
@@ -105,7 +106,10 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	// Write out steps, time_step and dummy index to energytemp.
 	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<<0 <<endl;
 	fs2.close();
-	
+
+	ofstream atom_position_output;
+	atom_position_output.open ("atom_positions.txt", ios::trunc);
+	atom_position_output.close();
 	
 	
 	/*// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
@@ -151,6 +155,7 @@ Simulation::Simulation(Simulation* old_simulation, int new_steps, bool new_equil
 	self_diff_coeff = 0;
 	last_MSD = 0;
 	eq_time_steps=0;
+	save_atom_positions = old_simulation->get_save_atom_positions();
 	
 
 	//Boltzmann constant
@@ -457,6 +462,12 @@ void Simulation::next_time_step(int current_time_step){
 //	clock_t t6 = clock();
 	clock_t start_of_time_step_time = clock();
 
+
+	ofstream atom_position_output;
+	if(save_atom_positions){
+		atom_position_output.open ("atom_positions.txt", ios::out | ios::app);
+	}
+
 	if (fmod(current_time_step, 5.0) == 0){
 		cout << "--------------------------------- t=" << current_time_step << " -----" << endl;
 		//if(!pbc_z) cout << "Number of atoms in cell " << cell_list->get_cell_with_number(-1)->get_cell_number() << " is " << cell_list->get_cell_with_number(-1)->get_number_of_atoms_in_cell() << endl;
@@ -482,6 +493,7 @@ void Simulation::next_time_step(int current_time_step){
 
 
 	for(int i = 0; i < number_of_atoms; i++){
+		//cout << i << endl;
 		atom = list_of_atoms[i];
 		//prev_position = position etc.
 		atom->update_atom();
@@ -542,7 +554,7 @@ void Simulation::next_time_step(int current_time_step){
 
 		
 		//Calculate things which need to loop over neighbouring atoms
-		//cout << "Atom " << atom->get_atom_number() << " har total neighbours: " << neighbouring_atoms.size() << endl;
+//		cout << "Total neighbours: " << neighbouring_atoms.size() << endl;
 		int count = 0;
 		for(unsigned int j = 0; j < neighbouring_atoms.size(); j++){			
 			neighbouring_atom = neighbouring_atoms[j];
@@ -553,10 +565,6 @@ void Simulation::next_time_step(int current_time_step){
 				count ++;
 				//Calculate potential energy
 				//times two because of how we loop over neighbouring atoms
-
-				if(i == 0 && j == 0){
-					cout << "time step " << current_time_step << "Atom " << i << "E_pot (ska vara 0) " << E_pot << endl;
-				}
 
 				E_pot += 2*atom->calculate_potential(distance_length,neighbouring_atom);
 
@@ -614,7 +622,18 @@ void Simulation::next_time_step(int current_time_step){
 			}
 		//}
 
+		if(save_atom_positions){
+			atom_position_output << "( " << atom->get_position().getX() << " , " << atom->get_position().getY() << " , " << atom->get_position().getZ() << " )";
+		}
+/*
+		clock_t t4 = clock();
+		at += t3 - t2;
+		bt += t4 - t3;
+		ct += t9 - t8;
+		dt += t10 - t9;
+		*/
 	}
+	//clock_t t5 = clock();
 
 
 	//if(current_time_step < 500 || fmod(current_time_step,10.0) == 0){ // Görs alltid vid de 500 första tidsstegen, sedan var 10e tidssteg
@@ -643,6 +662,11 @@ void Simulation::next_time_step(int current_time_step){
 
 		}
 	
+	if(save_atom_positions){
+		atom_position_output << endl;
+		atom_position_output.close();
+	}
+
 	// Write Energy & temp to a file so that they can be plotted in matlab using plotter.m from drive.
 	std::ofstream fs2("energytemp.txt", ios::app);
 
@@ -654,7 +678,21 @@ void Simulation::next_time_step(int current_time_step){
 		fs2.close();
 	//}
 
+	/*
+	clock_t t7 = clock();
+	at = at/number_of_atoms;
+	bt = bt/number_of_atoms;
+	ct = ct/number_of_atoms;
+	dt = dt/number_of_atoms;
+	if(equilibrium){
+		cout << "whole next_time_step " << t7 - t6 << endl;
+		cout << "whole for loop " << t5 - t1 << endl;
+		cout << "tmp_diff_coeff " << ct << endl;
+		cout << "MSD " << bt << endl << endl;
+	}
+	*/
 	clock_t end_of_time_step_time = clock();
+	//cout << "Time step " <<  current_time_step << " has duration: " << end_of_time_step_time-start_of_time_step_time << endl;
 
 	return;
 }
@@ -890,7 +928,9 @@ Vec Simulation::distance_between_now_and_initial(Atom* atom) {
 		shortest_distance = l8.length();
 		shortest_vec = l8;
 	}
-
+	/*if(shortest_vec.length() < 0.5 && atom_number != other_atom->get_atom_number()){
+		cout << "Atom " << atom_number << " mkt nära" << other_atom->get_atom_number() << endl;
+	}*/
 	// Returns the vector to the closest atom from list
 	return shortest_vec;
 }
@@ -974,3 +1014,4 @@ float Simulation::get_epsilon(){return epsilon;}
 float Simulation::get_lattice_constant(){return lattice_constant;}
 string Simulation::get_crystal_structure(){return crystal_structure;}
 Cell_list* Simulation::get_cell_list(){return cell_list;}
+bool Simulation::get_save_atom_positions(){return save_atom_positions;}
