@@ -43,12 +43,32 @@ Atom::Atom(Vec starting_position, float start_cutoff, int unit_cells_x, int unit
 Constructor for simulations 
 started from old simulations
 -----------------------*/
-Atom::Atom(Vec new_starting_position, float new_start_cutoff, int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_new_lattice_constant,
-float new_new_sigma, float new_new_epsilon, float new_new_mass, float new_new_time_step, float new_initial_velocity_modulus, bool new_new_pbc_z,
+Atom::Atom(Vec new_starting_position, float new_start_cutoff, int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_lattice_constant,
+float new_sigma, float new_epsilon, float new_mass, float new_time_step, float new_initial_velocity_modulus, bool new_pbc_z,
 int new_atom_number, Vec new_position, Vec new_prev_position, Vec new_velocity, Vec new_prev_velocity, Vec new_acceleration, Vec new_prev_acceleration,
 Vec new_initial_velocity, Vec new_initial_position, float new_total_energy){
 
+	atom_number = new_atom_number;
+	position = new_position;
+	prev_acceleration = new_prev_acceleration;
+	velocity = new_velocity;
+	prev_velocity = new_prev_velocity;
+	prev_position = new_prev_position;
+	acceleration = new_acceleration;
+	initial_velocity = new_initial_velocity;
+	initial_position = new_initial_position;
+	pbc_z = new_pbc_z;
 
+	cutoff = new_start_cutoff;
+	lattice_constant = new_lattice_constant;
+	sigma = new_sigma;
+	epsilon = new_epsilon;
+	bulk_length_x = new_unit_cells_x*lattice_constant;
+	bulk_length_y = new_unit_cells_y*lattice_constant;
+	bulk_length_z = new_unit_cells_z*lattice_constant;
+	
+	mass = new_mass;
+	time_step = new_time_step;
 }
 
 

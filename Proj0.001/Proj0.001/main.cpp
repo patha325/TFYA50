@@ -88,53 +88,70 @@ Parameters:
 	// cout << "Input filename.txt where old simulation can be found" <<endl;
 	// cin >> old_sim_filename:
 	
-	cout << "Input the number of unit cells in x,y and z direction:" <<endl;
-	cin >> input_x;
-	cin >> input_y;
-	cin >> input_z;
-	cout << "Choose (Yes = 1/No = 0) for periodic boundry condition in z"<<endl;
-	cin >> pbc_z;
-	cout << "Input the wanted time step size:" << endl; 
-	cin >> input_time_step;
-	cout << "Input the wanted number of steps:" << endl;
-	cin >> input_steps;
-	cout << "Input wanted material:" << endl;
-	cin >> input_material;
-	get_input_file(input_material,file);
-	cout << "Start temperature (K):" << endl;
-	cin >> input_temperature;
-	cout << "Scaling of lattice constant " << endl;
-	cin >> input_lattice_scaling;
-	cout << "Input cutoff multiples of lattice_constant:" <<endl;
-	cin >> input_cutoff;
-	input_cutoff = input_cutoff*lattice;
-	cout << "Simulate with thermostat? (Yes = 1/No = 0)" << endl;
-	cin >> input_thermostat;
-	if(input_thermostat) {
-		cout << "Update frequency for thermostat " << endl;
-		cin >> thermostat_update_freq;
+	if(!old_sim){
+		cout << "Input the number of unit cells in x,y and z direction:" <<endl;
+		cin >> input_x;
+		cin >> input_y;
+		cin >> input_z;
+		cout << "Choose (Yes = 1/No = 0) for periodic boundry condition in z"<<endl;
+		cin >> pbc_z;
+		cout << "Input the wanted time step size:" << endl; 
+		cin >> input_time_step;
+		cout << "Input the wanted number of steps:" << endl;
+		cin >> input_steps;
+		cout << "Input wanted material:" << endl;
+		cin >> input_material;
+		get_input_file(input_material,file);
+		cout << "Start temperature (K):" << endl;
+		cin >> input_temperature;
+		cout << "Scaling of lattice constant " << endl;
+		cin >> input_lattice_scaling;
+		cout << "Input cutoff multiples of lattice_constant:" <<endl;
+		cin >> input_cutoff;
+		input_cutoff = input_cutoff*lattice;
+		cout << "Simulate with thermostat? (Yes = 1/No = 0)" << endl;
+		cin >> input_thermostat;
+		if(input_thermostat) {
+			cout << "Update frequency for thermostat " << endl;
+			cin >> thermostat_update_freq;
+		}
+		cout << "Do you want to save atom positions? (Yes = 1/No = 0)" << endl;
+		cin >> save_atom_positions;
 	}
-	cout << "Do you want to save atom positions? (Yes = 1/No = 0)" << endl;
-	cin >> save_atom_positions;
+	else{
+		ifstream in("endofsimulation.txt");
+		int line_number = 0;
+		string line;
+		getline(in,line);
+
+		istringstream iss(line);
+		iss>>input_x >> input_y >> input_z >> input_time_step >> input_steps >> input_temperature >> input_cutoff >> 
+			input_mass >> input_sigma >> input_epsilon >> input_lattice_constant >> input_crystal_structure >> 
+			input_thermostat >>  input_equilibrium >>  pbc_z >>  thermostat_update_freq >>  save_atom_positions;
+	
+		in.close();
+	}
 
 	cout << endl << "------------" << endl;
 	cout << "- RUNNING -" << endl;
-	cout << "-----------" << endl << endl;
+	cout << "------------" << endl << endl;
 	
-	input_sigma = sigma; //[Å]
-	input_epsilon = epsilon; //[eV]
-	input_crystal_structure = structure;
-	input_mass = mass; //[eV/c^2]=[eV][Å]^2[fs]^-2
-	input_lattice_constant=lattice*input_lattice_scaling;
+	if(!old_sim){
+		input_sigma = sigma; //[Å]
+		input_epsilon = epsilon; //[eV]
+		input_crystal_structure = structure;
+		input_mass = mass; //[eV/c^2]=[eV][Å]^2[fs]^-2
+		input_lattice_constant=lattice*input_lattice_scaling;
+	}
 
-	cout << "Sigma: "<< sigma << endl;
-	cout << "Epsilon: "<<epsilon<<endl;
-	cout << "Structure: "<<structure<<endl;
-	cout << "Mass: "<<mass<<endl;
-	cout << "Lattice: "<<input_lattice_constant<<endl;
-	
+	cout << "Sigma: "<< input_sigma << endl;
+	cout << "Epsilon: "<< input_epsilon<<endl;
+	cout << "Structure: "<< input_crystal_structure<<endl;
+	cout << "Mass: "<< input_mass<<endl;
+	cout << "Lattice: "<< input_lattice_constant<<endl;
+
 	clock_t t1 = clock();
-		//Create first simulation world
+	//Create first simulation world
 	Simulation* simulation = new Simulation(input_x,input_y,input_z,input_time_step,input_steps,input_temperature, input_cutoff, 
 											input_mass, input_sigma, input_epsilon, input_lattice_constant,input_crystal_structure,
 											input_thermostat, input_equilibrium, pbc_z, thermostat_update_freq, old_sim, save_atom_positions);

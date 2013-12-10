@@ -73,7 +73,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 
 	if(old_sim){
-    read_old_sim();
+		read_old_sim();
 	}
 	else{
 		create_list_of_atoms();
@@ -107,9 +107,11 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<<0 <<endl;
 	fs2.close();
 
-	ofstream atom_position_output;
-	atom_position_output.open ("atom_positions.txt", ios::trunc);
-	atom_position_output.close();
+	if(!old_sim){
+		ofstream atom_position_output;
+		atom_position_output.open ("atom_positions.txt", ios::trunc);
+		atom_position_output.close();
+	}
 	
 	
 	/*// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
@@ -603,7 +605,7 @@ void Simulation::next_time_step(int current_time_step){
 		//clock_t t10 = clock();
 
 		//Calculate and set correct velocity only if not first time step
-		if(current_time_step == 1){
+		if(current_time_step == 1 && !old_sim){
 				atom->set_initial_velocity(atom->get_velocity());
 				atom->set_initial_position(atom->get_position());
 		}
@@ -998,7 +1000,70 @@ void Simulation::end_of_simulation(){
 
 }
 
-void Simulation::read_old_sim(){}
+void Simulation::read_old_sim(){
+
+	ifstream in("endofsimulation.txt");
+	int line_number = 0;
+	string line;
+
+	int atom_number;
+	float position_x;
+	float prev_position_x;
+	float velocity_x; 
+	float prev_veclocity_x;
+	float acceleration_x; 
+	float prev_acceleration_x;
+	float initial_velocity_x;
+	float initial_position_x;
+
+	float position_y;
+	float prev_position_y;
+	float velocity_y;
+	float prev_veclocity_y;
+	float acceleration_y;
+	float prev_acceleration_y;
+	float initial_velocity_y;
+	float initial_position_y;
+
+	float position_z;
+	float prev_position_z;
+	float velocity_z;
+	float prev_veclocity_z;
+	float acceleration_z;
+	float prev_acceleration_z;
+	float initial_velocity_z;
+	float initial_position_z;
+
+	float total_energy;
+
+	while(getline(in,line)){
+		if(line_number!=0){
+			cout << "Line: " << line_number << endl;
+			istringstream iss(line);
+
+			iss>>atom_number>>position_x>>position_y>>position_z>>prev_position_x>>prev_position_y>>prev_position_z>>
+				velocity_x>>velocity_y>>velocity_z>>prev_veclocity_x>>prev_veclocity_y>>prev_veclocity_z>>acceleration_x>>
+				acceleration_y>>acceleration_z>>prev_acceleration_x>>prev_acceleration_y>>prev_acceleration_z>>
+				initial_velocity_x>>initial_velocity_y>>initial_velocity_z>>initial_position_x>>initial_position_y>>initial_position_z>>
+				total_energy;
+
+			Vec position = Vec(position_x,position_y,position_z);
+			cout << "Atom number: " << atom_number << endl;
+			Vec prev_position = Vec(prev_position_x,prev_position_y,prev_position_z);
+			Vec velocity = Vec(velocity_x,velocity_y,velocity_z);
+			Vec prev_velocity = Vec(prev_veclocity_x,prev_veclocity_y,prev_veclocity_z);
+			Vec acceleration = Vec(acceleration_x,acceleration_y,acceleration_z);
+			Vec prev_acceleration = Vec(prev_acceleration_x,prev_acceleration_y,prev_acceleration_z);
+			Vec initial_velocity = Vec(initial_velocity_x,initial_velocity_y,initial_velocity_z);
+			Vec initial_position = Vec(initial_position_x,initial_position_y,initial_position_z);
+
+			list_of_atoms.push_back(new Atom(position,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma, epsilon, mass, time_step, initial_velocity_modulus, pbc_z,
+				atom_number, position,  prev_position,  velocity,  prev_velocity,  acceleration,  prev_acceleration, initial_velocity,  initial_position,  total_energy));
+		}
+		line_number++;
+	}	
+	in.close();
+}
 
 
 
