@@ -580,17 +580,15 @@ void Simulation::next_time_step(int current_time_step){
 	
 		
 		if (thermostat && fmod(current_time_step, thermostat_update_freq) == 0){
-			E_kin = 0;
 			float current_temperature = temperature/number_of_atoms;
-			temperature = 0;
 			float thermostat_scaling = sqrt(initial_temperature/current_temperature);
-
+			E_kin = 0;
+			temperature = 0;
+			
 			for(int i = 0; i < number_of_atoms; i++){
 				atom = list_of_atoms[i];
-
 				Vec current_velocity = atom->get_velocity();
 				atom->set_velocity(thermostat_scaling*current_velocity);
-				
 				tmp_E_kin = atom->calculate_kinetic_energy();
 				E_kin += tmp_E_kin;
 				temperature += atom->calculate_temperature(tmp_E_kin); 
