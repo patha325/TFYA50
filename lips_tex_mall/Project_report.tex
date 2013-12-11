@@ -214,10 +214,121 @@ The program is capable of running surface simulations, where the crystal is infi
 
 FIGURE?
 
-
 %% Calculating Physical Properties %%
 \subsection{Calculating Physical Properties}
 \label{sec:calculating_physical_properties}
+%The velocity for an atom is calculated according to equation \ref{eq:velVerlet}
+
+	%%Atomic Movement%%
+\subsubsection{Atomic movement}
+The movement of an atom is achieved by calculating its position at every timestep due to its previous position, velocity and accelaration as:
+
+\begin{equation}
+\label{eq:newPos}
+\mathbf r(t+\Delta t) =\mathbf r(t) + \mathbf v(t)\Delta t + 0.5 \cdot \mathbf a(t) (\Delta t)^2
+\end{equation}
+
+To get the velocity, the velocity verlet algorithm is used:
+\begin{equation}
+\label{eq:velVerlet}
+\mathbf v(t+\Delta t) = \mathbf v(t) + 0.5\Delta t  \cdot \mathbf a(t+\Delta t) + \mathbf a(t)
+\end{equation}
+
+The acceleration is calculated by using the Newton's equation of motion:
+\begin{equation}
+\label{eq:acceleration}
+\mathbf F = -m\mathbf a(t),
+\end{equation}
+
+where the \(\mathbf F\) is the total force from every neighboring atom within cutoff acting on the atom and the force between two atoms is calculated using the formula
+\begin{equation}
+\label{eq:force}
+\mathbf F(\mathbf r)=\frac{48\epsilon}{r} \left[\left(\frac{\sigma}{r}\right)^{12} - \frac 1 2 \left(\frac{\sigma}{r}\right)^6\right] \mathbf r
+\end{equation}
+
+	%%Energies%%
+\subsubsection{Energies}
+
+Potential energy for the system is 
+\begin{equation}
+E_{pot}(r)=\sum_{i=1}^N \sum_{j=1}^S \Theta(r_{ij})
+\end{equation}
+where \(i\) runs over all atoms in the system, \(j\) runs over all neighboring atoms to atom \(i\) and \( \Theta(r)\) is the Lennard Jones potential between two atoms 
+
+\begin{equation}
+\label{eq:LJ}
+\Theta(r)=4 \epsilon \left[\left(\frac{\sigma}{r}\right)^{12} - \left(\frac{\sigma}{r}\right)^6\right]
+\end{equation}
+Here, \( \epsilon\) is the maximum well-depth, \( \sigma \) is the effective atomic radius and \( r\) is the distance between the atoms
+
+From the potential energy we get the cohesive energy for the system as
+\begin{equation}
+\label{eq:Ecoh}
+E_{coh}=\frac{E_{pot}} N
+\end{equation}
+
+where \(E_{pot}\) is the value of the potential energy when the system has reached equilibrium. From the potential energy we also get the kinetic energy for the system as
+\begin{equation}
+\label{eq:Ekin}
+E_{kin}=\frac{1}2 \sum_{i=1}^N mv_i^2
+\end{equation}
+
+	%%Other Properties
+\subsubsection{Other properties}
+To calculate temperature, debye temperature, pressure, mean square displacement, diffusion coefficient, self diffusion coeffient and heat capacity the following formulas are used
+
+Temperature
+\begin{equation}
+\label{eq:temperature}
+T=\frac{2E_{kin}}{3k_b}
+\end{equation}
+where \(k_b\) is the Boltzmann constant.
+
+Debye Temperature
+\begin{equation}
+\label{eq:debyetemperature}
+\Theta_D^2=\frac{3 \hbar^2T}{mk_b \left< \Delta r^2\right>}
+\end{equation}
+
+Pressure
+\begin{equation}
+\label{eq:pressure}
+P=\frac{Nk_bT}{V} + \frac 1 {6V} \left[\sum_{i=1}^N \sum_{j\not=i}^N  \mathbf r_{ij} \cdot \mathbf f_{ij} \right]
+\end{equation}
+where \(V\) is the volume of the system.
+
+Mean Square Displacement
+\begin{equation}
+\label{eq:MSD}
+\left< \Delta r^2 \right>= \frac 1 N \sum_{i=1}^N \left[ r_i(t_n)-r_i(t_0) \right]^2
+\end{equation}
+where \( n\) is the number of time steps in the simulation
+
+Diffusion coefficient
+\begin{equation}
+\label{eq:diffCoeff}
+D= \int_0^\infty dt \left< v_x(t)v_x(0)\right>
+\end{equation}
+
+Self-diffusion coefficient
+\begin{equation}
+\label{eq:selfDiffCoeff}
+2tD=\frac 1 3 \left<|r_i(t)-r_i(t=0)|^2 \right>
+\end{equation}
+
+Specific heat
+\begin{equation}
+\label{eq:specHeat}
+\frac{\left< T^2\right> - \left< T \right>^2}{\left< T\right>^2} = \frac 3{2N} \left(1-\frac{3Nk_b}{2C_v} \right) \Rightarrow
+C_v =\frac{\frac{3Nk_b} 2}{1-\frac{2N} 3 \frac{\left< T^2\right> - \left< T \right>^2}{\left< T\right>^2}}
+\end{equation}
+
+%% Thermostat%%
+\subsection{Thermostat}
+\label{sec:thermostat}
+
+The thermostat is implementet as a Woodstock thermostat. %% (inte riktigt men jag vill skriva om den så det blir en sån// Malin)
+At every n:th time step, where n is a choosen value for every simulation, the velocity for all atoms are rescaled to force the temperature to be what we want it to be. The scale factor is calculated as the desired temperature devided by the, at the present time step, actual temperature. %%stämmer det?
 
 %% Data %%
 \subsection{Data output}
