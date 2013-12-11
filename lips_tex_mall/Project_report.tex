@@ -182,6 +182,7 @@ The simulation world contains representations of atoms, containing information a
 
 \subsubsection{Atoms}
 \label{sec:atoms}
+The program represents atoms as a c++ class. Class instances have properties defining position and velocity of the atom. Each atom interacts with other atoms with the Lennard-Jones potential as described in section \ref{sec:calculating_physical_properties}. Each simulation time step, for each atom there is calculated an interaction potential. The interaction potential gives atom acceleration which is also saved 
 
 \subsubsection{Cells}
 \label{sec:cells}
