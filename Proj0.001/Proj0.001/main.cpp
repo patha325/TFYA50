@@ -78,7 +78,7 @@ Parameters:
 	bool input_thermostat = false;
 	bool input_equilibrium = false;
 	bool pbc_z = false;
-	int thermostat_update_freq = 0;
+	float thermostat_update_freq = 0;
 	float input_lattice_scaling = 1;
 	bool old_sim;
 	bool save_atom_positions = false;

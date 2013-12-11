@@ -32,7 +32,7 @@ Calls constructors for all atoms and the cell list.
 Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit_cells_z, float new_time_step,
                         int new_steps,float new_temperature,float new_cutoff,float new_mass,float new_sigma,
                         float new_epsilon,float new_lattice_constant,string new_crystal_structure,bool new_thermostat,
-						bool new_equilibrium, bool new_pbc_z, int new_thermostat_update_freq, bool new_old_sim, bool new_save_atom_positions){
+						bool new_equilibrium, bool new_pbc_z, float new_thermostat_update_freq, bool new_old_sim, bool new_save_atom_positions){
     
     //Save parameters
 	unit_cells_x = new_unit_cells_x;
@@ -41,6 +41,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
     time_step = new_time_step;
     steps = new_steps;
     temperature = new_temperature;
+	initial_temperature = new_temperature;
 	pressure = 0;
     cutoff = new_cutoff;
     mass = new_mass;
@@ -73,7 +74,7 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 
 
 	if(old_sim){
-		read_old_sim();
+    read_old_sim();
 	}
 	else{
 		create_list_of_atoms();
@@ -107,11 +108,9 @@ Simulation::Simulation (int new_unit_cells_x, int new_unit_cells_y, int new_unit
 	fs2 << steps << " " << steps <<" "<<time_step<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<< 0<<" "<<0 <<endl;
 	fs2.close();
 
-	if(!old_sim){
-		ofstream atom_position_output;
-		atom_position_output.open ("atom_positions.txt", ios::trunc);
-		atom_position_output.close();
-	}
+	ofstream atom_position_output;
+	atom_position_output.open ("atom_positions.txt", ios::trunc);
+	atom_position_output.close();
 	
 	
 	/*// Write atom position to a file so that they can be plotted in matlab using plotter.m from drive.
@@ -477,7 +476,7 @@ void Simulation::next_time_step(int current_time_step){
 
 	float E_pot = 0;
 	float E_kin = 0;
-	float temperature = 0;
+	temperature = 0;
 	float tmp_E_kin = 0;
 	float pressure = 0;
 	float MSD = 0;
@@ -505,15 +504,9 @@ void Simulation::next_time_step(int current_time_step){
 
 		//Update cell_list every fifth time step
 		if (fmod(current_time_step, 5.0) == 0 && current_time_step!=0){
-			cell_list->add_atom_to_cells(atom);
-
-		
+			cell_list->add_atom_to_cells(atom);	
 		}
-		
 	}
-	
-
-
 
 	vector<Atom*> neighbouring_atoms;
 	Atom* neighbouring_atom;
@@ -527,36 +520,13 @@ void Simulation::next_time_step(int current_time_step){
 	for(int i = 0; i < number_of_atoms; i++){
 		atom = list_of_atoms[i];
 
-		//clock_t t2 = clock();
-
-		//cout << "next_time_step cell_list->get_neighbours(atom).size(): " << cell_list->get_neighbours(atom).size() << endl;
-		//atom->last_step_atom_neighbours = atom->get_atom_neighbours();
-
-
-		
 		//Creates the vector with atoms which neighbour the current atom
 		if (fmod(current_time_step, 5.0) == 0){
 			atom->update_neighbour_list(cell_list->get_neighbours(atom));
 		}	
 		vector<Atom*> neighbouring_atoms = atom->get_atom_neighbours();
 
-		//clock_t t3 = clock();
-
-		//neighbouring_atoms = cell_list->get_neighbours(atom); 
-
-		//neighbouring_atoms = atom->reduce_neighbours_list(neighbouring_atoms);
-
-		//Before doing anything else: Update atom_positions with current position for each atom for this time step
-		//This is for animation
-		/*
-		if (fmod(current_time_step, 5.0) == 0){
-			atom_positions[current_time_step].push_back(atom->get_position());
-		}
-		*/
-
-		
 		//Calculate things which need to loop over neighbouring atoms
-//		cout << "Total neighbours: " << neighbouring_atoms.size() << endl;
 		int count = 0;
 		for(unsigned int j = 0; j < neighbouring_atoms.size(); j++){			
 			neighbouring_atom = neighbouring_atoms[j];
@@ -567,52 +537,31 @@ void Simulation::next_time_step(int current_time_step){
 				count ++;
 				//Calculate potential energy
 				//times two because of how we loop over neighbouring atoms
-
 				E_pot += 2*atom->calculate_potential(distance_length,neighbouring_atom);
-
 				//Calculate force
 				Vec tmp_force = atom->calculate_force(distance, distance_length);
-				//if(atom->get_atom_number() == 3 && neighbouring_atom->get_atom_number() == 62) {
-				//	cout << "distance_length " << distance_length << endl;
-				//}
-				/*if(E_pot_tmp > 0){
-					cout << "tmp_force stor, = " << tmp_force << endl;
-					cout << "atom " << atom->get_atom_number() << "och atom " << neighbouring_atom->get_atom_number() << endl;
-					cout << "distance_lenght = " << distance_length << endl;
-				}*/
 				atom->add_tmp_force(tmp_force);
 				neighbouring_atom->add_tmp_force(-1*tmp_force);
 				//Calculate pressure
 				pressure += 2*atom->calculate_pressure(tmp_force, distance_length);
 			}
 		}
-		//cout << "Neighbours within cutoff: " << count << endl;
-		//system("pause");
 		//Destruct neighbouring_atom?
-
 		//Calculate and set acceleration = f(r)
 		atom->calculate_and_set_acceleration(atom->get_tmp_force());
 		//Calculate and set velocity = f(prev_vel, acc, prev_acc)
-		calculate_and_set_velocity(atom,current_time_step);
-
+		atom->calculate_and_set_velocity();
 		//Kinetic energy
 		tmp_E_kin = atom->calculate_kinetic_energy();
 		E_kin += tmp_E_kin;
-	
-		
-		//clock_t t8 = clock();
-		//clock_t t9 = clock();
-		//clock_t t10 = clock();
 
-		//Calculate and set correct velocity only if not first time step
-		if(current_time_step == 1 && !old_sim){
+		//Calculate and set velocity only if not first time step
+		if(current_time_step == 1){
 				atom->set_initial_velocity(atom->get_velocity());
 				atom->set_initial_position(atom->get_position());
 		}
 
-		//if(current_time_step < 500 || fmod(current_time_step,10.0) == 0){ // Görs alltid vid de 500 första tidsstegen, sedan var 10e tidssteg
-		
-			//Calculate temperature (even if thermostat. want to check to see that temperature is held constant)
+			//Calculate temperature
 			temperature += atom->calculate_temperature(tmp_E_kin); 
 			// Used to calculate Diff_coeff and MSD, 1 shold be change to another number if we decide equilibrium is reached after "number" steps...
 
@@ -627,16 +576,26 @@ void Simulation::next_time_step(int current_time_step){
 		if(save_atom_positions){
 			atom_position_output << "( " << atom->get_position().getX() << " , " << atom->get_position().getY() << " , " << atom->get_position().getZ() << " )";
 		}
-/*
-		clock_t t4 = clock();
-		at += t3 - t2;
-		bt += t4 - t3;
-		ct += t9 - t8;
-		dt += t10 - t9;
-		*/
 	}
-	//clock_t t5 = clock();
+	
+		
+		if (thermostat && fmod(current_time_step, thermostat_update_freq) == 0){
+			E_kin = 0;
+			float current_temperature = temperature/number_of_atoms;
+			temperature = 0;
+			float thermostat_scaling = sqrt(initial_temperature/current_temperature);
 
+			for(int i = 0; i < number_of_atoms; i++){
+				atom = list_of_atoms[i];
+
+				Vec current_velocity = atom->get_velocity();
+				atom->set_velocity(thermostat_scaling*current_velocity);
+				
+				tmp_E_kin = atom->calculate_kinetic_energy();
+				E_kin += tmp_E_kin;
+				temperature += atom->calculate_temperature(tmp_E_kin); 
+			}
+		}
 
 	//if(current_time_step < 500 || fmod(current_time_step,10.0) == 0){ // Görs alltid vid de 500 första tidsstegen, sedan var 10e tidssteg
 		//Calculate average temperature of system
@@ -680,19 +639,6 @@ void Simulation::next_time_step(int current_time_step){
 		fs2.close();
 	//}
 
-	/*
-	clock_t t7 = clock();
-	at = at/number_of_atoms;
-	bt = bt/number_of_atoms;
-	ct = ct/number_of_atoms;
-	dt = dt/number_of_atoms;
-	if(equilibrium){
-		cout << "whole next_time_step " << t7 - t6 << endl;
-		cout << "whole for loop " << t5 - t1 << endl;
-		cout << "tmp_diff_coeff " << ct << endl;
-		cout << "MSD " << bt << endl << endl;
-	}
-	*/
 	clock_t end_of_time_step_time = clock();
 	//cout << "Time step " <<  current_time_step << " has duration: " << end_of_time_step_time-start_of_time_step_time << endl;
 
@@ -705,30 +651,14 @@ Paramteters: None
 Returns: None
 - 
 Calculates and sets correct velocity
-Checks if system has thermostat
+Not needed after new thermostat
 ------------------------------*/
-void Simulation::calculate_and_set_velocity(Atom* atom,double current_time_step){
+/*
+void Simulation::calculate_and_set_velocity(Atom* atom, double current_time_step){
 	//Calculate velocity as if total energy is to be constant
 	atom->calculate_and_set_velocity();
-	if (thermostat && fmod(current_time_step,thermostat_update_freq)==0){
-		//Update velocity so temperature is constant
-		Vec new_velocity = atom->get_velocity();
-		float new_velocity_modulus = new_velocity.length();
-		float right_modulus = 0;
-		//This is just a simple check in order to not get infinities
-		if (new_velocity_modulus != 0){
-			//initial_velocity_modulus is calculated from initial temperature
-			right_modulus = initial_velocity_modulus/new_velocity_modulus;
-		}
-		else{
-			right_modulus = initial_velocity_modulus;
-			//Velocity of any atom will never be zero. Is this a problem?
-			new_velocity = atom->generate_random_vector();
-		}
-		atom->set_velocity(right_modulus*new_velocity);
-	}
 }
-
+*/
 /*------------------------------
 FUNCTION calculate_specific_heat
 Paramteters: None
@@ -1000,70 +930,7 @@ void Simulation::end_of_simulation(){
 
 }
 
-void Simulation::read_old_sim(){
-
-	ifstream in("endofsimulation.txt");
-	int line_number = 0;
-	string line;
-
-	int atom_number;
-	float position_x;
-	float prev_position_x;
-	float velocity_x; 
-	float prev_veclocity_x;
-	float acceleration_x; 
-	float prev_acceleration_x;
-	float initial_velocity_x;
-	float initial_position_x;
-
-	float position_y;
-	float prev_position_y;
-	float velocity_y;
-	float prev_veclocity_y;
-	float acceleration_y;
-	float prev_acceleration_y;
-	float initial_velocity_y;
-	float initial_position_y;
-
-	float position_z;
-	float prev_position_z;
-	float velocity_z;
-	float prev_veclocity_z;
-	float acceleration_z;
-	float prev_acceleration_z;
-	float initial_velocity_z;
-	float initial_position_z;
-
-	float total_energy;
-
-	while(getline(in,line)){
-		if(line_number!=0){
-			cout << "Line: " << line_number << endl;
-			istringstream iss(line);
-
-			iss>>atom_number>>position_x>>position_y>>position_z>>prev_position_x>>prev_position_y>>prev_position_z>>
-				velocity_x>>velocity_y>>velocity_z>>prev_veclocity_x>>prev_veclocity_y>>prev_veclocity_z>>acceleration_x>>
-				acceleration_y>>acceleration_z>>prev_acceleration_x>>prev_acceleration_y>>prev_acceleration_z>>
-				initial_velocity_x>>initial_velocity_y>>initial_velocity_z>>initial_position_x>>initial_position_y>>initial_position_z>>
-				total_energy;
-
-			Vec position = Vec(position_x,position_y,position_z);
-			cout << "Atom number: " << atom_number << endl;
-			Vec prev_position = Vec(prev_position_x,prev_position_y,prev_position_z);
-			Vec velocity = Vec(velocity_x,velocity_y,velocity_z);
-			Vec prev_velocity = Vec(prev_veclocity_x,prev_veclocity_y,prev_veclocity_z);
-			Vec acceleration = Vec(acceleration_x,acceleration_y,acceleration_z);
-			Vec prev_acceleration = Vec(prev_acceleration_x,prev_acceleration_y,prev_acceleration_z);
-			Vec initial_velocity = Vec(initial_velocity_x,initial_velocity_y,initial_velocity_z);
-			Vec initial_position = Vec(initial_position_x,initial_position_y,initial_position_z);
-
-			list_of_atoms.push_back(new Atom(position,cutoff,unit_cells_x,unit_cells_y,unit_cells_z,lattice_constant,sigma, epsilon, mass, time_step, initial_velocity_modulus, pbc_z,
-				atom_number, position,  prev_position,  velocity,  prev_velocity,  acceleration,  prev_acceleration, initial_velocity,  initial_position,  total_energy));
-		}
-		line_number++;
-	}	
-	in.close();
-}
+void Simulation::read_old_sim(){}
 
 
 

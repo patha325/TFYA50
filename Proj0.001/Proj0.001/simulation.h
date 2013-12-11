@@ -22,12 +22,13 @@ private:
 	float time_step; //Given in femtoseconds
 	int steps;
 	float temperature;
+	float initial_temperature;
 	float pressure;
 	float cutoff;
 	bool thermostat;
 	bool equilibrium;
 	bool pbc_z;
-	int thermostat_update_freq;
+	float thermostat_update_freq;
 	bool old_sim;
 	float initial_velocity_modulus;
 	int unit_cells_x;
@@ -69,7 +70,7 @@ public:
 	void create_list_of_atoms(); //Create all atoms in this class? Convert from fcc to atom positions.
 	bool check_input();
 	void next_time_step(int current_time_step); //Alter everything in the simulation to get to the next time step.
-	void calculate_and_set_velocity(Atom* atom,double current_time_step); //Sets velocity. Checks if system has thermostat or not
+	//void calculate_and_set_velocity(Atom* atom,double current_time_step); //Sets velocity, not needed after new thermostat
 	float calculate_specific_heat();
 	float calculate_MSD(Atom*);
 	Vec distance_between_now_and_initial(Atom*);
@@ -109,7 +110,7 @@ public:
 		bool thermostat,
 		bool equilibrium,
 		bool pbc_z,
-		int thermostat_update_freq,
+		float thermostat_update_freq,
 		bool old_sim,
 		bool save_atom_positions);
 	Simulation(Simulation* old_simulation, int steps, bool equilibrium); //Take off where we left off-constructor
