@@ -196,12 +196,12 @@ The space of the bulk is divided into a number of cells, all of which span a vol
 \end{center}
 \end{figure}
 
-The program uses periodic boundary conditions at the bulk borders. This means that cells which lie on the border of the bulk are in practice in contact with cells on the other side. In the example of figure \ref{fig:cells} the cell number six will be in contact with cells 53, 54 and 55. 
+
 
 
 \subsubsection{The periodic boundary condition}
 \label{sec:the_periodic_boundary_condition}
-The program uses periodic boundary conditions. This means that an atom near one edge of the bulk will be influenced by an atom on the other side of the bulk. This will make it possible to simulate an infinite crystal. This is illustrated in figure ???.
+The program uses periodic boundary conditions at the bulk borders. This means that cells which lie on the border of the bulk are in practice in contact with cells on the other side. In the example of figure \ref{fig:cells} the cell number six will be in contact with cells 53, 54 and 55. This will in extent make it possible to simulate an infinite crystal.
 
 FIGURE
 
@@ -246,6 +246,15 @@ where the \(\mathbf F\) is the total force from every neighboring atom within cu
 \mathbf F(\mathbf r)=\frac{48\epsilon}{r} \left[\left(\frac{\sigma}{r}\right)^{12} - \frac 1 2 \left(\frac{\sigma}{r}\right)^6\right] \mathbf r
 \end{equation}
 
+This expression is correlated to the Lennard Jones potential according to following expression:
+
+\begin{equation}
+\label{eq:force vs pot}
+\mathbf F(\mathbf r)=-\nabla \Theta(r)
+\end{equation}
+
+Where \( \Theta(r) \) is the Lennard Jones potential. 
+
 	%%Energies%%
 \subsubsection{Energies}
 
@@ -253,7 +262,7 @@ Potential energy for the system is
 \begin{equation}
 E_{pot}(r)=\sum_{i=1}^N \sum_{j=1}^S \Theta(r_{ij})
 \end{equation}
-where \(i\) runs over all atoms in the system, \(j\) runs over all neighboring atoms to atom \(i\) and \( \Theta(r)\) is the Lennard Jones potential between two atoms 
+where \(i\) runs over all atoms in the system, \(j\) runs over all neighboring atoms to atom \(i\) and \( \Theta(r)\) is the Lennard Jones potential between two atoms which is given by following expression
 
 \begin{equation}
 \label{eq:LJ}
@@ -322,6 +331,8 @@ Specific heat
 \frac{\left< T^2\right> - \left< T \right>^2}{\left< T\right>^2} = \frac 3{2N} \left(1-\frac{3Nk_b}{2C_v} \right) \Rightarrow
 C_v =\frac{\frac{3Nk_b} 2}{1-\frac{2N} 3 \frac{\left< T^2\right> - \left< T \right>^2}{\left< T\right>^2}}
 \end{equation}
+
+All of theese except the temperature and pressure are calculated only when the system has reached equilibrium.
 
 %% Thermostat%%
 \subsection{Thermostat}
