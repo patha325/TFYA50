@@ -219,6 +219,11 @@ FIGURE?
 \label{sec:calculating_physical_properties}
 %The velocity for an atom is calculated according to equation \ref{eq:velVerlet}
 
+	%%Units%%
+\subsubsection{Units}
+The units that are used are \(eV\) for energies, \(fs\) for times,  \AA for lenght and K for temperature. All other properties will be expressed in theese units. 
+
+
 	%%Atomic Movement%%
 \subsubsection{Atomic movement}
 The system is treated as a Lennard Jones system, where all particle interactions is computed by the Lennard Jones potential 
@@ -254,11 +259,6 @@ The acceleration is calculated by using the Newton's equation of motion:
 \mathbf F = -m\mathbf a(t),
 \end{equation}
 
-where the \(\mathbf F\) is the total force from every neighboring atom within cutoff acting on the atom and the force between two atoms is calculated using the formula
-\begin{equation}
-\label{eq:force}
-\mathbf F(\mathbf r)=\frac{48\epsilon}{r} \left[\left(\frac{\sigma}{r}\right)^{12} - \frac 1 2 \left(\frac{\sigma}{r}\right)^6\right] \mathbf r
-\end{equation}
 
 	%%Energies%%
 \subsubsection{Energies}
@@ -368,17 +368,28 @@ Details about the plotting and animation programs in Matlab are given in section
 \section{Result}
 \label{sec:Result}
 
+To get the lattice constant for which the system is most stable the initial lattice constant is varied one, two and three percent up and down. The most stable system is the one with least energy.
+
+To start with Argon is used for the simulations, this is since Argon  has a simple structure and it is known that Lennard Jones model is well suited for Argon simulations.
+
+Graph REFERENS!!! shows the total energy of the three systems with least energy. As can be seen in these graphs the system with the lattice constant decreased with one percent gives the most stable system.
+
+When the optimal lattice constant is found this is used for all other simulations.
+
+As can be seen in graph REFERENS!!! the energies have large fluctuations in the beginning but with time they reach equilibrium just as they are expected to.
+
 \begin{table}[h]
 \caption{Values for Argon}
 \begin{tabular}{| l | l | l | l |}
 \hline
   & \textbf{Physical values} & \textbf{Lattice scaling 1} & \textbf{Lattice scaling 0.99} \\
 \hline
-\textbf{Cohesive Energy} & 0.08 &  &   \\
+\textbf{Cohesive Energy} [eV] & 0.08  &  &   \\
 \hline
-\textbf{Debye Temperature} & 92K &  &  \\
+\textbf{Debye Temperature} [K] & 92 &  &  \\
 \hline
-\textbf{Specific heat coeff} & 0.312e-7 &  & \\
+\textbf{Specific heat coeff}  \( \left[ \frac{eV}{K}  \right] \) & 0.312e-7 &  & \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -389,9 +400,9 @@ Details about the plotting and animation programs in Matlab are given in section
 \hline
   & \textbf{Physical values} & \textbf{Lattice scaling 1} \\
 \hline
-\textbf{Cohesive Energy} & 1.113 &   \\
+\textbf{Cohesive Energy} [eV] & 1.113 &   \\
 \hline
-\textbf{Debye Temperature} & 156.5K &   \\
+\textbf{Debye Temperature} [K] & 156.5 &   \\
 \hline
 \end{tabular}
 \end{table} 
