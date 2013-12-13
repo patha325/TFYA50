@@ -8,6 +8,7 @@
 \usepackage{graphicx}
 \usepackage{epsfig}
 \usepackage{datetime}
+\usepackage{amsmath}
 
 %\addto{\captionsswedish}{\renewcommand*{\contentsname}{Table of contents}}
 %\addto{\captionsswedish}{\renewcommand*{\tablename}{Table}}
@@ -31,7 +32,6 @@
 \makeprojektidentitet
 \makegruppmedlemmar
 \makeprojektinfo
-\makedokumenthistoria
 \makeinnehall
 
 \pagenumbering{arabic}
@@ -141,7 +141,7 @@ Table \ref{tab:Requirements} summarizes the performance requirements of the MD p
 	\hline
 	Req. 5 & Routines for calculation of  \textbf{cohesive energy, temperature, internal pressure, thermostat} & High \\
 	\hline
-	Reg. 6 & \textbf{Capability to perform 2-dimensional simulations} necessary for surface properties/processes calculations & High \\
+	Reg. 6 & \textbf{Capcbility to perform 2-dimensional simulations} necessary for surface properties/processes calculations & High \\
 	\hline 
 	Req. 7 & \textbf{Visualization capabilities} would be an extremely useful addition and/or upgrade to the MD code & Low \\
 	\hline
@@ -182,7 +182,6 @@ The simulation world contains representations of atoms, containing information a
 
 \subsubsection{Atoms}
 \label{sec:atoms}
-The program represents atoms as a c++ class. Class instances have properties defining position and velocity of the atom. Each atom interacts with other atoms with the Lennard-Jones potential as described in section \ref{sec:calculating_physical_properties}. Each simulation time step, for each atom there is calculated an interaction potential. The interaction potential gives atom acceleration which is also saved 
 
 \subsubsection{Cells}
 \label{sec:cells}
@@ -196,7 +195,7 @@ The space of the bulk is divided into a number of cells, all of which span a vol
 \end{center}
 \end{figure}
 
-
+The program uses periodic boundary conditions at the bulk borders. This means that cells which lie on the border of the bulk are in practice in contact with cells on the other side. In the example of figure \ref{fig:cells} the cell number six will be in contact with cells 53, 54 and 55. 
 
 
 \subsubsection{The periodic boundary condition}
@@ -214,6 +213,7 @@ The program is capable of running surface simulations, where the crystal is infi
 
 FIGURE?
 
+
 %% Calculating Physical Properties %%
 \subsection{Calculating Physical Properties}
 \label{sec:calculating_physical_properties}
@@ -221,14 +221,28 @@ FIGURE?
 
 	%%Atomic Movement%%
 \subsubsection{Atomic movement}
-The movement of an atom is achieved by calculating its position at every timestep due to its previous position, velocity and accelaration as:
+The system is treated as a Lennard Jones system, where all particle interactions is computed by the Lennard Jones potential 
+
+\begin{equation}
+\label{eq:LJ}
+\Theta(r)=4 \epsilon \left[\left(\frac{\sigma}{r}\right)^{12} - \left(\frac{\sigma}{r}\right)^6\right]
+\end{equation}
+where \( \epsilon\) is the maximum well-depth, \( \sigma \) is the effective atomic radius and \( r\) is the distance between the atoms
+
+The force between two atoms is then
+
+\begin{equation}
+\mathbf F(\mathbf r) = - \nabla \Theta = \frac{48\epsilon}{r} \left[\left(\frac{\sigma}{r}\right)^{12} - \frac 1 2 \left(\frac{\sigma}{r}\right)^6\right] \mathbf r
+\end{equation}
+
+The movement of an atom is achieved by calculating its position at every timestep due to its previous position, velocity and accelaration according to the Velocity Verlet algorithm
 
 \begin{equation}
 \label{eq:newPos}
 \mathbf r(t+\Delta t) =\mathbf r(t) + \mathbf v(t)\Delta t + 0.5 \cdot \mathbf a(t) (\Delta t)^2
 \end{equation}
 
-To get the velocity, the velocity verlet algorithm is used:
+where the velocity is 
 \begin{equation}
 \label{eq:velVerlet}
 \mathbf v(t+\Delta t) = \mathbf v(t) + 0.5\Delta t  \cdot \mathbf a(t+\Delta t) + \mathbf a(t)
@@ -246,29 +260,15 @@ where the \(\mathbf F\) is the total force from every neighboring atom within cu
 \mathbf F(\mathbf r)=\frac{48\epsilon}{r} \left[\left(\frac{\sigma}{r}\right)^{12} - \frac 1 2 \left(\frac{\sigma}{r}\right)^6\right] \mathbf r
 \end{equation}
 
-This expression is correlated to the Lennard Jones potential according to following expression:
-
-\begin{equation}
-\label{eq:force vs pot}
-\mathbf F(\mathbf r)=-\nabla \Theta(r)
-\end{equation}
-
-Where \( \Theta(r) \) is the Lennard Jones potential. 
-
 	%%Energies%%
 \subsubsection{Energies}
+The different energies of the system are all calculated at every timestep and saved to be plotted at the end of the simulation
 
 Potential energy for the system is 
 \begin{equation}
 E_{pot}(r)=\sum_{i=1}^N \sum_{j=1}^S \Theta(r_{ij})
 \end{equation}
-where \(i\) runs over all atoms in the system, \(j\) runs over all neighboring atoms to atom \(i\) and \( \Theta(r)\) is the Lennard Jones potential between two atoms which is given by following expression
-
-\begin{equation}
-\label{eq:LJ}
-\Theta(r)=4 \epsilon \left[\left(\frac{\sigma}{r}\right)^{12} - \left(\frac{\sigma}{r}\right)^6\right]
-\end{equation}
-Here, \( \epsilon\) is the maximum well-depth, \( \sigma \) is the effective atomic radius and \( r\) is the distance between the atoms
+where \(i\) runs over all atoms in the system, \(j\) runs over all neighboring atoms to atom \(i\) and \( \Theta(r)\) is the Lennard Jones potential between two atoms 
 
 From the potential energy we get the cohesive energy for the system as
 \begin{equation}
@@ -276,22 +276,28 @@ From the potential energy we get the cohesive energy for the system as
 E_{coh}=\frac{E_{pot}} N
 \end{equation}
 
-where \(E_{pot}\) is the value of the potential energy when the system has reached equilibrium. From the potential energy we also get the kinetic energy for the system as
+and the kinetic energy for the system as
 \begin{equation}
 \label{eq:Ekin}
 E_{kin}=\frac{1}2 \sum_{i=1}^N mv_i^2
 \end{equation}
 
+The total energy for the system is then simply
+
+\begin{equation}
+E_{tot} = E_{kin} + E_{pot}
+\end{equation}
+
 	%%Other Properties
 \subsubsection{Other properties}
-To calculate temperature, debye temperature, pressure, mean square displacement, diffusion coefficient, self diffusion coeffient and heat capacity the following formulas are used
+At every timestep, the temperature and pressure of the system is calculated and saved. If a simulations is done on a system that is in equilibrium the program also calculate and save the Debye temperature, mean square displacement, diffusion coefficient, self diffusion coeffient and heat capacity. For those properties the following formulas are used
 
 Temperature
 \begin{equation}
 \label{eq:temperature}
 T=\frac{2E_{kin}}{3k_b}
 \end{equation}
-where \(k_b\) is the Boltzmann constant.
+where \(k_b\) is the Boltzmann constant
 
 Debye Temperature
 \begin{equation}
@@ -304,7 +310,7 @@ Pressure
 \label{eq:pressure}
 P=\frac{Nk_bT}{V} + \frac 1 {6V} \left[\sum_{i=1}^N \sum_{j\not=i}^N  \mathbf r_{ij} \cdot \mathbf f_{ij} \right]
 \end{equation}
-where \(V\) is the volume of the system.
+where \(V\) is the volume of the system
 
 Mean Square Displacement
 \begin{equation}
@@ -332,14 +338,16 @@ Specific heat
 C_v =\frac{\frac{3Nk_b} 2}{1-\frac{2N} 3 \frac{\left< T^2\right> - \left< T \right>^2}{\left< T\right>^2}}
 \end{equation}
 
-All of theese except the temperature and pressure are calculated only when the system has reached equilibrium.
-
 %% Thermostat%%
 \subsection{Thermostat}
 \label{sec:thermostat}
 
-The thermostat is implementet as a Woodstock thermostat. %% (inte riktigt men jag vill skriva om den så det blir en sån// Malin)
-At every n:th time step, where n is a choosen value for every simulation, the velocity for all atoms are rescaled to force the temperature to be what we want it to be. The scale factor is calculated as the desired temperature devided by the, at the present time step, actual temperature. %%stämmer det?
+In this program a Woodstocks thermostat is used, this means that it is implemented using velocity rescaling.
+At every n:th time step, where n is a chosen value for every simulation, the velocities for all atoms are rescaled so that the temperature is correct using
+\begin{equation}
+\mathbf v_{res}(t)=\sqrt \frac {T_{desired}} {T_{current}} \mathbf v(t)
+\end{equation}
+where \( v_{res}\) is the rescaled velocity
 
 %% Data %%
 \subsection{Data output}
@@ -388,7 +396,7 @@ When the program is run the user will be asked to input certain parameters in or
 
 \textbf{Number of unit cells}: Set the number of unit cells in each cartesian direction. The number of cells in each direction does not have to be the same.
 
-\textbf{Periodic boundary condition in z (Yes/No):} 
+\textbf{Periodic boundary condition in z:(Yes/No):} 
 
 \textbf{Time step size:} This determines the time step with which the system progresses. It is given in units of femtoseconds.
 

@@ -122,6 +122,7 @@ public:
 	float get_time_step();
 	int get_steps();
 	float get_temperature();
+	float get_initial_temperature();
 	float get_cutoff();
 	bool get_thermostat();
 	bool get_pbc_z();
