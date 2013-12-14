@@ -9,20 +9,20 @@
 \usepackage{epsfig}
 \usepackage{datetime}
 \usepackage{amsmath}
+\usepackage{adjustbox}
+\usepackage{blindtext}
+\usepackage{rotating}
+\usepackage{morefloats}
 
 \addto{\captionsswedish}{\renewcommand*{\contentsname}{Table of contents}}
 \addto{\captionsswedish}{\renewcommand*{\tablename}{Table}}
-
-%\newdateformat{\mydate}{\THEDAY - \THEMONTH - \THEYEAR}
-
-%\newcommand{\mytoday}{\formatdate[ddmmyyyy]{\today}}
 
 \begin{document}
 
 \title{Title}
 \author{Group 1}
 \authorepost{tfya50@googlegroups.com}
-\dokument{Final report} \version{0.1}
+\dokument{Final report} \version{1.0}
 \filtyp{pdf}
 \projektnummer{1} 
 \granskad{}{\today}
@@ -178,14 +178,16 @@ The program runs molecular dynamics simulations on several monatomic solids. It 
 %% Simulation World %%
 \subsection{Simulation World}
 \label{sec:simulation_world}
-The simulation world contains representations of atoms, containing information about position and velocity at a given time, aswell as other nessecery parameters.  All atoms are confined in a section of space, called the bulk, to which is applied periodic boundary conditions to simulate an infinite crystal. The bulk is divided into several smaller regions, called cells, which reduce computation speed. 
+The simulation world contains representations of atoms, containing information about position and velocity at a given time, aswell as other nessecery parameters.  All atoms are confined in a section of space, called the simulation space, to which is applied periodic boundary conditions to simulate an infinite crystal. The simulation space is divided into several smaller regions, called cells, which increase computation speed. 
 
 \subsubsection{Atoms}
 \label{sec:atoms}
+The atoms are represented by instances of a class \emph{Atom}. This class has instance variables for the position, velocity and acceleration of an atom, as well as other parameters required to calculate physical properties of the bulk. At the start of a new simulation, the atoms are placed in a crystal structure accoring to the chosen material. The program has capabilities of simulating fcc, bcc and sc structures. At the beginning of a simulation the atoms are given random velocities. 
+
 
 \subsubsection{Cells}
 \label{sec:cells}
-The space of the bulk is divided into a number of cells, all of which span a volume of space. Each cell keeps track of which atoms at a given instant is inside of the cell. The size of a cell is chosen so that all sides of a cell is larger than the potential cutoff distance. This means that an atom only needs to interact with atoms in the same cell and the cells directly next to it. A two dimensional example of the cell structure is shown in figure \ref{fig:cells}. An atom in cell 28 only has neighbors in the nine cells within the marked border. In three dimensions this means that all cells has 27 neighboring cells (itself included). This structure gives a reduced number of atom interactions, disregarding all atom pairs displaced far enough not to give a contribution to the interaction potential. 
+The simulation space is divided into a number of cells, all of which span a volume of space. Each cell keeps track of which atoms at a given instant is inside of the cell. The size of a cell is chosen so that all sides of a cell is larger than the potential cutoff distance. This means that an atom only needs to interact with atoms in the same cell and the cells directly next to it. A two dimensional example of the cell structure is shown in figure \ref{fig:cells}. An atom in cell 28 only has neighbors in the nine cells within the marked border. In three dimensions this means that all cells has 27 neighboring cells (itself included). This structure gives a reduced number of atom interactions, disregarding all atom pairs displaced far enough not to give a contribution to the interaction potential. 
 
 \begin{figure}[h]
 \begin{center}
@@ -195,29 +197,26 @@ The space of the bulk is divided into a number of cells, all of which span a vol
 \end{center}
 \end{figure}
 
-The program uses periodic boundary conditions at the bulk borders. This means that cells which lie on the border of the bulk are in practice in contact with cells on the other side. In the example of figure \ref{fig:cells} the cell number six will be in contact with cells 53, 54 and 55. 
-
 
 \subsubsection{The periodic boundary condition}
 \label{sec:the_periodic_boundary_condition}
-The program uses periodic boundary conditions at the bulk borders. This means that cells which lie on the border of the bulk are in practice in contact with cells on the other side. In the example of figure \ref{fig:cells} the cell number six will be in contact with cells 53, 54 and 55. This will in extent make it possible to simulate an infinite crystal.
-
-FIGURE
-
-This method is modified when running surfrace simulations, as described in section \ref{sec:surface_simulations}.
+The program uses periodic boundary conditions. This means that an atom near one edge of the bulk will be influenced by an atom on the other side of the bulk. In the example of figure \ref{fig:cells} the cell number six will be in contact with cells 53, 54 and 55. This will make it possible to simulate an infinite crystal. This method is modified when running surfrace simulations, as described in section \ref{sec:surface_simulations}.
 
 
 \subsubsection{Surface simulations}
 \label{sec:surface_simulations}
 The program is capable of running surface simulations, where the crystal is infinite in two dimensions and has a finite number of atom layers in the third. The process for this kind of simulation is the same as for the bulk simulations, with the difference that the periodic boundary conditions are turned off in one dimension. This means that atoms at the \emph{top} of the crystal (at the surface) will not interact with atoms at the other side of the crystal. Atoms at the side of the crystal will interact with atoms at the other side just as for bulk simulations. 
 
-FIGURE?
-
 
 %% Calculating Physical Properties %%
 \subsection{Calculating Physical Properties}
 \label{sec:calculating_physical_properties}
 %The velocity for an atom is calculated according to equation \ref{eq:velVerlet}
+
+	%%Units%%
+\subsubsection{Units}
+The units that are used are \(eV\) for energies, \(fs\) for times,  \AA \space for lenght and K for temperature. All other properties will be expressed in theese units. 
+
 
 	%%Atomic Movement%%
 \subsubsection{Atomic movement}
@@ -227,7 +226,7 @@ The system is treated as a Lennard Jones system, where all particle interactions
 \label{eq:LJ}
 \Theta(r)=4 \epsilon \left[\left(\frac{\sigma}{r}\right)^{12} - \left(\frac{\sigma}{r}\right)^6\right]
 \end{equation}
-where \( \epsilon\) is the maximum well-depth, \( \sigma \) is the effective atomic radius and \( r\) is the distance between the atoms
+where \( \epsilon\) is the maximum well-depth, \( \sigma \) is the effective atomic radius and \( r\) is the distance between the atoms. The L-J parameters \(\epsilon\) and \(\sigma\) were thought of as calibratable parameters. The reference point of the calibration for \(\epsilon\) was the experimentally obtained value of the cohesive energy for the specific material. Calibration of \(\sigma\) was not performed during this project.
 
 The force between two atoms is then
 
@@ -254,11 +253,6 @@ The acceleration is calculated by using the Newton's equation of motion:
 \mathbf F = -m\mathbf a(t),
 \end{equation}
 
-where the \(\mathbf F\) is the total force from every neighboring atom within cutoff acting on the atom and the force between two atoms is calculated using the formula
-\begin{equation}
-\label{eq:force}
-\mathbf F(\mathbf r)=\frac{48\epsilon}{r} \left[\left(\frac{\sigma}{r}\right)^{12} - \frac 1 2 \left(\frac{\sigma}{r}\right)^6\right] \mathbf r
-\end{equation}
 
 	%%Energies%%
 \subsubsection{Energies}
@@ -362,61 +356,115 @@ Details about the plotting and animation programs in Matlab are given in section
 \subsection{Graphics}
 \label{sec:graphics}
 
+There exists a \texttt{Matlab} program beside from the main C++ program that is used to plot graphs for all the data which is specified in \ref{sec:data_output}.
+
+The \texttt{Matlab} program uses the function importdata which requires the user to have access to Matlab version R2008a or newer. Aside from this, the Matlab program only requires that the user specifies where the file has been saved. There are several possible continuations to the code that can either be adding more data to the output file and plotting more in the Matlab code, or to add plotting capabilities to the C++ code so that it stands alone.
+
+There are two different ways of displaying the result of a simulation. One is through plots generated by the Matlab script \emph{plotter3}, another is to display an animation of the motion of the atoms. This is done by the Matlab script \emph{plot\_atoms}.
+
+\subsubsection{Plots of the data}
+When a simulation is run the following physical properties are allways calculated and saved: Total energy, kinetic energy, potential energy, temperature and pressure of the system. When a simulation is run in equilibrium mode the following are also calculated: Mean square displacement, Debye temperature, cohesive energy, diffusion coefficient. After a simulation has finnished the data is saved to a file called \emph{energytemp.txt}. Running the matlab script \emph{plotter3.m} will give plots of all the data displayed as a function of simulation time. 
+
+\subsubsection{Atom motion}
+When starting a simulation an option is given to save the atom positions. If this is chosen it will be possible to animate the motion of the atoms after the simulation has finished. A snapshot of the simulation is shown in figure \ref{fig:animation}.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.8]{figs/vis2.png}
+\caption{\small Atom animation
+\label{fig:animation}}
+\end{center}
+\end{figure}
+
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%  Result and discussion %%
 \section{Result}
 \label{sec:Result}
 
-\begin{center}
+To start with Argon is used for the simulations, this is since Argon  has a simple structure and it is known that Lennard Jones model is well suited for Argon simulations.
+
+To get the lattice constant for which the system is most stable the initial lattice constant is varied one percent up and down. The most stable system is the one with least energy. As can be seen in figures \ref{fig:changeLattice101}, \ref{fig:changeLattice100} and \ref{fig:changeLattice099} in Appendix B the system with a scaled lattice constant of \(0.99\) has the lowest total energy. From now on this scaling will be used for all Argon results. Also note that these three figures all show fluctuations in the total energy in the beginning but that they all reach equilibrium as expected.
+
+In figures \ref{fig:Ar_Ekin} to \ref{fig:Ar_Ecoh} all interesting physical properties of the system are plotted as a function of time. In addition to these plots the specific heat capacity is an interesting value to calculate for the system. Cohesive energy and specific heat capacity are listed in table \ref{tab:Ar_comparison} where they are also compared with experimentally obtained values. Preferably the table would have compared also Debye temperature, but an experimental value of the Debye temperature for Argon at 50 K was not found.
+
 \begin{table}[h]
-\caption{Values for Argon}
-\begin{tabular}{| l | l | l |}
+\begin{center}
+\caption{Values for Argon at 50 K}
+\label{tab:Ar_comparison}
+\begin{tabular}{| p{0.3\textwidth} | p{0.3\textwidth} | p{0.3\textwidth} |}
 \hline
   & \textbf{Physical values} & \textbf{Lattice scaling 0.99} \\
 \hline
-\textbf{Cohesive Energy} & 0.08 & 0.08 \\
+\textbf{Cohesive Energy} [eV] & 0.08  & 0.08 \\
 \hline
-\textbf{Specific heat coeff} & 0.312e-7 & -0.121e-3 \\
+\textbf{Specific heat capacity}  \( \left[ \frac{eV}{K}  \right] \) & 0.312e-7 & -0.121e-4 \\
 \hline
 \end{tabular}
+\end{center}
 \end{table}
-\end{center}
 
-\begin{center}
+The specific heat capacity seems to be off by a factor \(10^3\) and perhaps this could be fixed by calibrating the L-J parameters more systematically.
+
+In figure \ref{fig:Ar_thermostat50} one can see that the system has a fully functional thermostat. In this figure the temperature of the reservoar is set to 50 K and the system's temperature is updated every 50 femtoseconds. One can as the user choose the wanted update frequency of the thermostat and in figure \ref{fig:Ar_thermostat500} the update frequency is 500 fs.
+
+Figure \ref{fig:Ar_surface} plots the total energy from a simulation with no periodic boundary conditions in z direction, i.e. a surface potential simulation. This also reaches equilibrium as expected.
+
+The system can also simulate other materials apart from Argon. The possible materials and their calibrated L-J parameters are listed in table \ref{tab:materials_LJ}.
+
 \begin{table}[h]
-\caption{Values for Natrium}
-\begin{tabular}{| l | l | l |}
+\begin{center}
+\caption{Possible materials to simulate in the program}
+\label{tab:materials_LJ}
+%\begin{tabular}{|p{0.3\textwidth}|p{0.3\textwidth}|p{0.3\textwidth}|}
+\begin{tabular}{|l|l|l|}
 \hline
-  & \textbf{Physical values} & \textbf{Lattice scaling 1} \\
+\textbf{Material} & \textbf{\(\epsilon\)} & \textbf{\(\sigma\)} \\
 \hline
-\textbf{Cohesive Energy} & 1.113 & -0.008 \\
+Li & 0.153 & 2.839 \\
+\hline
+Na & 0.105 & 3.475 \\
+\hline
+Ar & 0.007 & 3.400 \\
+\hline
+K & 0.087 & 4.285 \\
+\hline
+Cr & 0.377 & 2.336 \\
+\hline
+Fe & 0.401 & 2.321 \\
+\hline
+Mo & 0.640 & 2.551 \\
 \hline
 \end{tabular}
-\end{table} 
 \end{center}
+\end{table}
 
+As an example of this figures \ref{fig:Na_Ekin} to \ref{fig:Na_Ecoh} plot the different physical properties of a simulated system with sodium as the material. Table \ref{tab:natrium} lists some calculated values from the same simulation and compares them to experimentally obtained values.
 
-Total energy plottar för olika lattice constants för att visa att vi hittar den bästa\\
-Övriga plottar för den bästa lattice constant (Epot, Ekin, temp, pressure, MSD, Debye, Ecoh, Diffusion coeff, Cv). Plottar finns i appendix B\\
-	- Utan termostat\\
-	- Med termostat\\
-	- Surface utan termostat (ta med de plottar som ser mest vettiga ut)\\
-Jämföra dessa plottar och värden med gjorda experiment\\
-Visa tabell för vilka material som går att simulera\\
-	- Målet: Justera epsilon för alla material\\
-	- Visa tabell med alla material, epsilon, Ecoh, diffusion coefficient, Cv\\
-Säga att det går att ändra cutoff (ha 8 plottar som visar detta i appendix B)\\
-	- Argon, utan termo, 50 K, lattice 1, cutoff 2.5\\
-Säga att det går att a icke kubisk bulk (ha 8 plottar som visar detta i appendix B)\\
-	- Argon 5x15x12\\
-Säga att det går att ändra uppdateringshastigheten för termostaten (ha 8 plottar som visar detta i appendix B)\\
-	- Argon, termo, var 500:e steg\\
+\begin{table}[h]
+\begin{center}
+\caption{Values for Sodium at 300 K}
+\label{tab:natrium}
+\begin{tabular}{| p{0.3\textwidth} | p{0.2\textwidth} | p{0.2\textwidth} | p{0.2\textwidth} |}
+\hline
+  & \textbf{Physical values} & \textbf{Lattice scaling 1} & \textbf{Before calibration of L-J \(\epsilon\)} \\
+\hline
+\textbf{Cohesive Energy} [eV] & 1.113 & 1.11 & 1.46 \\
+\hline
+\textbf{Debye Temperature} [K] & 156.5 & 1.25864e18 & - \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+A comment on table \ref{tab:natrium}: Cohesive energy in the second column is obtained after calibration of LJ-parameters and since cohesive energy was the reference point for the calibration the simulation would obtain a very good result. For some reference the value for cohesive energy before the calibration was made is also listed to show that perhaps Lennard-Jones simulation is not suited for BCC-structures.
+
+Regarding the Debye temperature it seems to be off by a factor of \(10^{16}\) which can be explained by a miss of units since we are using fs (\(= 10^{-15}s\)).
 
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Appendix A - User Manual %%
-\section*{Appendix A - User Manual}
+\section{Appendix A - User Manual}
 
 \label{sec:AppendixA}
 When the program is run the user will be asked to input certain parameters in order to start the simulation.
@@ -426,6 +474,7 @@ When the program is run the user will be asked to input certain parameters in or
 \textbf{Number of unit cells}: Set the number of unit cells in each cartesian direction. The number of cells in each direction does not have to be the same.
 
 \textbf{Periodic boundary condition in z:(Yes/No):} 
+If \emph{no} is chosen, the simulation will be a surface simulation.
 
 \textbf{Time step size:} This determines the time step with which the system progresses. It is given in units of femtoseconds.
 
@@ -458,13 +507,175 @@ He & Helium & & \\
 After this the simulation is started and the progress is shown each five time steps. \\
 When the simulation ends the user is given the specific heat as well as the choice of running another simulation back to back. One is prompted to answer whether or not the system is in equilibrium and then proceed by giving the number of time steps for the continued simulation. 
 
+\textbf{Save atom positions (Yes/No):} If this option is chosen, the atom postitions will be saved. This will enable the user to run a Matlab script to see an animation of the atom positions when the simulation is done. (See section \ref{sec:graphics}).
+
+
 \textbf{Visualizing the result of the simulation:} 
 In order to make the data output from the simulation more clear to the user a Matlab script is provided with the main program. The data from the simulation is automatically exported to a text file which is read by the Matlab script in order to plot how the material properties vary over the time of the simulation. The Matlab script simply needs to be run as is, and the plots will be generated. The properties plotted are total energy, potential energy, kinetic energy, temperature, pressure, mean square displacement, Debye temperature, diffusion coefficient and the cohesive energy.
+
+To run the atom animation script, it is required to have saved the atom positions when running the simulation (see above). This Matlab script can be run as is too, given that the file \emph{atom\_positions.txt} generated by the simulation is in the same folder as the \emph{.m}-file.  
+
 
 \newpage
 \section{Appendix B - Plots}
 \label{sec:AppendixB}
-Alla plottar för resultat är här. Kommer hänvisa hit i resultat.
 
+\begin{center}
+
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Ar_lattice_x101_noterm_TotalEnergy.png}
+	\caption{Total energy for Argon with lattice constant increased with 1 \%}
+	\label{fig:changeLattice101}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Ar_lattice_x1_noterm_TotalEnergy.png}
+	\caption{Total energy for Argon with unchanged lattice constant}
+	\label{fig:changeLattice100}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Ar_lattice_x099_noterm_TotalEnergy.png}
+	\caption{Total energy for Argon with lattice constant decreased with 1 \%}
+	\label{fig:changeLattice099}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/099_longrun/Ar_longrun_lattice_x099_noterm_KineticEnergy.png}
+	\caption{Kinetic energy for Argon with optimal lattice constant}
+	\label{fig:Ar_Ekin}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/099_longrun/Ar_longrun_lattice_x099_noterm_PotentialEnergy.png}
+	\caption{Potential energy for Argon with optimal lattice constant}
+	\label{fig:Ar_Epot}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/099_longrun/Ar_longrun_lattice_x099_noterm_Temperature.png}
+	\caption{Temperature for Argon with optimal lattice constant}
+	\label{fig:Ar_Temp}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/099_longrun/Ar_longrun_lattice_x099_noterm_Pressure.png}
+	\caption{Pressure for Argon with optimal lattice constant}
+	\label{fig:Ar_Pressure}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/099_longrun/Ar_longrun_lattice_x099_noterm_MSD.png}
+	\caption{Mean square displacement for Argon with optimal lattice constant}
+	\label{fig:Ar_MSD}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/099_longrun/Ar_longrun_lattice_x099_noterm_DiffusionCoefficient.png}
+	\caption{Diffusion coefficient for Argon with optimal lattice constant}
+	\label{fig:Ar_DiffusionCoeff}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/099_longrun/Ar_longrun_lattice_x099_noterm_DebyeTemperature.png}
+	\caption{Debye temperature for Argon with optimal lattice constant}
+	\label{fig:Ar_Debye}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/099_longrun/Ar_longrun_lattice_x099_noterm_CohesiveEnergy.png}
+	\caption{Cohesive energy for Argon with optimal lattice constant}
+	\label{fig:Ar_Ecoh}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Ar_lattice_x099_thermostat_50update_Temperature.png}
+	\caption{Temperature for Argon with optimal lattice constant with thermostat enabled at 50 K and an update frequency of 50 fs.}
+	\label{fig:Ar_thermostat50}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Ar_lattice_x099_thermostat_500update_Temperature.png}
+	\caption{Temperature for Argon with optimal lattice constant with thermostat enabled at 50 K and an update frequency of 500 fs.}
+	\label{fig:Ar_thermostat500}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Ar_surface_Total_energy.png}
+	\caption{Total energy for Argon with no periodic boundary conditions in the z-direction.}
+	\label{fig:Ar_surface}
+\end{sidewaysfigure}
+
+%%Natrium
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Na_longrun/Na_lattice_x1_noterm_300K_KineticEnergy.png}
+	\caption{Kinetic energy for Sodium}
+	\label{fig:Na_Ekin}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Na_longrun/Na_lattice_x1_noterm_300K_PotentialEnergy.png}
+	\caption{Potential energy for Sodium}
+	\label{fig:Na_Epot}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Na_longrun/Na_lattice_x1_noterm_300K_Temperature.png}
+	\caption{Temperature for Sodium}
+	\label{fig:Na_Temp}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Na_longrun/Na_lattice_x1_noterm_300K_Pressure.png}
+	\caption{Pressure for Sodium}
+	\label{fig:Na_Pressure}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Na_longrun/Na_lattice_x1_noterm_300K_MSD.png}
+	\caption{Mean square displacement for Sodium}
+	\label{fig:Na_MSD}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Na_longrun/Na_lattice_x1_noterm_300K_DiffusionCoefficient.png}
+	\caption{Diffusion coefficient for Sodium}
+	\label{fig:Na_DiffusionCoeff}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Na_longrun/Na_lattice_x1_noterm_300K_DebyeTemperature.png}
+	\caption{Debye temperature for Sodium}
+	\label{fig:Na_Debye}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}
+	\includegraphics[scale=0.55, trim=4cm 0 0 0]{plottar/Na_longrun/Na_lattice_x1_noterm_300K_CohesiveEnergy.png}
+	\caption{Cohesive energy for Sodium}
+	\label{fig:Na_Ecoh}
+\end{sidewaysfigure}
+
+\end{center}
 
 \end{document}
