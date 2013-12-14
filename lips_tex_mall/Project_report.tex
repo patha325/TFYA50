@@ -10,8 +10,8 @@
 \usepackage{datetime}
 \usepackage{amsmath}
 
-%\addto{\captionsswedish}{\renewcommand*{\contentsname}{Table of contents}}
-%\addto{\captionsswedish}{\renewcommand*{\tablename}{Table}}
+\addto{\captionsswedish}{\renewcommand*{\contentsname}{Table of contents}}
+\addto{\captionsswedish}{\renewcommand*{\tablename}{Table}}
 
 %\newdateformat{\mydate}{\THEDAY - \THEMONTH - \THEYEAR}
 
@@ -342,7 +342,7 @@ C_v =\frac{\frac{3Nk_b} 2}{1-\frac{2N} 3 \frac{\left< T^2\right> - \left< T \rig
 \subsection{Thermostat}
 \label{sec:thermostat}
 
-In this program a Woodstocks thermostat is used, this means that it is implemented using velocity rescaling.
+The thermostat is implemented using velocity rescaling.
 At every n:th time step, where n is a chosen value for every simulation, the velocities for all atoms are rescaled so that the temperature is correct using
 \begin{equation}
 \mathbf v_{res}(t)=\sqrt \frac {T_{desired}} {T_{current}} \mathbf v(t)
@@ -367,6 +367,35 @@ Details about the plotting and animation programs in Matlab are given in section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%  Result and discussion %%
 \section{Result}
 \label{sec:Result}
+
+\begin{center}
+\begin{table}[h]
+\caption{Values for Argon}
+\begin{tabular}{| l | l | l |}
+\hline
+  & \textbf{Physical values} & \textbf{Lattice scaling 0.99} \\
+\hline
+\textbf{Cohesive Energy} & 0.08 & 0.08 \\
+\hline
+\textbf{Specific heat coeff} & 0.312e-7 & -0.121e-3 \\
+\hline
+\end{tabular}
+\end{table}
+\end{center}
+
+\begin{center}
+\begin{table}[h]
+\caption{Values for Natrium}
+\begin{tabular}{| l | l | l |}
+\hline
+  & \textbf{Physical values} & \textbf{Lattice scaling 1} \\
+\hline
+\textbf{Cohesive Energy} & 1.113 & -0.008 \\
+\hline
+\end{tabular}
+\end{table} 
+\end{center}
+
 
 Total energy plottar för olika lattice constants för att visa att vi hittar den bästa\\
 Övriga plottar för den bästa lattice constant (Epot, Ekin, temp, pressure, MSD, Debye, Ecoh, Diffusion coeff, Cv). Plottar finns i appendix B\\
